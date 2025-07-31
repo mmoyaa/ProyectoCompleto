@@ -1,0 +1,79 @@
+<form *ngIf="miFormulario" [formGroup]="miFormulario" (ngSubmit)="guardarRelacion()">
+  <div class="row">
+<div class="col-md-3">
+  <div>
+    <label>Comuna:</label>
+    <select formControlName="idComuna" class="form-control">
+      <option value="" disabled selected>Seleccione comuna</option>
+      <option *ngFor="let comuna of ComunasAll" [value]="comuna.idComuna">
+        {{ comuna.Nombre }}
+      </option>
+    </select>
+  </div>
+</div>
+<div class="col-md-3">
+  <div>
+    <label>Repartición:</label>
+    <select formControlName="idReparticion" class="form-control">
+      <option value="" disabled selected>Seleccione repartición</option>
+      <option *ngFor="let r of ReparticionesAll" [value]="r.idReparticion">
+        {{ r.Nombre }}
+      </option>
+    </select>
+  </div>
+
+</div>
+  </div>
+
+<br><br>
+
+
+  <button type="submit" class="btn btn-primary">Guardar relación</button>
+
+
+
+  <!-- <div class="row">
+    <div class="col-md-4">
+<button (click)="expirarRelacion()">Expirar Relación</button>
+    </div>
+  </div> -->
+
+<div class="container-fluid">
+  <table>
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Repartición</th>
+      <th>Comuna</th>
+      <th>Estado</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let relacion of Relaciones; let i = index">
+      <td>{{ i + 1 }}</td>
+      <td>{{ relacion.NombreReparticion }}</td>
+      <td>{{ relacion.NombreComuna }}</td>
+      <td>
+        {{ relacion.fechaExpiracion ? (relacion.fechaExpiracion | date:'shortDate') : 'Activa' }}
+      </td>
+      <td>
+        <button (click)="expirarRelacion(relacion)" class="btn btn-danger">Eliminar</button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+
+
+
+
+
+
+
+
+<br>
+
+
+</form>
