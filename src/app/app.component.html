@@ -1,6 +1,4 @@
-<router-outlet>
-  <h1>Home</h1>
-
-  <app-paso-1></app-paso-1>
-</router-outlet>
-
+<ng-container *ngIf="router.url !== '/home'">
+  <app-navbar></app-navbar>
+</ng-container>
+<router-outlet></router-outlet>

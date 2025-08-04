@@ -1,0 +1,197 @@
+<div class="container"></div>
+  <div class="card">
+    <div class="card-header">
+      <h2>Agregar Nuevo Paciente</h2>
+      <p class="subtitle">Complete el formulario para registrar un nuevo paciente en el sistema</p>
+    </div>
+    
+    <div class="card-body">
+      <!-- Mensajes de estado -->
+      <div *ngIf="mensaje" class="message" [ngClass]="tipoMensaje" (click)="limpiarMensaje()">
+        <span>{{ mensaje }}</span>
+        <button type="button" class="close-btn" aria-label="Cerrar mensaje">×</button>
+      </div>
+
+      <!-- Formulario -->
+      <form [formGroup]="pacienteForm" (ngSubmit)="onSubmit()" class="patient-form">
+        
+        <!-- Información Personal -->
+        <div class="form-section">
+          <h3>Información Personal</h3>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="nombre">Nombre *</label>
+              <input 
+                id="nombre"
+                type="text" 
+                formControlName="nombre"
+                class="form-control"
+                [class.error]="pacienteForm.get('nombre')?.invalid && pacienteForm.get('nombre')?.touched"
+                placeholder="Ingrese el nombre"
+                maxlength="100">
+              <div class="error-message" *ngIf="getErrorMessage('nombre')">
+                {{ getErrorMessage('nombre') }}
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="apellidoPaterno">Apellido Paterno *</label>
+              <input 
+                id="apellidoPaterno"
+                type="text" 
+                formControlName="apellidoPaterno"
+                class="form-control"
+                [class.error]="pacienteForm.get('apellidoPaterno')?.invalid && pacienteForm.get('apellidoPaterno')?.touched"
+                placeholder="Ingrese el apellido paterno"
+                maxlength="100">
+              <div class="error-message" *ngIf="getErrorMessage('apellidoPaterno')">
+                {{ getErrorMessage('apellidoPaterno') }}
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="apellidoMaterno">Apellido Materno</label>
+              <input 
+                id="apellidoMaterno"
+                type="text" 
+                formControlName="apellidoMaterno"
+                class="form-control"
+                [class.error]="pacienteForm.get('apellidoMaterno')?.invalid && pacienteForm.get('apellidoMaterno')?.touched"
+                placeholder="Ingrese el apellido materno (opcional)"
+                maxlength="100">
+              <div class="error-message" *ngIf="getErrorMessage('apellidoMaterno')">
+                {{ getErrorMessage('apellidoMaterno') }}
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="rut">RUT *</label>
+              <input 
+                id="rut"
+                type="text" 
+                formControlName="rut"
+                (input)="formatearRut($event)"
+                class="form-control"
+                [class.error]="pacienteForm.get('rut')?.invalid && pacienteForm.get('rut')?.touched"
+                placeholder="12345678-9"
+                maxlength="12">
+              <div class="error-message" *ngIf="getErrorMessage('rut')">
+                {{ getErrorMessage('rut') }}
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="nacionalidad">Nacionalidad</label>
+              <select 
+                id="nacionalidad"
+                formControlName="nacionalidad"
+                class="form-control">
+                <option value="Chilena">Chilena</option>
+                <option value="Argentina">Argentina</option>
+                <option value="Peruana">Peruana</option>
+                <option value="Boliviana">Boliviana</option>
+                <option value="Brasileña">Brasileña</option>
+                <option value="Colombiana">Colombiana</option>
+                <option value="Ecuatoriana">Ecuatoriana</option>
+                <option value="Venezolana">Venezolana</option>
+                <option value="Otra">Otra</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Información de Contacto -->
+        <div class="form-section">
+          <h3>Información de Contacto</h3>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="telefono">Teléfono</label>
+              <input 
+                id="telefono"
+                type="tel" 
+                formControlName="telefono"
+                class="form-control"
+                [class.error]="pacienteForm.get('telefono')?.invalid && pacienteForm.get('telefono')?.touched"
+                placeholder="+56 9 1234 5678"
+                maxlength="20">
+              <div class="error-message" *ngIf="getErrorMessage('telefono')">
+                {{ getErrorMessage('telefono') }}
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="correo">Correo Electrónico</label>
+              <input 
+                id="correo"
+                type="email" 
+                formControlName="correo"
+                class="form-control"
+                [class.error]="pacienteForm.get('correo')?.invalid && pacienteForm.get('correo')?.touched"
+                placeholder="ejemplo@correo.com"
+                maxlength="150">
+              <div class="error-message" *ngIf="getErrorMessage('correo')">
+                {{ getErrorMessage('correo') }}
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group full-width">
+              <label for="direccion">Dirección</label>
+              <textarea 
+                id="direccion"
+                formControlName="direccion"
+                class="form-control"
+                [class.error]="pacienteForm.get('direccion')?.invalid && pacienteForm.get('direccion')?.touched"
+                placeholder="Ingrese la dirección completa"
+                rows="3"
+                maxlength="255">
+              </textarea>
+              <div class="error-message" *ngIf="getErrorMessage('direccion')">
+                {{ getErrorMessage('direccion') }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Botones de acción -->
+        <div class="form-actions">
+          <button 
+            type="button" 
+            class="btn btn-info"
+            (click)="probarConexion()"
+            [disabled]="loading">
+            <span *ngIf="loading" class="spinner"></span>
+            Probar Conexión
+          </button>
+          
+          <button 
+            type="button" 
+            class="btn btn-secondary"
+            (click)="resetForm()"
+            [disabled]="loading">
+            Limpiar
+          </button>
+          
+          <button 
+            type="submit" 
+            class="btn btn-primary"
+            [disabled]="loading || pacienteForm.invalid">
+            <span *ngIf="loading" class="spinner"></span>
+            {{ loading ? 'Guardando...' : 'Guardar Paciente' }}
+          </button>
+        </div>
+
+        <!-- Información de campos obligatorios -->
+        <div class="form-info">
+          <small>* Campos obligatorios</small>
+        </div>
+      </form>
+    </div>
+

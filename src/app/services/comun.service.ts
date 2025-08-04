@@ -49,6 +49,7 @@ getRelaciones(): Observable<any> {
 }
 
 
-
-
+agregarPacienteConTutor(data: any): Observable<any> {
+  return this.http.post<any>('http://localhost:3000/api/pacientes/simple', data);
+}
 }
