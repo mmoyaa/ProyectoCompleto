@@ -1,4 +1,4 @@
-<div class="container"></div>
+<div class="container">
   <div class="card">
     <div class="card-header">
       <h2>Agregar Nuevo Paciente</h2>
@@ -102,6 +102,168 @@
                 <option value="Otra">Otra</option>
               </select>
             </div>
+
+            <!-- Checkbox para representante -->
+            <div class="form-group">
+              <div class="checkbox-container">
+                <input 
+                  type="checkbox" 
+                  id="tieneRepresentante"
+                  formControlName="tieneRepresentante"
+                  class="checkbox-input">
+                <label for="tieneRepresentante" class="checkbox-label">
+                  <span class="checkbox-custom"></span>
+                  ¿Tiene Representante?
+                </label>
+                <small class="checkbox-help">Marque si el paciente necesita un representante legal</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Formulario del Representante (se muestra condicionalmente) -->
+        <div class="form-section" *ngIf="tieneRepresentante">
+          <h3>Información del Representante</h3>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="nombreRepresentante">Nombre del Representante *</label>
+              <input 
+                id="nombreRepresentante"
+                type="text" 
+                formControlName="nombreRepresentante"
+                class="form-control"
+                [class.error]="pacienteForm.get('nombreRepresentante')?.invalid && pacienteForm.get('nombreRepresentante')?.touched"
+                placeholder="Ingrese el nombre del representante"
+                maxlength="100">
+              <div class="error-message" *ngIf="getErrorMessage('nombreRepresentante')">
+                {{ getErrorMessage('nombreRepresentante') }}
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="apellidoRepresentante">Apellido del Representante *</label>
+              <input 
+                id="apellidoRepresentante"
+                type="text" 
+                formControlName="apellidoRepresentante"
+                class="form-control"
+                [class.error]="pacienteForm.get('apellidoRepresentante')?.invalid && pacienteForm.get('apellidoRepresentante')?.touched"
+                placeholder="Ingrese el apellido del representante"
+                maxlength="100">
+              <div class="error-message" *ngIf="getErrorMessage('apellidoRepresentante')">
+                {{ getErrorMessage('apellidoRepresentante') }}
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="rutRepresentante">RUT del Representante *</label>
+              <input 
+                id="rutRepresentante"
+                type="text" 
+                formControlName="rutRepresentante"
+                (input)="formatearRut($event, 'rutRepresentante')"
+                class="form-control"
+                [class.error]="pacienteForm.get('rutRepresentante')?.invalid && pacienteForm.get('rutRepresentante')?.touched"
+                placeholder="12345678-9"
+                maxlength="12">
+              <div class="error-message" *ngIf="getErrorMessage('rutRepresentante')">
+                {{ getErrorMessage('rutRepresentante') }}
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="relacionRepresentante">Relación con el Paciente *</label>
+              <select 
+                id="relacionRepresentante"
+                formControlName="relacionRepresentante"
+                class="form-control"
+                [class.error]="pacienteForm.get('relacionRepresentante')?.invalid && pacienteForm.get('relacionRepresentante')?.touched">
+                <option value="">Seleccione una relación</option>
+                <option value="Padre">Padre</option>
+                <option value="Madre">Madre</option>
+                <option value="Tutor Legal">Tutor Legal</option>
+                <option value="Apoderado">Apoderado</option>
+                <option value="Cónyuge">Cónyuge</option>
+                <option value="Hijo/a">Hijo/a</option>
+                <option value="Hermano/a">Hermano/a</option>
+                <option value="Otro Familiar">Otro Familiar</option>
+                <option value="Representante Legal">Representante Legal</option>
+              </select>
+              <div class="error-message" *ngIf="getErrorMessage('relacionRepresentante')">
+                {{ getErrorMessage('relacionRepresentante') }}
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="telefonoRepresentante">Teléfono del Representante</label>
+              <input 
+                id="telefonoRepresentante"
+                type="tel" 
+                formControlName="telefonoRepresentante"
+                class="form-control"
+                [class.error]="pacienteForm.get('telefonoRepresentante')?.invalid && pacienteForm.get('telefonoRepresentante')?.touched"
+                placeholder="+56 9 1234 5678"
+                maxlength="20">
+              <div class="error-message" *ngIf="getErrorMessage('telefonoRepresentante')">
+                {{ getErrorMessage('telefonoRepresentante') }}
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="correoRepresentante">Correo del Representante</label>
+              <input 
+                id="correoRepresentante"
+                type="email" 
+                formControlName="correoRepresentante"
+                class="form-control"
+                [class.error]="pacienteForm.get('correoRepresentante')?.invalid && pacienteForm.get('correoRepresentante')?.touched"
+                placeholder="representante@correo.com"
+                maxlength="150">
+              <div class="error-message" *ngIf="getErrorMessage('correoRepresentante')">
+                {{ getErrorMessage('correoRepresentante') }}
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="direccionRepresentante">Dirección del Representante</label>
+              <textarea 
+                id="direccionRepresentante"
+                formControlName="direccionRepresentante"
+                class="form-control"
+                [class.error]="pacienteForm.get('direccionRepresentante')?.invalid && pacienteForm.get('direccionRepresentante')?.touched"
+                placeholder="Ingrese la dirección del representante"
+                rows="2"
+                maxlength="255">
+              </textarea>
+              <div class="error-message" *ngIf="getErrorMessage('direccionRepresentante')">
+                {{ getErrorMessage('direccionRepresentante') }}
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="nacionalidadRepresentante">Nacionalidad del Representante</label>
+              <select 
+                id="nacionalidadRepresentante"
+                formControlName="nacionalidadRepresentante"
+                class="form-control">
+                <option value="Chilena">Chilena</option>
+                <option value="Argentina">Argentina</option>
+                <option value="Peruana">Peruana</option>
+                <option value="Boliviana">Boliviana</option>
+                <option value="Brasileña">Brasileña</option>
+                <option value="Colombiana">Colombiana</option>
+                <option value="Ecuatoriana">Ecuatoriana</option>
+                <option value="Venezolana">Venezolana</option>
+                <option value="Otra">Otra</option>
+              </select>
+            </div>
           </div>
         </div>
 
@@ -150,7 +312,7 @@
                 class="form-control"
                 [class.error]="pacienteForm.get('direccion')?.invalid && pacienteForm.get('direccion')?.touched"
                 placeholder="Ingrese la dirección completa"
-                rows="3"
+                rows="2"
                 maxlength="255">
               </textarea>
               <div class="error-message" *ngIf="getErrorMessage('direccion')">
@@ -162,6 +324,15 @@
 
         <!-- Botones de acción -->
         <div class="form-actions">
+          <button 
+            type="button" 
+            class="btn btn-success"
+            (click)="abrirModalPacientes()"
+            [disabled]="loading">
+            <span class="btn-icon">👥</span>
+            Ver Pacientes
+          </button>
+          
           <button 
             type="button" 
             class="btn btn-info"
@@ -194,4 +365,97 @@
         </div>
       </form>
     </div>
+  </div>
+</div>
 
+
+<!-- Modal para mostrar lista de pacientes -->
+<div class="modal-overlay" *ngIf="mostrarModalPacientes" (click)="cerrarModalPacientes()">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Lista de Pacientes</h2>
+      <button class="modal-close" (click)="cerrarModalPacientes()" aria-label="Cerrar modal">×</button>
+    </div>
+    
+    <div class="modal-body">
+      <!-- Loading indicator -->
+      <div *ngIf="loadingPacientes" class="loading-container">
+        <div class="spinner-large"></div>
+        <p>Cargando pacientes...</p>
+      </div>
+      
+      <!-- Tabla de pacientes -->
+      <div *ngIf="!loadingPacientes && listaPacientes.length > 0" class="table-container">
+        <div class="table-info">
+          <p>Total de pacientes: <strong>{{ listaPacientes.length }}</strong></p>
+        </div>
+        
+        <table class="pacientes-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre Completo</th>
+              <th>RUT</th>
+              <th>Teléfono</th>
+              <th>Correo</th>
+              <th>Tutor/Representante</th>
+              <th>Fecha Creación</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let paciente of listaPacientes; let i = index">
+              <td>{{ paciente.idPaciente }}</td>
+              <td class="nombre-completo">{{ formatearNombreCompleto(paciente) }}</td>
+              <td class="rut">{{ paciente.rut }}</td>
+              <td>{{ paciente.telefono || 'N/A' }}</td>
+              <td>{{ paciente.correo || 'N/A' }}</td>
+              <td class="tutor-info">
+                <div *ngIf="paciente.tutor === 1" class="tutor-badge">
+                  <span class="badge tutor">TUTOR</span>
+                  <small>{{ paciente.nombreTutor }}</small>
+                </div>
+                <div *ngIf="paciente.idRepresentante" class="representante-badge">
+                  <span class="badge representante">REPRESENTANTE</span>
+                  <small>{{ paciente.nombreRepresentante }} ({{ paciente.relacionRepresentante }})</small>
+                </div>
+                <div *ngIf="paciente.tutor === 0 && !paciente.idRepresentante" class="sin-tutor">
+                  <span class="badge adulto">ADULTO</span>
+                </div>
+              </td>
+              <td>{{ formatearFecha(paciente.fechaCreacion) }}</td>
+              <td class="acciones">
+                <button 
+                  class="btn-ver" 
+                  (click)="cargarPacienteEnFormulario(paciente)"
+                  title="Ver y cargar datos en el formulario"
+                  [attr.aria-label]="'Ver paciente ' + formatearNombreCompleto(paciente)">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z"/>
+                    <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/>
+                  </svg>
+                  Ver
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      
+      <!-- Mensaje cuando no hay pacientes -->
+      <div *ngIf="!loadingPacientes && listaPacientes.length === 0" class="no-data">
+        <p>No se encontraron pacientes registrados.</p>
+      </div>
+    </div>
+    
+    <div class="modal-footer">
+      <button class="btn btn-secondary" (click)="cerrarModalPacientes()">
+        Cerrar
+      </button>
+      <button class="btn btn-info" (click)="cargarListaPacientes()" [disabled]="loadingPacientes">
+        <span *ngIf="loadingPacientes" class="spinner"></span>
+        Actualizar
+      </button>
+    </div>
+  </div>
+</div>

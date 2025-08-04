@@ -13,9 +13,33 @@ export interface Paciente {
   nacionalidad?: string;
 }
 
+export interface Representante {
+  nombreRepresentante: string;
+  apellidoRepresentante: string;
+  rutRepresentante: string;
+  telefonoRepresentante?: string;
+  correoRepresentante?: string;
+  direccionRepresentante?: string;
+  relacionRepresentante: string;
+  nacionalidadRepresentante?: string;
+}
+
+export interface PacienteConRepresentante extends Paciente {
+  nombreRepresentante: string;
+  apellidoRepresentante: string;
+  rutRepresentante: string;
+  telefonoRepresentante?: string;
+  correoRepresentante?: string;
+  direccionRepresentante?: string;
+  relacionRepresentante: string;
+  nacionalidadRepresentante?: string;
+}
+
 export interface PacienteResponse {
   message: string;
   idPaciente: number;
+  idRepresentante?: number;
+  relacion?: string;
 }
 
 @Injectable({
@@ -35,6 +59,24 @@ export class PacienteService {
     return this.http.post<PacienteResponse>(`${this.apiUrl}/pacientes`, paciente, { headers });
   }
 
+  // Crear paciente con representante
+  crearPacienteConRepresentante(pacienteConRepresentante: PacienteConRepresentante): Observable<PacienteResponse> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json'
+    });
+    
+    return this.http.post<PacienteResponse>(`${this.apiUrl}/pacientes/con-representante`, pacienteConRepresentante, { headers });
+  }
+
+  // Crear solo representante
+  crearRepresentante(representante: Representante): Observable<any> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json'
+    });
+    
+    return this.http.post<any>(`${this.apiUrl}/representantes`, representante, { headers });
+  }
+
   // Crear paciente simple (solo nombre y apellido) - para testing
   crearPacienteSimple(datos: { nombre: string; apellido: string }): Observable<any> {
     const headers = new HttpHeaders({
@@ -47,6 +89,11 @@ export class PacienteService {
   // Obtener todos los pacientes (si existe el endpoint GET)
   obtenerPacientes(): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/pacientes`);
+  }
+
+  // Obtener todos los pacientes con información completa de tutores y representantes
+  obtenerPacientesCompletos(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/pacientes/con-info-tutor`);
   }
 
   // Test de conectividad
