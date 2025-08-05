@@ -1,0 +1,215 @@
+<div class="container">
+  <!-- Header con estadísticas -->
+  <div class="header-section">
+    <div class="page-title">
+      <h1>📊 Evaluaciones Sensoriales</h1>
+      <p>Gestión y seguimiento de evaluaciones de pacientes</p>
+    </div>
+    
+    <div class="stats-cards" *ngIf="estadisticas">
+      <div class="stat-card">
+        <div class="stat-icon">📋</div>
+        <div class="stat-content">
+          <div class="stat-number">{{estadisticas.totalEvaluaciones}}</div>
+          <div class="stat-label">Total Evaluaciones</div>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon">👥</div>
+        <div class="stat-content">
+          <div class="stat-number">{{estadisticas.pacientesConEvaluaciones}}</div>
+          <div class="stat-label">Pacientes Evaluados</div>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon">✅</div>
+        <div class="stat-content">
+          <div class="stat-number">{{estadisticas.evaluacionesCompletadas}}</div>
+          <div class="stat-label">Completadas</div>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon">🔄</div>
+        <div class="stat-content">
+          <div class="stat-number">{{estadisticas.evaluacionesEnProgreso}}</div>
+          <div class="stat-label">En Progreso</div>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon">📈</div>
+        <div class="stat-content">
+          <div class="stat-number">{{estadisticas.progresoPromedio | number:'1.0-1'}}%</div>
+          <div class="stat-label">Progreso Promedio</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Controles -->
+  <div class="controls-section">
+    <button class="btn btn-primary" (click)="nuevaEvaluacion()">
+      <span class="btn-icon">➕</span>
+      Nueva Evaluación
+    </button>
+    
+    <button class="btn btn-secondary" (click)="cargarEvaluaciones()" [disabled]="loading">
+      <span class="btn-icon" *ngIf="!loading">🔄</span>
+      <span class="spinner" *ngIf="loading"></span>
+      {{loading ? 'Cargando...' : 'Actualizar'}}
+    </button>
+  </div>
+
+  <!-- Mensaje de error -->
+  <div class="error-message" *ngIf="error">
+    <div class="error-icon">⚠️</div>
+    <div class="error-text">{{error}}</div>
+    <button class="btn-retry" (click)="cargarEvaluaciones()">Reintentar</button>
+  </div>
+
+  <!-- Loading indicator -->
+  <div class="loading-section" *ngIf="loading && evaluaciones.length === 0">
+    <div class="spinner-large"></div>
+    <p>Cargando evaluaciones...</p>
+  </div>
+
+  <!-- Lista de evaluaciones -->
+  <div class="evaluaciones-section" *ngIf="!loading || evaluaciones.length > 0">
+    
+    <!-- Sin evaluaciones -->
+    <div class="no-evaluaciones" *ngIf="evaluaciones.length === 0 && !loading">
+      <div class="empty-icon">📋</div>
+      <h3>No hay evaluaciones registradas</h3>
+      <p>Crea la primera evaluación sensorial para comenzar el seguimiento de pacientes.</p>
+      <button class="btn btn-primary" (click)="nuevaEvaluacion()">
+        <span class="btn-icon">➕</span>
+        Crear Primera Evaluación
+      </button>
+    </div>
+
+    <!-- Tabla de evaluaciones -->
+    <div class="table-container" *ngIf="evaluaciones.length > 0">
+      <div class="table-header">
+        <h3>Lista de Evaluaciones ({{evaluaciones.length}})</h3>
+      </div>
+      
+      <div class="table-wrapper">
+        <table class="evaluaciones-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Paciente</th>
+              <th>RUT</th>
+              <th>Fecha Evaluación</th>
+              <th>Progreso</th>
+              <th>Estado</th>
+              <th>Evaluador</th>
+              <th>Última Actualización</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let evaluacion of evaluaciones; let i = index" class="evaluacion-row">
+              <td class="id-cell">
+                <span class="id-badge">#{{evaluacion.idEvaluacion}}</span>
+              </td>
+              
+              <td class="paciente-cell">
+                <div class="paciente-info">
+                  <div class="paciente-avatar">
+                    <span class="paciente-initials">
+                      {{obtenerIniciales(evaluacion.nombreCompleto)}}
+                    </span>
+                  </div>
+                  <div class="paciente-details">
+                    <div class="paciente-nombre">{{evaluacion.nombreCompleto}}</div>
+                    <div class="paciente-id">ID: {{evaluacion.idPaciente}}</div>
+                  </div>
+                </div>
+              </td>
+              
+              <td class="rut-cell">{{evaluacion.rut}}</td>
+              
+              <td class="fecha-cell">
+                <div class="fecha-container">
+                  <div class="fecha-main">{{formatearFecha(evaluacion.fechaEvaluacion)}}</div>
+                </div>
+              </td>
+              
+              <td class="progreso-cell">
+                <div class="progreso-container">
+                  <div class="progreso-bar">
+                    <div 
+                      class="progreso-fill" 
+                      [style.width.%]="evaluacion.progreso"
+                      [style.background-color]="obtenerColorProgreso(evaluacion.progreso)">
+                    </div>
+                  </div>
+                  <span class="progreso-text">{{evaluacion.progreso}}%</span>
+                </div>
+              </td>
+              
+              <td class="estado-cell">
+                <span class="estado-badge" [ngClass]="obtenerClaseEstado(evaluacion.estado)">
+                  <span class="estado-icon">{{obtenerIconoEstado(evaluacion.estado)}}</span>
+                  {{evaluacion.estado || 'Sin estado'}}
+                </span>
+              </td>
+              
+              <td class="evaluador-cell">
+                <div class="evaluador-info" *ngIf="evaluacion.evaluadorNombre; else sinEvaluador">
+                  <div class="evaluador-nombre">{{evaluacion.evaluadorNombre}}</div>
+                  <div class="evaluador-email" *ngIf="evaluacion.evaluadorCorreo">{{evaluacion.evaluadorCorreo}}</div>
+                </div>
+                <ng-template #sinEvaluador>
+                  <span class="sin-evaluador">No especificado</span>
+                </ng-template>
+              </td>
+              
+              <td class="actualizacion-cell">
+                <div class="fecha-actualizacion">
+                  {{formatearFecha(evaluacion.fechaActualizacion || evaluacion.fechaCreacion)}}
+                </div>
+              </td>
+              
+              <td class="acciones-cell">
+                <div class="action-buttons">
+                  <button 
+                    class="btn-action btn-view" 
+                    (click)="verDetalle(evaluacion)"
+                    title="Ver detalles">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                      <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z"/>
+                      <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/>
+                    </svg>
+                  </button>
+                  
+                  <button 
+                    class="btn-action btn-edit" 
+                    (click)="editarEvaluacion(evaluacion)"
+                    title="Editar evaluación">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                      <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708L7.707 11.707c-.147.147-.34.22-.54.22H4.5a.5.5 0 0 1-.5-.5V8.793c0-.2.073-.394.22-.54l8.146-8.147zm.707.707L10 3.707 12.293 6l2.853-2.853-2.146-2.147zM9 4.707 6.707 7 9 9.293 11.293 7 9 4.707zM6 8.707V11h2.293L6 8.707z"/>
+                    </svg>
+                  </button>
+                  
+                  <button 
+                    class="btn-action btn-delete" 
+                    (click)="eliminarEvaluacion(evaluacion)"
+                    title="Eliminar evaluación">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                      <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z"/>
+                    </svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { ComunService } from 'src/app/services/comun.service';
 import { PacienteService, Paciente, PacienteConRepresentante } from 'src/app/services/paciente.service';
 
@@ -23,7 +24,8 @@ export class Pagina1Component implements OnInit {
   constructor(
     private fb: FormBuilder,
     private comunService: ComunService,
-    private pacienteService: PacienteService
+    private pacienteService: PacienteService,
+    private router: Router
   ) {
     this.initializeForm();
   }
@@ -449,5 +451,11 @@ export class Pagina1Component implements OnInit {
         this.mensaje += ' ⚠️ Algunos datos del representante pueden estar incompletos.';
       }, 1500);
     }
+  }
+
+  // Método para navegar a la evaluación sensorial de un paciente
+  irAEvaluacion(pacienteId: number): void {
+    console.log('Navegando a evaluación para paciente ID:', pacienteId);
+    this.router.navigate(['/pagina2'], { queryParams: { pacienteId: pacienteId } });
   }
 }

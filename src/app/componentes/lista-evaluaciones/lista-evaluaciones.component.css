@@ -1,0 +1,574 @@
+/* Estilos para Lista de Evaluaciones */
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+/* Header Section */
+.header-section {
+  margin-bottom: 30px;
+}
+
+.page-title h1 {
+  margin: 0 0 8px 0;
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #1e293b;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.page-title p {
+  margin: 0;
+  color: #64748b;
+  font-size: 1.1rem;
+}
+
+/* Stats Cards */
+.stats-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin-top: 25px;
+}
+
+.stat-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+}
+
+.stat-icon {
+  font-size: 2rem;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 12px;
+  filter: grayscale(0.3);
+}
+
+.stat-content {
+  flex: 1;
+}
+
+.stat-number {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 4px;
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+/* Controls Section */
+.controls-section {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 25px;
+  align-items: center;
+}
+
+.btn {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(102, 126, 234, 0.4);
+}
+
+.btn-secondary {
+  background: #f8fafc;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+}
+
+.btn-secondary:hover {
+  background: #e2e8f0;
+  transform: translateY(-1px);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.btn-icon {
+  font-size: 16px;
+}
+
+/* Error Message */
+.error-message {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #dc2626;
+}
+
+.error-icon {
+  font-size: 20px;
+}
+
+.error-text {
+  flex: 1;
+  font-weight: 500;
+}
+
+.btn-retry {
+  background: #dc2626;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* Loading Section */
+.loading-section {
+  text-align: center;
+  padding: 60px 20px;
+  color: #64748b;
+}
+
+.spinner-large {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #e5e7eb;
+  border-top: 4px solid #667eea;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 20px;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid transparent;
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* No Evaluaciones */
+.no-evaluaciones {
+  text-align: center;
+  padding: 80px 20px;
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+}
+
+.empty-icon {
+  font-size: 4rem;
+  margin-bottom: 20px;
+  opacity: 0.5;
+}
+
+.no-evaluaciones h3 {
+  margin: 0 0 12px 0;
+  color: #374151;
+  font-size: 1.5rem;
+}
+
+.no-evaluaciones p {
+  margin: 0 0 30px 0;
+  color: #6b7280;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+/* Table Container */
+.table-container {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
+}
+
+.table-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f8fafc;
+}
+
+.table-header h3 {
+  margin: 0;
+  color: #374151;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+/* Table Styles */
+.evaluaciones-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.evaluaciones-table th {
+  background: #f8fafc;
+  padding: 16px 12px;
+  text-align: left;
+  font-weight: 600;
+  color: #374151;
+  border-bottom: 1px solid #e5e7eb;
+  white-space: nowrap;
+}
+
+.evaluaciones-table td {
+  padding: 16px 12px;
+  border-bottom: 1px solid #f1f5f9;
+  vertical-align: middle;
+}
+
+.evaluacion-row:hover {
+  background: #f8fafc;
+}
+
+/* Cell Styles */
+.id-cell {
+  width: 80px;
+}
+
+.id-badge {
+  background: #e0e7ff;
+  color: #3730a3;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.paciente-cell {
+  min-width: 200px;
+}
+
+.paciente-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.paciente-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.paciente-initials {
+  color: white;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.paciente-nombre {
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 2px;
+}
+
+.paciente-id {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.rut-cell {
+  font-family: 'Courier New', monospace;
+  color: #475569;
+  font-weight: 500;
+}
+
+.fecha-cell {
+  min-width: 140px;
+}
+
+.fecha-main {
+  font-weight: 500;
+  color: #374151;
+}
+
+.progreso-cell {
+  min-width: 120px;
+}
+
+.progreso-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.progreso-bar {
+  flex: 1;
+  height: 8px;
+  background: #e5e7eb;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progreso-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.progreso-text {
+  font-weight: 600;
+  font-size: 12px;
+  color: #374151;
+  min-width: 35px;
+}
+
+.estado-cell {
+  min-width: 120px;
+}
+
+.estado-badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.estado-completada {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.estado-en-progreso {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.estado-icon {
+  font-size: 14px;
+}
+
+.evaluador-cell {
+  min-width: 150px;
+}
+
+.evaluador-nombre {
+  font-weight: 500;
+  color: #374151;
+}
+
+.evaluador-email {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.sin-evaluador {
+  color: #9ca3af;
+  font-style: italic;
+  font-size: 12px;
+}
+
+.actualizacion-cell {
+  min-width: 140px;
+}
+
+.fecha-actualizacion {
+  color: #64748b;
+  font-size: 12px;
+}
+
+/* Action Buttons */
+.acciones-cell {
+  width: 120px;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.btn-action {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.btn-view {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+.btn-view:hover {
+  background: #0369a1;
+  color: white;
+  transform: scale(1.05);
+}
+
+.btn-edit {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.btn-edit:hover {
+  background: #f59e0b;
+  color: white;
+  transform: scale(1.05);
+}
+
+.btn-delete {
+  background: #fecaca;
+  color: #dc2626;
+}
+
+.btn-delete:hover {
+  background: #dc2626;
+  color: white;
+  transform: scale(1.05);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .stats-cards {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+  }
+  
+  .stat-card {
+    padding: 16px;
+  }
+  
+  .stat-icon {
+    width: 50px;
+    height: 50px;
+    font-size: 1.5rem;
+  }
+  
+  .stat-number {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 16px;
+  }
+  
+  .page-title h1 {
+    font-size: 1.8rem;
+  }
+  
+  .stats-cards {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+  }
+  
+  .controls-section {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  
+  .btn {
+    justify-content: center;
+  }
+  
+  .evaluaciones-table {
+    font-size: 12px;
+  }
+  
+  .evaluaciones-table th,
+  .evaluaciones-table td {
+    padding: 12px 8px;
+  }
+  
+  .paciente-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .paciente-avatar {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+@media (max-width: 640px) {
+  .stats-cards {
+    grid-template-columns: 1fr;
+  }
+  
+  /* Ocultar algunas columnas en móviles */
+  .evaluaciones-table th:nth-child(3),
+  .evaluaciones-table td:nth-child(3),
+  .evaluaciones-table th:nth-child(7),
+  .evaluaciones-table td:nth-child(7),
+  .evaluaciones-table th:nth-child(8),
+  .evaluaciones-table td:nth-child(8) {
+    display: none;
+  }
+}

@@ -1,1 +1,2118 @@
-<p>pagina2 works!</p>
+<div class="container">
+  <!-- Contador de progreso flotante -->
+  <div class="floating-progress" [class.hidden]="answeredQuestions === 0">
+    <div class="floating-progress-header">
+      <h5>Progreso</h5>
+      <button class="btn-close-floating" (click)="toggleFloatingProgress()">
+        <span class="close-icon">×</span>
+      </button>
+    </div>
+    
+    <div class="floating-progress-content">
+      <div class="circular-progress">
+        <svg class="progress-ring" width="80" height="80">
+          <circle
+            class="progress-ring-background"
+            stroke="#e5e7eb"
+            stroke-width="6"
+            fill="transparent"
+            r="34"
+            cx="40"
+            cy="40"/>
+          <circle
+            class="progress-ring-progress"
+            [attr.stroke-dasharray]="circumference + ' ' + circumference"
+            [attr.stroke-dashoffset]="strokeDashoffset"
+            stroke="#667eea"
+            stroke-width="6"
+            fill="transparent"
+            r="34"
+            cx="40"
+            cy="40"/>
+        </svg>
+        <div class="progress-text-center">
+          <span class="progress-percentage">{{progressPercentage}}%</span>
+        </div>
+      </div>
+      
+      <div class="progress-details">
+        <div class="progress-count">
+          <span class="answered">{{answeredQuestions}}</span>
+          <span class="separator">/</span>
+          <span class="total">{{totalQuestions}}</span>
+        </div>
+        <div class="progress-label">preguntas</div>
+      </div>
+      
+      <div class="section-progress">
+        <div class="section-item" 
+             *ngFor="let section of sectionProgress" 
+             [class.completed]="section.completed"
+             (click)="scrollToSection(section.id)">
+          <div class="section-dot" [style.background-color]="section.color"></div>
+          <div class="section-info">
+            <span class="section-name">{{section.name}}</span>
+            <span class="section-count">{{section.answered}}/{{section.total}}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h2>Evaluación Sensorial Completa - Cuestionario</h2>
+      <p class="subtitle">Evaluación integral de procesamiento sensorial: Auditivo, Táctil, Gusto/Olfato, Conciencia Corporal y Equilibrio/Movimiento</p>
+    </div>
+    
+    <div class="card-body">
+      <!-- Indicador de progreso -->
+      <div class="progress-indicator">
+        <div class="progress-header">
+          <h4>Progreso de la Evaluación</h4>
+          <span class="progress-text">0/80 preguntas completadas</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width: 0%"></div>
+        </div>
+        <div class="section-indicators">
+          <div class="section-indicator vision" (click)="scrollToSection('seccion-vision')">
+            <span class="indicator-dot"></span>
+            <span class="indicator-text">Visión (1-10)</span>
+          </div>
+          <div class="section-indicator auditory" (click)="scrollToSection('seccion-auditivo')">
+            <span class="indicator-dot"></span>
+            <span class="indicator-text">Auditivo (11-20)</span>
+          </div>
+          <div class="section-indicator tactile" (click)="scrollToSection('seccion-tactil')">
+            <span class="indicator-dot"></span>
+            <span class="indicator-text">Táctil (21-30)</span>
+          </div>
+          <div class="section-indicator taste-smell" (click)="scrollToSection('seccion-gusto-olfato')">
+            <span class="indicator-dot"></span>
+            <span class="indicator-text">Gusto/Olfato (31-40)</span>
+          </div>
+          <div class="section-indicator body-awareness" (click)="scrollToSection('seccion-conciencia-corporal')">
+            <span class="indicator-dot"></span>
+            <span class="indicator-text">Conciencia Corporal (41-50)</span>
+          </div>
+          <div class="section-indicator balance-movement" (click)="scrollToSection('seccion-equilibrio-movimiento')">
+            <span class="indicator-dot"></span>
+            <span class="indicator-text">Equilibrio/Movimiento (51-60)</span>
+          </div>
+          <div class="section-indicator planning-ideas" (click)="scrollToSection('seccion-planificacion-ideas')">
+            <span class="indicator-dot"></span>
+            <span class="indicator-text">Planificación/Ideas (61-70)</span>
+          </div>
+          <div class="section-indicator social-participation" (click)="scrollToSection('seccion-participacion-social')">
+            <span class="indicator-dot"></span>
+            <span class="indicator-text">Participación Social (71-80)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Selector de Paciente -->
+      <div class="patient-selector" *ngIf="!patientIdFromRoute">
+        <div class="patient-selector-header">
+          <h4>Seleccionar Paciente</h4>
+          <p>Elige el paciente para quien se realizará la evaluación sensorial</p>
+        </div>
+        <div class="patient-select-container">
+          <select 
+            class="patient-select" 
+            (change)="onPatientSelect($event)"
+            [value]="selectedPatient?.id || ''">
+            <option value="">-- Selecciona un paciente --</option>
+            <option *ngFor="let patient of patients" [value]="patient.id">
+              {{patient.nombre}} {{patient.apellidoPaterno}} - {{patient.rut}}
+            </option>
+          </select>
+        </div>
+        <div class="selected-patient-info" *ngIf="selectedPatient">
+          <div class="patient-card">
+            <div class="patient-avatar">
+              <span class="patient-initials">
+                {{selectedPatient.nombre?.charAt(0)}}{{selectedPatient.apellidoPaterno?.charAt(0)}}
+              </span>
+            </div>
+            <div class="patient-details">
+              <h5>{{selectedPatient.nombre}} {{selectedPatient.apellidoPaterno}}</h5>
+              <p class="patient-rut">RUT: {{selectedPatient.rut}}</p>
+              <p class="patient-contact" *ngIf="selectedPatient.telefono">📞 {{selectedPatient.telefono}}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Información del paciente seleccionado desde ruta -->
+      <div class="patient-info-route" *ngIf="patientIdFromRoute && selectedPatient">
+        <div class="patient-card-route">
+          <div class="patient-avatar">
+            <span class="patient-initials">
+              {{selectedPatient.nombre?.charAt(0)}}{{selectedPatient.apellidoPaterno?.charAt(0)}}
+            </span>
+          </div>
+          <div class="patient-details">
+            <h5>Evaluación para: {{selectedPatient.nombre}} {{selectedPatient.apellidoPaterno}}</h5>
+            <p class="patient-rut">RUT: {{selectedPatient.rut}}</p>
+          </div>
+        </div>
+      </div>
+
+      <form class="evaluation-form">
+        
+        <!-- Sección 1: VISIÓN (Preguntas 1-10) -->
+        <div class="form-section" id="seccion-vision">
+          <h3>VISIÓN - Este niño o esta niña...</h3>
+          
+          <div class="question-item">
+            <label class="question-label">1. Se fastidia con la luz brillante</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q1_nunca" name="pregunta1" value="nunca">
+                <label for="q1_nunca" class="radio-label">N<br><small></small></label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q1_ocasionalmente" name="pregunta1" value="ocasionalmente">
+                <label for="q1_ocasionalmente" class="radio-label">O<br></label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q1_frecuentemente" name="pregunta1" value="frecuentemente">
+                <label for="q1_frecuentemente" class="radio-label">F<br></label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q1_siempre" name="pregunta1" value="siempre">
+                <label for="q1_siempre" class="radio-label">S<br></label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">2. Tiene problemas para encontrar un objeto en medio de otros</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q2_nunca" name="pregunta2" value="nunca">
+                <label for="q2_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q2_ocasionalmente" name="pregunta2" value="ocasionalmente">
+                <label for="q2_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q2_frecuentemente" name="pregunta2" value="frecuentemente">
+                <label for="q2_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q2_siempre" name="pregunta2" value="siempre">
+                <label for="q2_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">3. Se angustia en lugares donde el ambiente visual es poco común como en habitaciones de espejos</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q3_nunca" name="pregunta3" value="nunca">
+                <label for="q3_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q3_ocasionalmente" name="pregunta3" value="ocasionalmente">
+                <label for="q3_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q3_frecuentemente" name="pregunta3" value="frecuentemente">
+                <label for="q3_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q3_siempre" name="pregunta3" value="siempre">
+                <label for="q3_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">4. Tiene dificultad siguiendo a objetos que se mueven con la vista</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q4_nunca" name="pregunta4" value="nunca">
+                <label for="q4_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q4_ocasionalmente" name="pregunta4" value="ocasionalmente">
+                <label for="q4_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q4_frecuentemente" name="pregunta4" value="frecuentemente">
+                <label for="q4_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q4_siempre" name="pregunta4" value="siempre">
+                <label for="q4_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">5. Tiene dificultad para reconocer cómo se parecen o cómo difieren los objetos en base a sus colores, formas, o tamaños</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q5_nunca" name="pregunta5" value="nunca">
+                <label for="q5_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q5_ocasionalmente" name="pregunta5" value="ocasionalmente">
+                <label for="q5_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q5_frecuentemente" name="pregunta5" value="frecuentemente">
+                <label for="q5_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q5_siempre" name="pregunta5" value="siempre">
+                <label for="q5_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">6. Se fascina con ciertos tipos de iluminación como luces estroboscópicas, luces parpadeantes, o luces fluorescentes</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q6_nunca" name="pregunta6" value="nunca">
+                <label for="q6_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q6_ocasionalmente" name="pregunta6" value="ocasionalmente">
+                <label for="q6_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q6_frecuentemente" name="pregunta6" value="frecuentemente">
+                <label for="q6_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q6_siempre" name="pregunta6" value="siempre">
+                <label for="q6_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">7. Mira a objetos con el rabillo del ojo</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q7_nunca" name="pregunta7" value="nunca">
+                <label for="q7_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q7_ocasionalmente" name="pregunta7" value="ocasionalmente">
+                <label for="q7_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q7_frecuentemente" name="pregunta7" value="frecuentemente">
+                <label for="q7_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q7_siempre" name="pregunta7" value="siempre">
+                <label for="q7_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">8. Se presume o se distrae en lugares donde hay demasiadas tiendas por todas las cosas que se ven en las vitrinas</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q8_nunca" name="pregunta8" value="nunca">
+                <label for="q8_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q8_ocasionalmente" name="pregunta8" value="ocasionalmente">
+                <label for="q8_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q8_frecuentemente" name="pregunta8" value="frecuentemente">
+                <label for="q8_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q8_siempre" name="pregunta8" value="siempre">
+                <label for="q8_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">9. Se distrae con objetos o gente que están visibles</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q9_nunca" name="pregunta9" value="nunca">
+                <label for="q9_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q9_ocasionalmente" name="pregunta9" value="ocasionalmente">
+                <label for="q9_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q9_frecuentemente" name="pregunta9" value="frecuentemente">
+                <label for="q9_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q9_siempre" name="pregunta9" value="siempre">
+                <label for="q9_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">10. Busca áreas que están oscuras</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q10_nunca" name="pregunta10" value="nunca">
+                <label for="q10_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q10_ocasionalmente" name="pregunta10" value="ocasionalmente">
+                <label for="q10_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q10_frecuentemente" name="pregunta10" value="frecuentemente">
+                <label for="q10_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q10_siempre" name="pregunta10" value="siempre">
+                <label for="q10_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sección: Este niño o esta niña... -->
+        <div class="form-section" id="seccion-auditivo">
+          <h3>Este niño o esta niña...</h3>
+          
+          <div class="question-item">
+            <label class="question-label">11. Se distrae con los sonidos caseros comunes como el de una aspiradora</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q11_nunca" name="pregunta11" value="nunca">
+                <label for="q11_nunca" class="radio-label">N<br></label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q11_ocasionalmente" name="pregunta11" value="ocasionalmente">
+                <label for="q11_ocasionalmente" class="radio-label">O<br></label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q11_frecuentemente" name="pregunta11" value="frecuentemente">
+                <label for="q11_frecuentemente" class="radio-label">F<br></label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q11_siempre" name="pregunta11" value="siempre">
+                <label for="q11_siempre" class="radio-label">S<br></label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">12. Responde a las voces escondidos, llorando, o poniéndose las manos sobre los oídos</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q12_nunca" name="pregunta12" value="nunca">
+                <label for="q12_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q12_ocasionalmente" name="pregunta12" value="ocasionalmente">
+                <label for="q12_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q12_frecuentemente" name="pregunta12" value="frecuentemente">
+                <label for="q12_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q12_siempre" name="pregunta12" value="siempre">
+                <label for="q12_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">13. No nota los sonidos que otros niños notan</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q13_nunca" name="pregunta13" value="nunca">
+                <label for="q13_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q13_ocasionalmente" name="pregunta13" value="ocasionalmente">
+                <label for="q13_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q13_frecuentemente" name="pregunta13" value="frecuentemente">
+                <label for="q13_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q13_siempre" name="pregunta13" value="siempre">
+                <label for="q13_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">14. Parece estar intensamente interesado/a en sonidos que otros no notan</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q14_nunca" name="pregunta14" value="nunca">
+                <label for="q14_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q14_ocasionalmente" name="pregunta14" value="ocasionalmente">
+                <label for="q14_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q14_frecuentemente" name="pregunta14" value="frecuentemente">
+                <label for="q14_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q14_siempre" name="pregunta14" value="siempre">
+                <label for="q14_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">15. Se asusta o se molesta a los demás no les molestan</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q15_nunca" name="pregunta15" value="nunca">
+                <label for="q15_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q15_ocasionalmente" name="pregunta15" value="ocasionalmente">
+                <label for="q15_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q15_frecuentemente" name="pregunta15" value="frecuentemente">
+                <label for="q15_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q15_siempre" name="pregunta15" value="siempre">
+                <label for="q15_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">16. Se distrae o se fastidia con ruidos en el ambiente que otros ignoran como una máquina de cortar el césped o el ruido de aire acondicionado</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q16_nunca" name="pregunta16" value="nunca">
+                <label for="q16_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q16_ocasionalmente" name="pregunta16" value="ocasionalmente">
+                <label for="q16_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q16_frecuentemente" name="pregunta16" value="frecuentemente">
+                <label for="q16_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q16_siempre" name="pregunta16" value="siempre">
+                <label for="q16_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">17. Gusta hacer ciertos sonidos repetidamente como tararear o jalar la cadena de la taza del baño</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q17_nunca" name="pregunta17" value="nunca">
+                <label for="q17_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q17_ocasionalmente" name="pregunta17" value="ocasionalmente">
+                <label for="q17_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q17_frecuentemente" name="pregunta17" value="frecuentemente">
+                <label for="q17_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q17_siempre" name="pregunta17" value="siempre">
+                <label for="q17_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">18. Se angustia cuando hay sonidos agudos como silbatos o aparatos para hacer ruido en las fiestas</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q18_nunca" name="pregunta18" value="nunca">
+                <label for="q18_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q18_ocasionalmente" name="pregunta18" value="ocasionalmente">
+                <label for="q18_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q18_frecuentemente" name="pregunta18" value="frecuentemente">
+                <label for="q18_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q18_siempre" name="pregunta18" value="siempre">
+                <label for="q18_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">19. Se queja frecuentemente de ruidos específicos por ruidos irreconocidos</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q19_nunca" name="pregunta19" value="nunca">
+                <label for="q19_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q19_ocasionalmente" name="pregunta19" value="ocasionalmente">
+                <label for="q19_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q19_frecuentemente" name="pregunta19" value="frecuentemente">
+                <label for="q19_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q19_siempre" name="pregunta19" value="siempre">
+                <label for="q19_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">20. Evita los lugares donde hay música o ruido fuerte</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q20_nunca" name="pregunta20" value="nunca">
+                <label for="q20_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q20_ocasionalmente" name="pregunta20" value="ocasionalmente">
+                <label for="q20_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q20_frecuentemente" name="pregunta20" value="frecuentemente">
+                <label for="q20_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q20_siempre" name="pregunta20" value="siempre">
+                <label for="q20_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sección adicional para continuación -->
+        <div class="form-section" id="seccion-tactil">
+          <h3>Este niño o esta niña... (continuación)</h3>
+          
+          <div class="question-item">
+            <label class="question-label">21. Come cuando la/lo tocan ligeramente o inesperadamente</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q21_nunca" name="pregunta21" value="nunca">
+                <label for="q21_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q21_ocasionalmente" name="pregunta21" value="ocasionalmente">
+                <label for="q21_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q21_frecuentemente" name="pregunta21" value="frecuentemente">
+                <label for="q21_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q21_siempre" name="pregunta21" value="siempre">
+                <label for="q21_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">22. Se angustia con las actividades diarias de higiene personal</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q22_nunca" name="pregunta22" value="nunca">
+                <label for="q22_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q22_ocasionalmente" name="pregunta22" value="ocasionalmente">
+                <label for="q22_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q22_frecuentemente" name="pregunta22" value="frecuentemente">
+                <label for="q22_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q22_siempre" name="pregunta22" value="siempre">
+                <label for="q22_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">23. Se esquiva cuando le cortan las uñas de las manos o de los pies</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q23_nunca" name="pregunta23" value="nunca">
+                <label for="q23_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q23_ocasionalmente" name="pregunta23" value="ocasionalmente">
+                <label for="q23_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q23_frecuentemente" name="pregunta23" value="frecuentemente">
+                <label for="q23_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q23_siempre" name="pregunta23" value="siempre">
+                <label for="q23_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">24. Se fastidia cuando alguien le toca la cara</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q24_nunca" name="pregunta24" value="nunca">
+                <label for="q24_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q24_ocasionalmente" name="pregunta24" value="ocasionalmente">
+                <label for="q24_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q24_frecuentemente" name="pregunta24" value="frecuentemente">
+                <label for="q24_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q24_siempre" name="pregunta24" value="siempre">
+                <label for="q24_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">25. Evita tocar o jugar con cosas que ensucian como la pintura o la goma de pegar</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q25_nunca" name="pregunta25" value="nunca">
+                <label for="q25_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q25_ocasionalmente" name="pregunta25" value="ocasionalmente">
+                <label for="q25_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q25_frecuentemente" name="pregunta25" value="frecuentemente">
+                <label for="q25_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q25_siempre" name="pregunta25" value="siempre">
+                <label for="q25_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">26. Tiene una gran capacidad para tolerar el dolor y heridas pequeñas, demuestra nada o poca molestia</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q26_nunca" name="pregunta26" value="nunca">
+                <label for="q26_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q26_ocasionalmente" name="pregunta26" value="ocasionalmente">
+                <label for="q26_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q26_frecuentemente" name="pregunta26" value="frecuentemente">
+                <label for="q26_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q26_siempre" name="pregunta26" value="siempre">
+                <label for="q26_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">27. Se restriega contra los dientes</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q27_nunca" name="pregunta27" value="nunca">
+                <label for="q27_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q27_ocasionalmente" name="pregunta27" value="ocasionalmente">
+                <label for="q27_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q27_frecuentemente" name="pregunta27" value="frecuentemente">
+                <label for="q27_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q27_siempre" name="pregunta27" value="siempre">
+                <label for="q27_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">28. Tiene dificultad para encontrar cosas en un bolsillo, una bolsa, o una mochila sin mirar</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q28_nunca" name="pregunta28" value="nunca">
+                <label for="q28_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q28_ocasionalmente" name="pregunta28" value="ocasionalmente">
+                <label for="q28_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q28_frecuentemente" name="pregunta28" value="frecuentemente">
+                <label for="q28_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q28_siempre" name="pregunta28" value="siempre">
+                <label for="q28_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">29. Evita caminar descalzo(a), especialmente en la arena o en la comida de la casa</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q29_nunca" name="pregunta29" value="nunca">
+                <label for="q29_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q29_ocasionalmente" name="pregunta29" value="ocasionalmente">
+                <label for="q29_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q29_frecuentemente" name="pregunta29" value="frecuentemente">
+                <label for="q29_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q29_siempre" name="pregunta29" value="siempre">
+                <label for="q29_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">30. Se queja de que las camisas están "demasiado calientes" o "demasiado frías"</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q30_nunca" name="pregunta30" value="nunca">
+                <label for="q30_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q30_ocasionalmente" name="pregunta30" value="ocasionalmente">
+                <label for="q30_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q30_frecuentemente" name="pregunta30" value="frecuentemente">
+                <label for="q30_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q30_siempre" name="pregunta30" value="siempre">
+                <label for="q30_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sección GUSTO Y OLFATO -->
+        <div class="form-section" id="seccion-gusto-olfato">
+          <h3>GUSTO Y OLFATO - Este niño o esta niña...</h3>
+          
+          <div class="question-item">
+            <label class="question-label">31. Huele objetos no alimenticios</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q31_nunca" name="pregunta31" value="nunca">
+                <label for="q31_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q31_ocasionalmente" name="pregunta31" value="ocasionalmente">
+                <label for="q31_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q31_frecuentemente" name="pregunta31" value="frecuentemente">
+                <label for="q31_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q31_siempre" name="pregunta31" value="siempre">
+                <label for="q31_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">32. Se fastidia con olores que no les molestan a los demás</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q32_nunca" name="pregunta32" value="nunca">
+                <label for="q32_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q32_ocasionalmente" name="pregunta32" value="ocasionalmente">
+                <label for="q32_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q32_frecuentemente" name="pregunta32" value="frecuentemente">
+                <label for="q32_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q32_siempre" name="pregunta32" value="siempre">
+                <label for="q32_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">33. No nota los olores fuertes</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q33_nunca" name="pregunta33" value="nunca">
+                <label for="q33_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q33_ocasionalmente" name="pregunta33" value="ocasionalmente">
+                <label for="q33_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q33_frecuentemente" name="pregunta33" value="frecuentemente">
+                <label for="q33_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q33_siempre" name="pregunta33" value="siempre">
+                <label for="q33_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">34. Come objetos nuevos de cosas nuevas antes de usarlos</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q34_nunca" name="pregunta34" value="nunca">
+                <label for="q34_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q34_ocasionalmente" name="pregunta34" value="ocasionalmente">
+                <label for="q34_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q34_frecuentemente" name="pregunta34" value="frecuentemente">
+                <label for="q34_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q34_siempre" name="pregunta34" value="siempre">
+                <label for="q34_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">35. Nota fragancias u olores que otros no notan</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q35_nunca" name="pregunta35" value="nunca">
+                <label for="q35_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q35_ocasionalmente" name="pregunta35" value="ocasionalmente">
+                <label for="q35_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q35_frecuentemente" name="pregunta35" value="frecuentemente">
+                <label for="q35_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q35_siempre" name="pregunta35" value="siempre">
+                <label for="q35_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">36. Se fastidia con el sabor de ciertas comidas</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q36_nunca" name="pregunta36" value="nunca">
+                <label for="q36_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q36_ocasionalmente" name="pregunta36" value="ocasionalmente">
+                <label for="q36_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q36_frecuentemente" name="pregunta36" value="frecuentemente">
+                <label for="q36_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q36_siempre" name="pregunta36" value="siempre">
+                <label for="q36_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">37. Insiste en comer sólo ciertas comidas o ciertas marcas de alimentos</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q37_nunca" name="pregunta37" value="nunca">
+                <label for="q37_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q37_ocasionalmente" name="pregunta37" value="ocasionalmente">
+                <label for="q37_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q37_frecuentemente" name="pregunta37" value="frecuentemente">
+                <label for="q37_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q37_siempre" name="pregunta37" value="siempre">
+                <label for="q37_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">38. Evita probar nuevas comidas</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q38_nunca" name="pregunta38" value="nunca">
+                <label for="q38_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q38_ocasionalmente" name="pregunta38" value="ocasionalmente">
+                <label for="q38_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q38_frecuentemente" name="pregunta38" value="frecuentemente">
+                <label for="q38_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q38_siempre" name="pregunta38" value="siempre">
+                <label for="q38_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">39. Evita baños públicos debido a los olores</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q39_nunca" name="pregunta39" value="nunca">
+                <label for="q39_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q39_ocasionalmente" name="pregunta39" value="ocasionalmente">
+                <label for="q39_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q39_frecuentemente" name="pregunta39" value="frecuentemente">
+                <label for="q39_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q39_siempre" name="pregunta39" value="siempre">
+                <label for="q39_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">40. No distingue sabores ni expresa preferencias entre ellos</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q40_nunca" name="pregunta40" value="nunca">
+                <label for="q40_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q40_ocasionalmente" name="pregunta40" value="ocasionalmente">
+                <label for="q40_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q40_frecuentemente" name="pregunta40" value="frecuentemente">
+                <label for="q40_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q40_siempre" name="pregunta40" value="siempre">
+                <label for="q40_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sección CONCIENCIA DEL CUERPO -->
+        <div class="form-section" id="seccion-conciencia-corporal">
+          <h3>CONCIENCIA DEL CUERPO - Este niño o esta niña...</h3>
+          
+          <div class="question-item">
+            <label class="question-label">41. Busca oportunidades para que se/lo/la columnen en superficial que no sostuvo demandad suelto e demasiado fuerte este el/la compañero</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q41_nunca" name="pregunta41" value="nunca">
+                <label for="q41_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q41_ocasionalmente" name="pregunta41" value="ocasionalmente">
+                <label for="q41_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q41_frecuentemente" name="pregunta41" value="frecuentemente">
+                <label for="q41_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q41_siempre" name="pregunta41" value="siempre">
+                <label for="q41_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">42. Agarra objetos, como un lápiz o una cuchara, de una manera demasiado fuerte o demasiado suave para poder escribir o comer fácilmente</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q42_nunca" name="pregunta42" value="nunca">
+                <label for="q42_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q42_ocasionalmente" name="pregunta42" value="ocasionalmente">
+                <label for="q42_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q42_frecuentemente" name="pregunta42" value="frecuentemente">
+                <label for="q42_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q42_siempre" name="pregunta42" value="siempre">
+                <label for="q42_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">43. Usa demasiada fuerza para ciertas cosas, por ejemplo cerrando puertas o pisando de escalón muy fuerte</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q43_nunca" name="pregunta43" value="nunca">
+                <label for="q43_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q43_ocasionalmente" name="pregunta43" value="ocasionalmente">
+                <label for="q43_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q43_frecuentemente" name="pregunta43" value="frecuentemente">
+                <label for="q43_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q43_siempre" name="pregunta43" value="siempre">
+                <label for="q43_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">44. Salta mucho</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q44_nunca" name="pregunta44" value="nunca">
+                <label for="q44_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q44_ocasionalmente" name="pregunta44" value="ocasionalmente">
+                <label for="q44_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q44_frecuentemente" name="pregunta44" value="frecuentemente">
+                <label for="q44_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q44_siempre" name="pregunta44" value="siempre">
+                <label for="q44_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">45. Juega con sus compañeros/as de una manera demasiado ruda</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q45_nunca" name="pregunta45" value="nunca">
+                <label for="q45_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q45_ocasionalmente" name="pregunta45" value="ocasionalmente">
+                <label for="q45_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q45_frecuentemente" name="pregunta45" value="frecuentemente">
+                <label for="q45_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q45_siempre" name="pregunta45" value="siempre">
+                <label for="q45_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">46. Rompe las cosas al presionarlas, jaladas, o empujarlas demasiado fuerte</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q46_nunca" name="pregunta46" value="nunca">
+                <label for="q46_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q46_ocasionalmente" name="pregunta46" value="ocasionalmente">
+                <label for="q46_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q46_frecuentemente" name="pregunta46" value="frecuentemente">
+                <label for="q46_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q46_siempre" name="pregunta46" value="siempre">
+                <label for="q46_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">47. Pone demasiada comida en su boca</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q47_nunca" name="pregunta47" value="nunca">
+                <label for="q47_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q47_ocasionalmente" name="pregunta47" value="ocasionalmente">
+                <label for="q47_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q47_frecuentemente" name="pregunta47" value="frecuentemente">
+                <label for="q47_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q47_siempre" name="pregunta47" value="siempre">
+                <label for="q47_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">48. Se golpea la cabeza a propósito con algún objeto contra la pared</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q48_nunca" name="pregunta48" value="nunca">
+                <label for="q48_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q48_ocasionalmente" name="pregunta48" value="ocasionalmente">
+                <label for="q48_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q48_frecuentemente" name="pregunta48" value="frecuentemente">
+                <label for="q48_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q48_siempre" name="pregunta48" value="siempre">
+                <label for="q48_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">49. Derrama o voltea las cosas</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q49_nunca" name="pregunta49" value="nunca">
+                <label for="q49_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q49_ocasionalmente" name="pregunta49" value="ocasionalmente">
+                <label for="q49_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q49_frecuentemente" name="pregunta49" value="frecuentemente">
+                <label for="q49_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q49_siempre" name="pregunta49" value="siempre">
+                <label for="q49_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">50. Tira la pelota con mucha o con muy poca fuerza</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q50_nunca" name="pregunta50" value="nunca">
+                <label for="q50_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q50_ocasionalmente" name="pregunta50" value="ocasionalmente">
+                <label for="q50_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q50_frecuentemente" name="pregunta50" value="frecuentemente">
+                <label for="q50_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q50_siempre" name="pregunta50" value="siempre">
+                <label for="q50_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sección EQUILIBRIO Y MOVIMIENTO -->
+        <div class="form-section" id="seccion-equilibrio-movimiento">
+          <h3>EQUILIBRIO Y MOVIMIENTO - Este niño o esta niña...</h3>
+          
+          <div class="question-item">
+            <label class="question-label">51. Le tiene miedo a ciertos movimientos típicos de columpios y el deslizarse en el tobogán</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q51_nunca" name="pregunta51" value="nunca">
+                <label for="q51_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q51_ocasionalmente" name="pregunta51" value="ocasionalmente">
+                <label for="q51_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q51_frecuentemente" name="pregunta51" value="frecuentemente">
+                <label for="q51_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q51_siempre" name="pregunta51" value="siempre">
+                <label for="q51_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">52. Se mantiene en movimiento, de una actividad a otra</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q52_nunca" name="pregunta52" value="nunca">
+                <label for="q52_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q52_ocasionalmente" name="pregunta52" value="ocasionalmente">
+                <label for="q52_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q52_frecuentemente" name="pregunta52" value="frecuentemente">
+                <label for="q52_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q52_siempre" name="pregunta52" value="siempre">
+                <label for="q52_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">53. Evita escaleras sobre sujetar fuerzas que requieren equilibrio cuando exista el riesgo de caerse</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q53_nunca" name="pregunta53" value="nunca">
+                <label for="q53_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q53_ocasionalmente" name="pregunta53" value="ocasionalmente">
+                <label for="q53_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q53_frecuentemente" name="pregunta53" value="frecuentemente">
+                <label for="q53_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q53_siempre" name="pregunta53" value="siempre">
+                <label for="q53_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">54. Busca los juegos que tienen cambio de posición</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q54_nunca" name="pregunta54" value="nunca">
+                <label for="q54_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q54_ocasionalmente" name="pregunta54" value="ocasionalmente">
+                <label for="q54_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q54_frecuentemente" name="pregunta54" value="frecuentemente">
+                <label for="q54_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q54_siempre" name="pregunta54" value="siempre">
+                <label for="q54_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">55. No se queda quieto en una posición para que tuvo fuerzas mientras que este en clase de o varias o cuaderno o</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q55_nunca" name="pregunta55" value="nunca">
+                <label for="q55_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q55_ocasionalmente" name="pregunta55" value="ocasionalmente">
+                <label for="q55_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q55_frecuentemente" name="pregunta55" value="frecuentemente">
+                <label for="q55_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q55_siempre" name="pregunta55" value="siempre">
+                <label for="q55_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">56. Muestra poca coordinación en el tipo de los dos lados de su cuerpo como hay que tener para saltar y usar</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q56_nunca" name="pregunta56" value="nunca">
+                <label for="q56_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q56_ocasionalmente" name="pregunta56" value="ocasionalmente">
+                <label for="q56_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q56_frecuentemente" name="pregunta56" value="frecuentemente">
+                <label for="q56_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q56_siempre" name="pregunta56" value="siempre">
+                <label for="q56_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">57. Se apoya contra las paredes, los muebles, o la gente para mantenerse de mejor sostenerse</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q57_nunca" name="pregunta57" value="nunca">
+                <label for="q57_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q57_ocasionalmente" name="pregunta57" value="ocasionalmente">
+                <label for="q57_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q57_frecuentemente" name="pregunta57" value="frecuentemente">
+                <label for="q57_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q57_siempre" name="pregunta57" value="siempre">
+                <label for="q57_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">58. Se pone como la cabeza y está algo desorientado/a</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q58_nunca" name="pregunta58" value="nunca">
+                <label for="q58_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q58_ocasionalmente" name="pregunta58" value="ocasionalmente">
+                <label for="q58_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q58_frecuentemente" name="pregunta58" value="frecuentemente">
+                <label for="q58_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q58_siempre" name="pregunta58" value="siempre">
+                <label for="q58_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">59. Busca oportunidades para estar de cabeza</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q59_nunca" name="pregunta59" value="nunca">
+                <label for="q59_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q59_ocasionalmente" name="pregunta59" value="ocasionalmente">
+                <label for="q59_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q59_frecuentemente" name="pregunta59" value="frecuentemente">
+                <label for="q59_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q59_siempre" name="pregunta59" value="siempre">
+                <label for="q59_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">60. Tiene dificultad en saber algo mientras su cabeza está en movimiento como el juego para atrapar una pelota</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q60_nunca" name="pregunta60" value="nunca">
+                <label for="q60_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q60_ocasionalmente" name="pregunta60" value="ocasionalmente">
+                <label for="q60_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q60_frecuentemente" name="pregunta60" value="frecuentemente">
+                <label for="q60_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q60_siempre" name="pregunta60" value="siempre">
+                <label for="q60_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sección 6: PLANIFICACIÓN E IDEAS (Preguntas 61-70) -->
+        <div class="form-section" id="seccion-planificacion-ideas">
+          <h3>PLANIFICACIÓN E IDEAS (61-70)</h3>
+
+          <div class="question-item">
+            <label class="question-label">61. Tiene dificultad para planear cómo cargar varios objetos a la vez</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q61_nunca" name="pregunta61" value="nunca">
+                <label for="q61_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q61_ocasionalmente" name="pregunta61" value="ocasionalmente">
+                <label for="q61_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q61_frecuentemente" name="pregunta61" value="frecuentemente">
+                <label for="q61_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q61_siempre" name="pregunta61" value="siempre">
+                <label for="q61_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">62. Tiene dificultad para sus pertenencias en su lugar como el poner la ropa</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q62_nunca" name="pregunta62" value="nunca">
+                <label for="q62_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q62_ocasionalmente" name="pregunta62" value="ocasionalmente">
+                <label for="q62_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q62_frecuentemente" name="pregunta62" value="frecuentemente">
+                <label for="q62_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q62_siempre" name="pregunta62" value="siempre">
+                <label for="q62_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">63. No descompone la secuencia lógica de acciones necesarias en la rutina de la cena como servir o poner la mesa</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q63_nunca" name="pregunta63" value="nunca">
+                <label for="q63_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q63_ocasionalmente" name="pregunta63" value="ocasionalmente">
+                <label for="q63_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q63_frecuentemente" name="pregunta63" value="frecuentemente">
+                <label for="q63_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q63_siempre" name="pregunta63" value="siempre">
+                <label for="q63_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">64. No planifica bien o reacciona contra objetivos hacia los siguientes pasos</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q64_nunca" name="pregunta64" value="nunca">
+                <label for="q64_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q64_ocasionalmente" name="pregunta64" value="ocasionalmente">
+                <label for="q64_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q64_frecuentemente" name="pregunta64" value="frecuentemente">
+                <label for="q64_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q64_siempre" name="pregunta64" value="siempre">
+                <label for="q64_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">65. Tiene dificultad imitando movimientos, sonidos, o expresiones correspondientes</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q65_nunca" name="pregunta65" value="nunca">
+                <label for="q65_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q65_ocasionalmente" name="pregunta65" value="ocasionalmente">
+                <label for="q65_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q65_frecuentemente" name="pregunta65" value="frecuentemente">
+                <label for="q65_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q65_siempre" name="pregunta65" value="siempre">
+                <label for="q65_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">66. Tiene dificultad para copiar un modelo al construir con bloques o con Legos</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q66_nunca" name="pregunta66" value="nunca">
+                <label for="q66_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q66_ocasionalmente" name="pregunta66" value="ocasionalmente">
+                <label for="q66_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q66_frecuentemente" name="pregunta66" value="frecuentemente">
+                <label for="q66_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q66_siempre" name="pregunta66" value="siempre">
+                <label for="q66_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">67. Tiene dificultad para generar nuevas determinación de los tipos y lugares que para obtener las ideas</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q67_nunca" name="pregunta67" value="nunca">
+                <label for="q67_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q67_ocasionalmente" name="pregunta67" value="ocasionalmente">
+                <label for="q67_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q67_frecuentemente" name="pregunta67" value="frecuentemente">
+                <label for="q67_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q67_siempre" name="pregunta67" value="siempre">
+                <label for="q67_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">68. Necesita más práctica que los demás para adquirir una habilidad nueva</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q68_nunca" name="pregunta68" value="nunca">
+                <label for="q68_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q68_ocasionalmente" name="pregunta68" value="ocasionalmente">
+                <label for="q68_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q68_frecuentemente" name="pregunta68" value="frecuentemente">
+                <label for="q68_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q68_siempre" name="pregunta68" value="siempre">
+                <label for="q68_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">69. Toma demasiado tiempo para completar las tareas rutinarias</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q69_nunca" name="pregunta69" value="nunca">
+                <label for="q69_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q69_ocasionalmente" name="pregunta69" value="ocasionalmente">
+                <label for="q69_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q69_frecuentemente" name="pregunta69" value="frecuentemente">
+                <label for="q69_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q69_siempre" name="pregunta69" value="siempre">
+                <label for="q69_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">70. Tiene dificultad para generar ideas sobre qué construir como cuando juega con bloques o con materiales de artesanía</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q70_nunca" name="pregunta70" value="nunca">
+                <label for="q70_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q70_ocasionalmente" name="pregunta70" value="ocasionalmente">
+                <label for="q70_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q70_frecuentemente" name="pregunta70" value="frecuentemente">
+                <label for="q70_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q70_siempre" name="pregunta70" value="siempre">
+                <label for="q70_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sección 7: PARTICIPACIÓN SOCIAL (Preguntas 71-80) -->
+        <div class="form-section" id="seccion-participacion-social">
+          <h3>PARTICIPACIÓN SOCIAL (71-80)</h3>
+
+          <div class="question-item">
+            <label class="question-label">71. Colabora con sus amigos sin mucha dificultad cuando juega con ellos</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q71_nunca" name="pregunta71" value="nunca">
+                <label for="q71_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q71_ocasionalmente" name="pregunta71" value="ocasionalmente">
+                <label for="q71_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q71_frecuentemente" name="pregunta71" value="frecuentemente">
+                <label for="q71_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q71_siempre" name="pregunta71" value="siempre">
+                <label for="q71_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">72. Participa de manera apropiada con padres y otros adultos</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q72_nunca" name="pregunta72" value="nunca">
+                <label for="q72_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q72_ocasionalmente" name="pregunta72" value="ocasionalmente">
+                <label for="q72_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q72_frecuentemente" name="pregunta72" value="frecuentemente">
+                <label for="q72_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q72_siempre" name="pregunta72" value="siempre">
+                <label for="q72_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">73. Comparte las cosas cuando se le piden</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q73_nunca" name="pregunta73" value="nunca">
+                <label for="q73_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q73_ocasionalmente" name="pregunta73" value="ocasionalmente">
+                <label for="q73_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q73_frecuentemente" name="pregunta73" value="frecuentemente">
+                <label for="q73_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q73_siempre" name="pregunta73" value="siempre">
+                <label for="q73_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">74. Conversa con otros sin pararse o sentarse demasiado cerca de ellos</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q74_nunca" name="pregunta74" value="nunca">
+                <label for="q74_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q74_ocasionalmente" name="pregunta74" value="ocasionalmente">
+                <label for="q74_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q74_frecuentemente" name="pregunta74" value="frecuentemente">
+                <label for="q74_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q74_siempre" name="pregunta74" value="siempre">
+                <label for="q74_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">75. Mantiene contacto visual apropiado al conversar</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q75_nunca" name="pregunta75" value="nunca">
+                <label for="q75_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q75_ocasionalmente" name="pregunta75" value="ocasionalmente">
+                <label for="q75_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q75_frecuentemente" name="pregunta75" value="frecuentemente">
+                <label for="q75_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q75_siempre" name="pregunta75" value="siempre">
+                <label for="q75_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">76. Se une al juego con otros sin alterar lo que está transcurriendo</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q76_nunca" name="pregunta76" value="nunca">
+                <label for="q76_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q76_ocasionalmente" name="pregunta76" value="ocasionalmente">
+                <label for="q76_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q76_frecuentemente" name="pregunta76" value="frecuentemente">
+                <label for="q76_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q76_siempre" name="pregunta76" value="siempre">
+                <label for="q76_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">77. Interrumpe y necesita demasiada ayuda para participar en la conversación durante las comidas</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q77_nunca" name="pregunta77" value="nunca">
+                <label for="q77_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q77_ocasionalmente" name="pregunta77" value="ocasionalmente">
+                <label for="q77_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q77_frecuentemente" name="pregunta77" value="frecuentemente">
+                <label for="q77_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q77_siempre" name="pregunta77" value="siempre">
+                <label for="q77_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">78. Participa de manera apropiada en reuniones y salidas con la familia</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q78_nunca" name="pregunta78" value="nunca">
+                <label for="q78_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q78_ocasionalmente" name="pregunta78" value="ocasionalmente">
+                <label for="q78_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q78_frecuentemente" name="pregunta78" value="frecuentemente">
+                <label for="q78_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q78_siempre" name="pregunta78" value="siempre">
+                <label for="q78_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">79. Se expresa cuando su rutina o su plan cambian</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q79_nunca" name="pregunta79" value="nunca">
+                <label for="q79_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q79_ocasionalmente" name="pregunta79" value="ocasionalmente">
+                <label for="q79_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q79_frecuentemente" name="pregunta79" value="frecuentemente">
+                <label for="q79_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q79_siempre" name="pregunta79" value="siempre">
+                <label for="q79_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-item">
+            <label class="question-label">80. Coopera con miembros de la familia mientras hacen recados</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="q80_nunca" name="pregunta80" value="nunca">
+                <label for="q80_nunca" class="radio-label">N</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q80_ocasionalmente" name="pregunta80" value="ocasionalmente">
+                <label for="q80_ocasionalmente" class="radio-label">O</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q80_frecuentemente" name="pregunta80" value="frecuentemente">
+                <label for="q80_frecuentemente" class="radio-label">F</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="q80_siempre" name="pregunta80" value="siempre">
+                <label for="q80_siempre" class="radio-label">S</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Información del Evaluador -->
+        <div class="form-section">
+          <h3>Información del Evaluador</h3>
+          
+          <div class="evaluator-info">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="nombreEvaluador">Nombre del Evaluador</label>
+                <input 
+                  type="text" 
+                  id="nombreEvaluador"
+                  class="form-control"
+                  placeholder="Ingrese el nombre del profesional evaluador">
+              </div>
+              
+              <div class="form-group">
+                <label for="fechaEvaluacion">Fecha de Evaluación</label>
+                <input 
+                  type="date" 
+                  id="fechaEvaluacion"
+                  class="form-control">
+              </div>
+            </div>
+            
+            <div class="form-row">
+              <div class="form-group">
+                <label for="observaciones">Observaciones Adicionales</label>
+                <textarea 
+                  id="observaciones"
+                  class="form-control"
+                  rows="3"
+                  placeholder="Ingrese observaciones relevantes sobre la evaluación...">
+                </textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Botones de acción -->
+        <div class="form-actions">
+          <button type="button" class="btn btn-info">
+            <span class="btn-icon">📊</span>
+            Generar Reporte
+          </button>
+          <button type="button" class="btn btn-secondary">
+            Limpiar Formulario
+          </button>
+          <button type="submit" class="btn btn-primary">
+            <span class="btn-icon">💾</span>
+            Guardar Evaluación
+          </button>
+        </div>
+
+        <!-- Leyenda -->
+        <div class="form-legend">
+          <h4>Leyenda de Frecuencias:</h4>
+          <div class="legend-items">
+            <div class="legend-item">
+              <strong>N:</strong> Nunca
+            </div>
+            <div class="legend-item">
+              <strong>O:</strong> Ocasionalmente
+            </div>
+            <div class="legend-item">
+              <strong>F:</strong> Frecuentemente
+            </div>
+            <div class="legend-item">
+              <strong>S:</strong> Siempre
+            </div>
+          </div>
+        </div>
+
+        <!-- Resumen de áreas evaluadas -->
+        <div class="areas-summary">
+          <h4>Áreas de Evaluación Sensorial:</h4>
+          <div class="summary-grid">
+            <div class="summary-item vision summary-link" (click)="scrollToSection('seccion-vision')">
+              <div class="summary-icon">👁️</div>
+              <div class="summary-content">
+                <h5>Procesamiento Visual</h5>
+                <p>Preguntas 1-10: Evaluación de la respuesta a estímulos visuales</p>
+              </div>
+            </div>
+            <div class="summary-item auditory summary-link" (click)="scrollToSection('seccion-auditivo')">
+              <div class="summary-icon">🔊</div>
+              <div class="summary-content">
+                <h5>Procesamiento Auditivo</h5>
+                <p>Preguntas 11-20: Evaluación de la respuesta a estímulos auditivos</p>
+              </div>
+            </div>
+            <div class="summary-item tactile summary-link" (click)="scrollToSection('seccion-tactil')">
+              <div class="summary-icon">✋</div>
+              <div class="summary-content">
+                <h5>Procesamiento Táctil</h5>
+                <p>Preguntas 21-30: Evaluación de la respuesta a estímulos táctiles</p>
+              </div>
+            </div>
+            <div class="summary-item taste-smell summary-link" (click)="scrollToSection('seccion-gusto-olfato')">
+              <div class="summary-icon">👃</div>
+              <div class="summary-content">
+                <h5>Gusto y Olfato</h5>
+                <p>Preguntas 31-40: Evaluación de estímulos gustativos y olfativos</p>
+              </div>
+            </div>
+            <div class="summary-item body-awareness summary-link" (click)="scrollToSection('seccion-conciencia-corporal')">
+              <div class="summary-icon">🤸</div>
+              <div class="summary-content">
+                <h5>Conciencia Corporal</h5>
+                <p>Preguntas 41-50: Evaluación de la propiocepción y fuerza</p>
+              </div>
+            </div>
+            <div class="summary-item balance-movement summary-link" (click)="scrollToSection('seccion-equilibrio-movimiento')">
+              <div class="summary-icon">⚖️</div>
+              <div class="summary-content">
+                <h5>Equilibrio y Movimiento</h5>
+                <p>Preguntas 51-60: Evaluación del sistema vestibular y coordinación</p>
+              </div>
+            </div>
+            <div class="summary-item planning-ideas summary-link" (click)="scrollToSection('seccion-planificacion-ideas')">
+              <div class="summary-icon">🧠</div>
+              <div class="summary-content">
+                <h5>Planificación e Ideas</h5>
+                <p>Preguntas 61-70: Evaluación de la planificación motora y generación de ideas</p>
+              </div>
+            </div>
+            <div class="summary-item social-participation summary-link" (click)="scrollToSection('seccion-participacion-social')">
+              <div class="summary-icon">👥</div>
+              <div class="summary-content">
+                <h5>Participación Social</h5>
+                <p>Preguntas 71-80: Evaluación de las habilidades sociales y participación en grupo</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+
+      <!-- Botón para guardar evaluación -->
+      <div class="save-evaluation-section" *ngIf="selectedPatient && (currentProgress > 0 || hasAnswers())">
+        <div class="save-container">
+          <button 
+            class="save-btn" 
+            (click)="saveEvaluation()"
+            [disabled]="!selectedPatient">
+            <span class="save-icon">💾</span>
+            Guardar Evaluación
+          </button>
+          <div class="save-info">
+            <p class="progress-info">Progreso actual: {{currentProgress}}%</p>
+            <p class="patient-info">Paciente: {{selectedPatient.nombre}} {{selectedPatient.apellidoPaterno}}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

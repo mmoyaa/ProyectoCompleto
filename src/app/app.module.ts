@@ -12,6 +12,7 @@ import { NavbarComponent } from './componentes/share/navbar/navbar.component';
 import { FooterComponent } from './componentes/share/footer/footer.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { HomeComponent } from './componentes/share/home/home.component';
+import { ListaEvaluacionesComponent } from './componentes/lista-evaluaciones/lista-evaluaciones.component';
 
 
   @NgModule({
@@ -23,6 +24,7 @@ import { HomeComponent } from './componentes/share/home/home.component';
     NavbarComponent,
     FooterComponent,
     HomeComponent,
+    ListaEvaluacionesComponent,
     
   ],
   imports: [
