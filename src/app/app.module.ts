@@ -14,6 +14,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { HomeComponent } from './componentes/share/home/home.component';
 import { ListaEvaluacionesComponent } from './componentes/lista-evaluaciones/lista-evaluaciones.component';
 import { TestRadioComponent } from './componentes/test-radio/test-radio.component';
+import { GraficosComponent } from './componentes/graficos/graficos.component';
 
 
   @NgModule({
@@ -27,6 +28,7 @@ import { TestRadioComponent } from './componentes/test-radio/test-radio.componen
     HomeComponent,
     ListaEvaluacionesComponent,
     TestRadioComponent,
+    GraficosComponent,
     
   ],
   imports: [

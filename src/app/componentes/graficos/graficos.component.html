@@ -1,0 +1,205 @@
+<div class="graficos-container">
+  <!-- Header de la sección -->
+  <div class="header-section">
+    <h2 class="page-title">
+      <i class="fas fa-chart-line"></i>
+      Gráficos de Evaluaciones Sensoriales
+    </h2>
+    <p class="page-description">
+      Visualiza los resultados de las evaluaciones sensoriales por secciones y analiza el progreso de los pacientes
+    </p>
+  </div>
+
+  <!-- Controles de selección -->
+  <div class="controls-section">
+    <div class="row">
+      <!-- Selector de Paciente -->
+      <div class="col-md-6">
+        <div class="form-group">
+          <label for="patientSelect" class="form-label">
+            <i class="fas fa-user"></i>
+            Seleccionar Paciente:
+          </label>
+          <select 
+            id="patientSelect" 
+            class="form-control form-select"
+            (change)="onPatientChange($event)">
+            <option value="">-- Seleccione un paciente --</option>
+            <option 
+              *ngFor="let patient of patients" 
+              [value]="patient.idPaciente || patient.id">
+              {{patient.nombre}} {{patient.apellidoPaterno}} {{patient.apellidoMaterno}} ({{patient.rut}})
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Selector de Evaluación -->
+      <div class="col-md-6">
+        <div class="form-group">
+          <label for="evaluacionSelect" class="form-label">
+            <i class="fas fa-clipboard-list"></i>
+            Seleccionar Evaluación:
+          </label>
+          <select 
+            id="evaluacionSelect" 
+            class="form-control form-select"
+            [disabled]="!selectedPatient || evaluaciones.length === 0"
+            (change)="onEvaluacionChange($event)">
+            <option value="">-- Seleccione una evaluación --</option>
+            <option 
+              *ngFor="let evaluacion of evaluaciones" 
+              [value]="evaluacion.idEvaluacion">
+              {{evaluacion.fechaEvaluacion | date:'dd/MM/yyyy HH:mm'}} - 
+              Progreso: {{evaluacion.progreso}}% - 
+              Estado: {{evaluacion.estado}}
+            </option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading spinner -->
+    <div *ngIf="loading" class="loading-section">
+      <div class="spinner-border text-primary" role="status">
+        <span class="sr-only">Cargando evaluaciones...</span>
+      </div>
+      <span class="loading-text">Cargando evaluaciones...</span>
+    </div>
+  </div>
+
+  <!-- Información del paciente y evaluación seleccionada -->
+  <div *ngIf="selectedPatient && selectedEvaluacion" class="info-section">
+    <div class="patient-info-card">
+      <div class="row">
+        <div class="col-md-6">
+          <h4><i class="fas fa-user-circle"></i> Información del Paciente</h4>
+          <p><strong>Nombre:</strong> {{selectedPatient.nombre}} {{selectedPatient.apellidoPaterno}} {{selectedPatient.apellidoMaterno}}</p>
+          <p><strong>RUT:</strong> {{selectedPatient.rut}}</p>
+          <p *ngIf="selectedPatient.telefono"><strong>Teléfono:</strong> {{selectedPatient.telefono}}</p>
+        </div>
+        <div class="col-md-6">
+          <h4><i class="fas fa-clipboard-check"></i> Información de la Evaluación</h4>
+          <p><strong>Fecha:</strong> {{selectedEvaluacion.fechaEvaluacion | date:'dd/MM/yyyy HH:mm'}}</p>
+          <p><strong>Progreso:</strong> 
+            <span class="badge" [ngClass]="selectedEvaluacion.progreso === 100 ? 'badge-success' : 'badge-warning'">
+              {{selectedEvaluacion.progreso}}%
+            </span>
+          </p>
+          <p><strong>Estado:</strong> 
+            <span class="badge" [ngClass]="selectedEvaluacion.estado === 'Completada' ? 'badge-success' : 'badge-info'">
+              {{selectedEvaluacion.estado}}
+            </span>
+          </p>
+          <p *ngIf="selectedEvaluacion.evaluadorNombre"><strong>Evaluador:</strong> {{selectedEvaluacion.evaluadorNombre}}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Área del gráfico -->
+  <div class="chart-section">
+    <div class="chart-container">
+      <div class="chart-header">
+        <h3>
+          <i class="fas fa-chart-area"></i>
+          Resultados por Sección Sensorial
+        </h3>
+        <div class="chart-actions" *ngIf="selectedEvaluacion">
+          <button class="btn btn-outline-primary btn-sm" (click)="exportChart()" title="Exportar como imagen">
+            <i class="fas fa-download"></i>
+            Exportar
+          </button>
+          <button class="btn btn-outline-secondary btn-sm" (click)="printChart()" title="Imprimir gráfico">
+            <i class="fas fa-print"></i>
+            Imprimir
+          </button>
+        </div>
+      </div>
+      
+      <div class="chart-wrapper">
+        <canvas id="evaluacionChart"></canvas>
+      </div>
+
+      <!-- Mensaje informativo cuando no hay datos reales -->
+      <div *ngIf="!selectedEvaluacion" class="info-message">
+        <i class="fas fa-info-circle"></i>
+        <p>Gráfico de ejemplo mostrado. Seleccione un paciente y evaluación para ver datos reales.</p>
+      </div>
+
+      <!-- Leyenda explicativa -->
+      <div class="chart-legend">
+        <h5><i class="fas fa-info-circle"></i> Interpretación del Gráfico</h5>
+        <div class="row">
+          <div class="col-md-6">
+            <h6>Escala de Puntajes:</h6>
+            <ul class="legend-list">
+              <li><span class="score-1"></span> 1 - Nunca</li>
+              <li><span class="score-2"></span> 2 - Casi Nunca</li>
+              <li><span class="score-3"></span> 3 - A Veces</li>
+              <li><span class="score-4"></span> 4 - Frecuentemente</li>
+              <li><span class="score-5"></span> 5 - Siempre</li>
+            </ul>
+          </div>
+          <div class="col-md-6">
+            <h6>Secciones Evaluadas:</h6>
+            <div class="sections-grid">
+              <div *ngFor="let seccion of secciones" class="section-item">
+                <span class="section-color" [style.background-color]="seccion.color"></span>
+                {{seccion.nombre}}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mensaje cuando no hay gráfico -->
+    <ng-template #noChartMessage>
+      <div class="no-chart-message">
+        <div class="message-content">
+          <i class="fas fa-chart-line fa-3x"></i>
+          <h4>No hay datos para mostrar</h4>
+          <p *ngIf="!selectedPatient">Seleccione un paciente para comenzar</p>
+          <p *ngIf="selectedPatient && evaluaciones.length === 0">
+            El paciente seleccionado no tiene evaluaciones registradas
+          </p>
+          <p *ngIf="selectedPatient && evaluaciones.length > 0 && !selectedEvaluacion">
+            Seleccione una evaluación para visualizar el gráfico
+          </p>
+        </div>
+      </div>
+    </ng-template>
+  </div>
+
+  <!-- Estadísticas adicionales -->
+  <div *ngIf="selectedEvaluacion" class="stats-section">
+    <h4><i class="fas fa-chart-bar"></i> Estadísticas de la Evaluación</h4>
+    <div class="row">
+      <div class="col-md-3">
+        <div class="stat-card">
+          <div class="stat-value">{{selectedEvaluacion.progreso}}%</div>
+          <div class="stat-label">Progreso Completado</div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="stat-card">
+          <div class="stat-value">8</div>
+          <div class="stat-label">Secciones Evaluadas</div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="stat-card">
+          <div class="stat-value">80</div>
+          <div class="stat-label">Preguntas Totales</div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="stat-card">
+          <div class="stat-value">{{selectedEvaluacion.fechaEvaluacion | date:'dd/MM'}}</div>
+          <div class="stat-label">Fecha de Evaluación</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

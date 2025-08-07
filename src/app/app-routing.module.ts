@@ -6,6 +6,7 @@ import { Pagina2Component } from './componentes/pagina2/pagina2.component';
 import { HomeComponent } from './componentes/share/home/home.component';
 import { ListaEvaluacionesComponent } from './componentes/lista-evaluaciones/lista-evaluaciones.component';
 import { TestRadioComponent } from './componentes/test-radio/test-radio.component';
+import { GraficosComponent } from './componentes/graficos/graficos.component';
 
 
 const routes: Routes = [
@@ -14,6 +15,7 @@ const routes: Routes = [
   { path:'pagina1', component: Pagina1Component },
   { path:'pagina2', component: Pagina2Component },
   { path:'evaluaciones', component: ListaEvaluacionesComponent },
+  { path:'graficos', component: GraficosComponent },
   { path:'home', component: HomeComponent },
   { path:'test-radio', component: TestRadioComponent },
 ];
