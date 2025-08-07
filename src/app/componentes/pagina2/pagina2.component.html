@@ -1,4 +1,21 @@
 <div class="container">
+  <!-- Banner de modo edición -->
+  <div class="edit-mode-banner" *ngIf="isEditMode && currentEvaluacion" style="background: #3b82f6; color: white; padding: 15px; margin-bottom: 20px; border-radius: 8px; display: flex; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+    <div style="margin-right: 15px; font-size: 24px;">📝</div>
+    <div style="flex: 1;">
+      <h4 style="margin: 0; font-size: 16px; font-weight: 600;">Editando Evaluación Existente</h4>
+      <p style="margin: 5px 0 0 0; font-size: 14px; opacity: 0.9;">
+        Paciente: {{currentEvaluacion.nombreCompleto}} | 
+        Progreso actual: {{currentEvaluacion.progreso}}% | 
+        Estado: {{currentEvaluacion.estado}} |
+        Evaluador: {{currentEvaluacion.evaluadorNombre}}
+      </p>
+    </div>
+    <div style="font-size: 14px; opacity: 0.8;">
+      ID: {{currentEvaluacion.idEvaluacion}}
+    </div>
+  </div>
+
   <!-- Contador de progreso flotante -->
   <div class="floating-progress" [class.hidden]="answeredQuestions === 0">
     <div class="floating-progress-header">
@@ -159,7 +176,17 @@
         </div>
       </div>
 
-      <form class="evaluation-form">
+      <form class="evaluation-form" (ngSubmit)="saveEvaluation()" #evaluationForm="ngForm">
+
+        <!-- BOTÓN DE PRUEBA TEMPORAL - SIEMPRE VISIBLE -->
+        <div style="position: fixed; top: 10px; right: 10px; z-index: 9999; background: red; padding: 15px; border-radius: 10px;">
+          <button 
+            type="button"
+            (click)="saveEvaluation($event)"
+            style="background: #28a745; color: white; border: none; padding: 15px 30px; font-size: 18px; font-weight: bold; border-radius: 5px; cursor: pointer;">
+            🚨 BOTÓN DE PRUEBA - GUARDAR AHORA
+          </button>
+        </div>
         
         <!-- Sección 1: VISIÓN (Preguntas 1-10) -->
         <div class="form-section" id="seccion-vision">
@@ -2008,10 +2035,7 @@
           <button type="button" class="btn btn-secondary">
             Limpiar Formulario
           </button>
-          <button type="submit" class="btn btn-primary">
-            <span class="btn-icon">💾</span>
-            Guardar Evaluación
-          </button>
+          <!-- BOTÓN ELIMINADO - Usar el botón principal de abajo -->
         </div>
 
         <!-- Leyenda -->
@@ -2095,21 +2119,57 @@
             </div>
           </div>
         </div>
+
+        <!-- BOTÓN PRINCIPAL DE GUARDAR EVALUACIÓN -->
+        <div class="form-actions" style="margin-top: 30px; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; text-align: center;">
+          <h4 style="color: white; margin-bottom: 20px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">
+            💾 Guardar Evaluación Sensorial
+          </h4>
+          
+          <button 
+            type="submit"
+            class="btn btn-success btn-lg" 
+            (click)="saveEvaluation($event)"
+            style="font-size: 18px; padding: 15px 40px; font-weight: bold; background: linear-gradient(45deg, #28a745, #20c997); border: none; border-radius: 50px; color: white; cursor: pointer; transition: all 0.3s; box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4); text-transform: uppercase; letter-spacing: 1px;">
+            <i class="fas fa-save" style="margin-right: 10px;"></i>
+            GUARDAR RESPUESTAS EN BASE DE DATOS
+          </button>
+          
+          <div style="margin-top: 15px; color: white; font-size: 14px; opacity: 0.9;">
+            <p><strong>📊 Progreso:</strong> {{currentProgress || 0}}% completado</p>
+            <p><strong>👤 Estado Paciente:</strong> 
+              <span *ngIf="selectedPatient" style="color: #28a745;">
+                ✅ {{selectedPatient?.nombre}} {{selectedPatient?.apellidoPaterno}} (ID: {{selectedPatient?.idPaciente || selectedPatient?.id}})
+              </span>
+              <span *ngIf="!selectedPatient" style="color: #ffc107;">
+                ⚠️ Sin paciente seleccionado
+              </span>
+            </p>
+            <p><strong>📝 Debug Info:</strong> selectedPatient = {{selectedPatient | json}}</p>
+          </div>
+        </div>
       </form>
 
       <!-- Botón para guardar evaluación -->
-      <div class="save-evaluation-section" *ngIf="selectedPatient && (currentProgress > 0 || hasAnswers())">
+      <div class="save-evaluation-section" *ngIf="selectedPatient">
         <div class="save-container">
           <button 
             class="save-btn" 
             (click)="saveEvaluation()"
-            [disabled]="!selectedPatient">
-            <span class="save-icon">💾</span>
-            Guardar Evaluación
+            [disabled]="!selectedPatient"
+            [style.background-color]="isEditMode ? '#f59e0b' : '#3b82f6'">
+            <span class="save-icon">{{isEditMode ? '�' : '�💾'}}</span>
+            {{isEditMode ? 'Actualizar Evaluación' : 'Guardar Evaluación'}}
           </button>
           <div class="save-info">
             <p class="progress-info">Progreso actual: {{currentProgress}}%</p>
-            <p class="patient-info">Paciente: {{selectedPatient.nombre}} {{selectedPatient.apellidoPaterno}}</p>
+            <p class="patient-info">Paciente: {{selectedPatient?.nombre}} {{selectedPatient?.apellidoPaterno}}</p>
+            <p *ngIf="isEditMode" class="edit-info" style="color: #f59e0b; font-size: 12px; margin-top: 5px;">
+              ✏️ Modo edición: Actualizando evaluación existente
+            </p>
+            <p class="debug-info" style="color: #059669; font-size: 14px; font-weight: bold; margin-top: 8px; padding: 8px; background: #ecfdf5; border-radius: 4px; border-left: 4px solid #10b981;">
+              🟢 BOTÓN ACTIVO - Click para guardar en base de datos
+            </p>
           </div>
         </div>
       </div>
