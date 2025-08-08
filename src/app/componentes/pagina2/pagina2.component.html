@@ -20,9 +20,14 @@
   <div class="floating-progress" [class.hidden]="answeredQuestions === 0">
     <div class="floating-progress-header">
       <h5>Progreso</h5>
-      <button class="btn-close-floating" (click)="toggleFloatingProgress()">
-        <span class="close-icon">×</span>
-      </button>
+      <div class="floating-actions">
+        <button class="btn-home-floating" (click)="scrollToTop()" title="Ir al inicio">
+          <i class="fas fa-home"></i>
+        </button>
+        <button class="btn-close-floating" (click)="toggleFloatingProgress()">
+          <span class="close-icon">×</span>
+        </button>
+      </div>
     </div>
     
     <div class="floating-progress-content">

@@ -722,4 +722,13 @@ export class Pagina2Component implements OnInit, AfterViewInit {
     console.log('🧪 Test button - Funcionalidad de debug');
     alert('Funcionalidad de debug activada. Ver consola para detalles.');
   }
+
+  // Método para ir al inicio del componente
+  scrollToTop(): void {
+    // Hacer scroll suave hacia el inicio del componente
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  }
 }

@@ -466,28 +466,143 @@ export class GraficosComponent implements OnInit, AfterViewInit {
     link.click();
   }
 
-  // Método para imprimir el gráfico
+  // Método para imprimir solo las tablas (sin gráfico)
   printChart(): void {
-    if (!this.chart) {
-      alert('No hay gráfico para imprimir');
+    if (!this.selectedEvaluacion) {
+      alert('No hay evaluación seleccionada para imprimir');
       return;
     }
-
-    const url = this.chart.toBase64Image();
+    
+    // Generar tabla de resumen por sección
+    const summaryTableHTML = this.generateSummaryTableHTML();
+    
+    // Generar tabla de percentiles
+    const percentilesTableHTML = this.generatePercentilesTableHTML();
+    
     const windowContent = `
       <html>
-        <head><title>Evaluación Sensorial - ${this.selectedPatient?.nombre}</title></head>
-        <body style="margin: 20px;">
-          <h2>Evaluación Sensorial</h2>
-          <p><strong>Paciente:</strong> ${this.selectedPatient?.nombre} ${this.selectedPatient?.apellidoPaterno}</p>
-          <p><strong>Fecha:</strong> ${new Date(this.selectedEvaluacion?.fechaEvaluacion || '').toLocaleDateString()}</p>
-          <p><strong>Progreso:</strong> ${this.selectedEvaluacion?.progreso}%</p>
-          <img src="${url}" style="max-width: 100%; height: auto;">
+        <head>
+          <title>Evaluación Sensorial - ${this.selectedPatient?.nombre}</title>
+          <style>
+            body { 
+              margin: 20px; 
+              font-family: Arial, sans-serif; 
+              color: #333;
+            }
+            .header { 
+              margin-bottom: 30px; 
+              border-bottom: 2px solid #667eea; 
+              padding-bottom: 15px;
+            }
+            .table-section { 
+              margin: 30px 0; 
+              page-break-inside: avoid;
+            }
+            .table-title { 
+              font-size: 18px; 
+              font-weight: bold; 
+              margin-bottom: 15px; 
+              color: #667eea;
+            }
+            table { 
+              width: 100%; 
+              border-collapse: collapse; 
+              margin-bottom: 20px;
+              font-size: 10px;
+            }
+            th, td { 
+              border: 1px solid #ddd; 
+              padding: 4px; 
+              text-align: center;
+              line-height: 1.2;
+            }
+            th { 
+              background-color: #f8f9fa; 
+              font-weight: bold;
+              font-size: 9px;
+            }
+            .summary-table th { 
+              background-color: #667eea; 
+              color: white;
+              font-size: 11px;
+            }
+            .summary-table td {
+              font-size: 11px;
+              padding: 6px;
+            }
+            .percentiles-table { 
+              font-size: 8px;
+              margin-top: 10px;
+            }
+            .percentiles-table th { 
+              background-color: #17a2b8; 
+              color: white;
+              padding: 3px;
+              font-size: 8px;
+            }
+            .percentiles-table td {
+              padding: 2px;
+              font-size: 8px;
+            }
+            .current-value { 
+              background-color: #ffeb3b !important; 
+              font-weight: bold;
+              color: #d84315 !important;
+              border: 2px solid #ff9800 !important;
+            }
+            @media print {
+              .table-section { 
+                page-break-inside: avoid; 
+              }
+              .percentiles-section {
+                page-break-before: always;
+              }
+              .percentiles-table {
+                transform: scale(0.85);
+                transform-origin: top left;
+                margin-bottom: 10px;
+              }
+              body {
+                margin: 15px;
+              }
+              .header {
+                margin-bottom: 20px;
+                padding-bottom: 10px;
+              }
+              .summary-section {
+                page-break-after: avoid;
+              }
+            }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <h2>Evaluación Sensorial Completa</h2>
+            <p><strong>Paciente:</strong> ${this.selectedPatient?.nombre} ${this.selectedPatient?.apellidoPaterno}</p>
+            <p><strong>RUT:</strong> ${this.selectedPatient?.rut || 'N/A'}</p>
+            <p><strong>Fecha de Evaluación:</strong> ${new Date(this.selectedEvaluacion?.fechaEvaluacion || '').toLocaleDateString()}</p>
+            <p><strong>Progreso:</strong> ${this.selectedEvaluacion?.progreso}%</p>
+            <p><strong>Evaluador:</strong> ${this.selectedEvaluacion?.evaluadorNombre || 'N/A'}</p>
+          </div>
+          
+          <div class="summary-section">
+            <div class="table-section">
+              <div class="table-title">Resumen por Sección Sensorial</div>
+              ${summaryTableHTML}
+            </div>
+          </div>
+          
+          <div class="percentiles-section">
+            <div class="table-section">
+              <div class="table-title">Tabla de Percentiles de Referencia</div>
+              ${percentilesTableHTML}
+            </div>
+          </div>
         </body>
       </html>
     `;
     
-    const printWindow = window.open('', '', 'height=600,width=800');
+    const printWindow = window.open('', '', 'height=800,width=1200');
     if (printWindow) {
       printWindow.document.open();
       printWindow.document.write(windowContent);
@@ -496,7 +611,7 @@ export class GraficosComponent implements OnInit, AfterViewInit {
       setTimeout(() => {
         printWindow.print();
         printWindow.close();
-      }, 250);
+      }, 500);
     }
   }
 
@@ -599,5 +714,118 @@ export class GraficosComponent implements OnInit, AfterViewInit {
       
       return currentValue === numValue;
     }
+  }
+
+  // Método para generar la tabla de resumen HTML para impresión
+  private generateSummaryTableHTML(): string {
+    let html = '<table class="summary-table">';
+    html += '<thead><tr>';
+    html += '<th>Sección Sensorial</th>';
+    html += '<th>Preguntas</th>';
+    html += '<th>Suma Total</th>';
+    html += '<th>Promedio</th>';
+    html += '</tr></thead>';
+    html += '<tbody>';
+
+    this.secciones.forEach(seccion => {
+      const suma = this.sumasSeccion[seccion.nombre] || 0;
+      const promedio = this.promediosSeccion[seccion.nombre] || 0;
+      const rangoPreguntas = `${seccion.preguntas[0]}-${seccion.preguntas[seccion.preguntas.length - 1]}`;
+      html += `<tr>`;
+      html += `<td style="background-color: ${seccion.color}20; font-weight: bold;">${seccion.nombre}</td>`;
+      html += `<td>${rangoPreguntas}</td>`;
+      html += `<td style="font-weight: bold; color: #28a745;">${suma}</td>`;
+      html += `<td style="color: #667eea;">${promedio.toFixed(1)}</td>`;
+      html += `</tr>`;
+    });
+
+    // Fila de totales
+    html += '<tr style="background-color: #f8f9fa; font-weight: bold;">';
+    html += '<td>TOTAL GENERAL</td>';
+    html += '<td>80 preguntas</td>';
+    html += `<td style="color: #28a745; font-size: 16px;">${this.sumaTotal}</td>`;
+    html += `<td style="color: #667eea;">${this.totalPreguntasRespondidas > 0 ? (this.sumaTotal / this.totalPreguntasRespondidas).toFixed(1) : '0.0'}</td>`;
+    html += '</tr>';
+    html += '</tbody></table>';
+
+    return html;
+  }
+
+  // Método para generar la tabla de percentiles HTML para impresión
+  private generatePercentilesTableHTML(): string {
+    let html = '<table class="percentiles-table">';
+    
+    // Encabezados
+    html += '<thead>';
+    html += '<tr><th rowspan="2">Percentil</th><th rowspan="2">T</th><th colspan="6">Secciones Sensoriales</th><th rowspan="2">Total</th></tr>';
+    html += '<tr>';
+    html += '<th style="background-color: #06b6d4; color: white;">SOC</th>';
+    html += '<th style="background-color: #ec4899; color: white;">VIS</th>';
+    html += '<th style="background-color: #667eea; color: white;">HEA</th>';
+    html += '<th style="background-color: #f59e0b; color: white;">TOU</th>';
+    html += '<th style="background-color: #ef4444; color: white;">BOD</th>';
+    html += '<th style="background-color: #8b5cf6; color: white;">BAL</th>';
+    html += '<th style="background-color: #f97316; color: white;">PLA</th>';
+    html += '</tr>';
+    html += '</thead>';
+    
+    html += '<tbody>';
+    
+    this.percentilesData.forEach(row => {
+      let rowClass = '';
+      if (row.percentile === 40) {
+        rowClass = 'style="background-color: #fff3cd; font-weight: bold;"';
+      } else if (row.percentile === 16) {
+        rowClass = 'style="background-color: #d1ecf1; font-weight: bold;"';
+      }
+      
+      html += `<tr ${rowClass}>`;
+      html += `<td>${row.percentile}</td>`;
+      html += `<td>${row.t}</td>`;
+      
+      // Verificar valores actuales y resaltarlos
+      const socClass = this.isCurrentValue('SOC', row.soc) ? 'current-value' : '';
+      const visClass = this.isCurrentValue('VIS', row.vis) ? 'current-value' : '';
+      const heaClass = this.isCurrentValue('HEA', row.hea) ? 'current-value' : '';
+      const touClass = this.isCurrentValue('TOU', row.tou) ? 'current-value' : '';
+      const bodClass = this.isCurrentValue('BOD', row.bod) ? 'current-value' : '';
+      const balClass = this.isCurrentValue('BAL', row.bal) ? 'current-value' : '';
+      const plaClass = this.isCurrentValue('PLA', row.pla) ? 'current-value' : '';
+      const totClass = this.isCurrentValue('TOT', row.tot) ? 'current-value' : '';
+      
+      html += `<td class="${socClass}">${row.soc}</td>`;
+      html += `<td class="${visClass}">${row.vis}</td>`;
+      html += `<td class="${heaClass}">${row.hea}</td>`;
+      html += `<td class="${touClass}">${row.tou}</td>`;
+      html += `<td class="${bodClass}">${row.bod}</td>`;
+      html += `<td class="${balClass}">${row.bal}</td>`;
+      html += `<td class="${plaClass}">${row.pla}</td>`;
+      html += `<td class="${totClass}">${row.tot}</td>`;
+      html += '</tr>';
+    });
+    
+    html += '</tbody></table>';
+    
+    // Agregar leyenda
+    html += '<div style="margin-top: 10px; font-size: 9px;">';
+    html += '<p style="margin: 5px 0; font-weight: bold;">Leyenda:</p>';
+    html += '<div style="margin: 3px 0;">';
+    html += '<span><strong>SOC:</strong> Participación Social | <strong>VIS:</strong> Visión | <strong>HEA:</strong> Auditivo | <strong>TOU:</strong> Táctil | ';
+    html += '<strong>BOD:</strong> Conciencia Corporal | <strong>BAL:</strong> Equilibrio/Movimiento | <strong>PLA:</strong> Planificación/Ideas</span>';
+    html += '</div>';
+    html += '<div style="margin: 8px 0; padding: 5px; background-color: #ffeb3b; border: 2px solid #ff9800; border-radius: 4px; font-weight: bold; color: #d84315; text-align: center;">';
+    html += 'Valores resaltados en AMARILLO corresponden a los puntajes actuales del paciente';
+    html += '</div>';
+    html += '</div>';
+    
+    return html;
+  }
+
+  scrollToTop(): void {
+    // Hacer scroll suave hacia el inicio del componente
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
   }
 }
