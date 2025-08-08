@@ -15,6 +15,7 @@ import { HomeComponent } from './componentes/share/home/home.component';
 import { ListaEvaluacionesComponent } from './componentes/lista-evaluaciones/lista-evaluaciones.component';
 import { TestRadioComponent } from './componentes/test-radio/test-radio.component';
 import { GraficosComponent } from './componentes/graficos/graficos.component';
+import { Pagina3Component } from './componentes/pagina3/pagina3.component';
 
 
   @NgModule({
@@ -29,6 +30,7 @@ import { GraficosComponent } from './componentes/graficos/graficos.component';
     ListaEvaluacionesComponent,
     TestRadioComponent,
     GraficosComponent,
+    Pagina3Component,
     
   ],
   imports: [

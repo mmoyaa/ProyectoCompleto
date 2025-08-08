@@ -263,11 +263,29 @@
   display: inline-block;
 }
 
-.score-1 { background-color: #dc3545; }
-.score-2 { background-color: #fd7e14; }
-.score-3 { background-color: #ffc107; }
-.score-4 { background-color: #20c997; }
-.score-5 { background-color: #28a745; }
+.score-1 { background-color: #dc3545; } /* Nunca = 1 = Rojo */
+.score-2 { background-color: #ffc107; } /* Ocasionalmente = 2 = Amarillo */
+.score-3 { background-color: #20c997; } /* Frecuentemente = 3 = Verde claro */
+.score-4 { background-color: #28a745; } /* Siempre = 4 = Verde */
+
+/* Nota especial para Participación Social */
+.special-note {
+  background-color: #fff3cd;
+  border: 1px solid #ffeaa7;
+  border-radius: 6px;
+  padding: 8px 12px;
+  margin-top: 10px;
+}
+
+.special-note i {
+  color: #f39c12;
+  margin-right: 6px;
+}
+
+.special-note small {
+  color: #856404;
+  font-size: 12px;
+}
 
 .sections-grid {
   display: grid;
@@ -442,4 +460,426 @@
 
 .stats-section {
   animation: fadeIn 0.5s ease-in-out;
+}
+
+/* === SUMMARY SECTION === */
+.summary-section {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  margin-top: 25px;
+  overflow: hidden;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.summary-container {
+  padding: 25px;
+}
+
+.summary-container h4 {
+  color: #495057;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  font-size: 1.4rem;
+}
+
+.summary-container h4 i {
+  margin-right: 10px;
+  color: #28a745;
+}
+
+.summary-description {
+  color: #6c757d;
+  margin-bottom: 25px;
+  font-size: 14px;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.summary-card {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 10px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.summary-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+.summary-header {
+  background: white;
+  padding: 15px 20px;
+  border-left: 4px solid #667eea;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.summary-header h5 {
+  margin: 0;
+  color: #495057;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.question-range {
+  font-size: 12px;
+  color: #6c757d;
+  font-weight: normal;
+  margin-left: 8px;
+}
+
+.summary-content {
+  padding: 20px;
+}
+
+.summary-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 15px;
+}
+
+.stat-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.stat-label {
+  font-size: 13px;
+  color: #6c757d;
+  font-weight: 500;
+}
+
+.stat-value {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.stat-value.total {
+  color: #28a745;
+  font-size: 16px;
+}
+
+.stat-value.average {
+  color: #667eea;
+}
+
+.stat-value.questions {
+  color: #6c757d;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background-color: #e9ecef;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+/* === GENERAL TOTALS === */
+.general-totals {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border: 1px solid #dee2e6;
+  border-radius: 10px;
+  padding: 20px;
+  margin-top: 20px;
+}
+
+.totals-header {
+  margin-bottom: 15px;
+}
+
+.totals-header h5 {
+  margin: 0;
+  color: #495057;
+  display: flex;
+  align-items: center;
+  font-size: 1.1rem;
+}
+
+.totals-header h5 i {
+  margin-right: 8px;
+  color: #fd7e14;
+}
+
+.totals-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 15px;
+}
+
+.total-item {
+  background: white;
+  padding: 15px;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+.total-item:hover {
+  background: #f8f9fa;
+  border-color: #667eea;
+}
+
+.total-label {
+  font-size: 13px;
+  color: #6c757d;
+  font-weight: 500;
+}
+
+.total-value {
+  font-size: 16px;
+  font-weight: 700;
+  color: #495057;
+}
+
+/* === RESPONSIVE DESIGN FOR SUMMARY === */
+@media (max-width: 768px) {
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .totals-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .summary-container {
+    padding: 20px;
+  }
+  
+  .stat-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+}
+
+/* === PERCENTILES TABLE SECTION === */
+.percentiles-section {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  margin-top: 25px;
+  overflow: hidden;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.percentiles-container {
+  padding: 25px;
+}
+
+.percentiles-container h4 {
+  color: #495057;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  font-size: 1.4rem;
+}
+
+.percentiles-container h4 i {
+  margin-right: 10px;
+  color: #17a2b8;
+}
+
+.percentiles-description {
+  color: #6c757d;
+  margin-bottom: 25px;
+  font-size: 14px;
+}
+
+.table-responsive {
+  margin-bottom: 20px;
+  max-height: 500px;
+  overflow-y: auto;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+}
+
+.percentiles-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  background: white;
+}
+
+.percentiles-table th,
+.percentiles-table td {
+  padding: 6px 8px;
+  text-align: center;
+  border: 1px solid #dee2e6;
+  vertical-align: middle;
+}
+
+.percentiles-table th {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  font-weight: 600;
+  color: #495057;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.header-labels th {
+  background: #f1f3f4;
+  font-size: 10px;
+  color: #6c757d;
+  font-weight: 500;
+  padding: 4px 6px;
+}
+
+/* Colores de encabezados por sección */
+.soc-header { background-color: #06b6d4 !important; color: white; }
+.vis-header { background-color: #ec4899 !important; color: white; }
+.hea-header { background-color: #667eea !important; color: white; }
+.tou-header { background-color: #f59e0b !important; color: white; }
+.bod-header { background-color: #ef4444 !important; color: white; }
+.bal-header { background-color: #8b5cf6 !important; color: white; }
+.pla-header { background-color: #f97316 !important; color: white; }
+.tot-header { background-color: #10b981 !important; color: white; }
+
+/* Estilos de celdas */
+.percentile-col, .t-col {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  color: #495057;
+  width: 60px;
+}
+
+.soc-col, .vis-col, .hea-col, .tou-col, 
+.bod-col, .bal-col, .pla-col, .tot-col {
+  background-color: white;
+  transition: all 0.3s ease;
+}
+
+/* Resaltado de valores actuales */
+.current-soc { background-color: #e0f7fa !important; font-weight: bold; color: #006064; }
+.current-vis { background-color: #fce4ec !important; font-weight: bold; color: #880e4f; }
+.current-hea { background-color: #e8eaf6 !important; font-weight: bold; color: #1a237e; }
+.current-tou { background-color: #fff8e1 !important; font-weight: bold; color: #e65100; }
+.current-bod { background-color: #ffebee !important; font-weight: bold; color: #b71c1c; }
+.current-bal { background-color: #f3e5f5 !important; font-weight: bold; color: #4a148c; }
+.current-pla { background-color: #fff3e0 !important; font-weight: bold; color: #bf360c; }
+.current-tot { background-color: #e8f5e8 !important; font-weight: bold; color: #1b5e20; }
+
+/* Filas especiales */
+.highlight-row {
+  background-color: #fff3cd !important;
+  border: 2px solid #ffc107;
+}
+
+.current-score {
+  background-color: #d1ecf1 !important;
+  border: 2px solid #17a2b8;
+}
+
+/* Leyenda de la tabla */
+.table-legend {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 20px;
+  margin-top: 20px;
+}
+
+.table-legend h6 {
+  color: #495057;
+  font-size: 14px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+}
+
+.table-legend h6 i {
+  margin-right: 8px;
+  color: #17a2b8;
+}
+
+.percentile-legend {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.percentile-legend li {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+  font-size: 13px;
+  color: #6c757d;
+}
+
+.percentile-legend li span {
+  width: 20px;
+  height: 12px;
+  border-radius: 3px;
+  margin-right: 10px;
+  display: inline-block;
+}
+
+.legend-high { background-color: #28a745; }
+.legend-normal { background-color: #ffc107; }
+.legend-low { background-color: #dc3545; }
+
+.current-scores {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.score-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
+  font-size: 12px;
+}
+
+.score-label {
+  font-weight: 600;
+  color: #495057;
+}
+
+.score-value {
+  font-weight: 700;
+  color: #28a745;
+}
+
+/* Responsive para tabla de percentiles */
+@media (max-width: 768px) {
+  .percentiles-table {
+    font-size: 10px;
+  }
+  
+  .percentiles-table th,
+  .percentiles-table td {
+    padding: 4px 6px;
+  }
+  
+  .current-scores {
+    grid-template-columns: 1fr;
+  }
+  
+  .table-responsive {
+    max-height: 400px;
+  }
 }

@@ -7,6 +7,7 @@ import { HomeComponent } from './componentes/share/home/home.component';
 import { ListaEvaluacionesComponent } from './componentes/lista-evaluaciones/lista-evaluaciones.component';
 import { TestRadioComponent } from './componentes/test-radio/test-radio.component';
 import { GraficosComponent } from './componentes/graficos/graficos.component';
+import { Pagina3Component } from './componentes/pagina3/pagina3.component';
 
 
 const routes: Routes = [
@@ -18,6 +19,7 @@ const routes: Routes = [
   { path:'graficos', component: GraficosComponent },
   { path:'home', component: HomeComponent },
   { path:'test-radio', component: TestRadioComponent },
+   { path:'pagina3', component: Pagina3Component },
 ];
 
 @NgModule({

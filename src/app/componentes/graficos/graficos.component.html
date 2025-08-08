@@ -134,12 +134,15 @@
           <div class="col-md-6">
             <h6>Escala de Puntajes:</h6>
             <ul class="legend-list">
-              <li><span class="score-1"></span> 1 - Nunca</li>
-              <li><span class="score-2"></span> 2 - Casi Nunca</li>
-              <li><span class="score-3"></span> 3 - A Veces</li>
-              <li><span class="score-4"></span> 4 - Frecuentemente</li>
-              <li><span class="score-5"></span> 5 - Siempre</li>
+              <li><span class="score-1"></span> 1 - Nunca (N)</li>
+              <li><span class="score-2"></span> 2 - Ocasionalmente (O)</li>
+              <li><span class="score-3"></span> 3 - Frecuentemente (F)</li>
+              <li><span class="score-4"></span> 4 - Siempre (S)</li>
             </ul>
+            <!-- <div class="special-note">
+              <i class="fas fa-exclamation-triangle"></i>
+              <small><strong>Nota:</strong> En Participación Social los valores están invertidos: N=4, O=3, F=2, S=1</small>
+            </div> -->
           </div>
           <div class="col-md-6">
             <h6>Secciones Evaluadas:</h6>
@@ -170,6 +173,158 @@
         </div>
       </div>
     </ng-template>
+  </div>
+
+  <!-- Resumen de Sumas por Sección -->
+  <div *ngIf="selectedEvaluacion" class="summary-section">
+    <div class="summary-container">
+      <h4><i class="fas fa-calculator"></i> Resumen de Puntajes por Sección</h4>
+      <p class="summary-description">Suma total de respuestas por cada área sensorial evaluada</p>
+      
+      <div class="summary-grid">
+        <div class="summary-card" *ngFor="let seccion of secciones; let i = index">
+          <div class="summary-header" [style.border-left-color]="seccion.color">
+            <h5>{{seccion.nombre}}</h5>
+            <span class="question-range">({{seccion.preguntas[0]}}-{{seccion.preguntas[seccion.preguntas.length-1]}})</span>
+          </div>
+          <div class="summary-content">
+            <div class="summary-stats">
+              <div class="stat-item">
+                <span class="stat-label">Suma Total:</span>
+                <span class="stat-value total">{{sumasSeccion[seccion.nombre] || 0}}</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Promedio:</span>
+                <span class="stat-value average">{{promediosSeccion[seccion.nombre] || 0}}</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Preguntas:</span>
+                <span class="stat-value questions">{{seccion.preguntas.length}}</span>
+              </div>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" 
+                   [style.width.%]="(promediosSeccion[seccion.nombre] / 4) * 100"
+                   [style.background-color]="seccion.color">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Totales generales -->
+      <div class="general-totals">
+        <div class="totals-header">
+          <h5><i class="fas fa-chart-pie"></i> Resumen General</h5>
+        </div>
+        <div class="totals-grid">
+          <div class="total-item">
+            <span class="total-label">Suma Total de Todas las Secciones:</span>
+            <span class="total-value">{{sumaTotal}}</span>
+          </div>
+          <div class="total-item">
+            <span class="total-label">Promedio General:</span>
+            <span class="total-value">{{promedioGeneral}}</span>
+          </div>
+          <div class="total-item">
+            <span class="total-label">Total de Preguntas Respondidas:</span>
+            <span class="total-value">{{totalPreguntasRespondidas}}</span>
+          </div>
+          <div class="total-item">
+            <span class="total-label">Porcentaje de Completitud:</span>
+            <span class="total-value">{{porcentajeCompletitud}}%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabla de Percentiles de Referencia -->
+  <div *ngIf="selectedEvaluacion" class="percentiles-section">
+    <div class="percentiles-container">
+      <h4><i class="fas fa-table"></i> Tabla de Percentiles de Referencia</h4>
+      <p class="percentiles-description">Valores de referencia normativa para interpretación de resultados por sección sensorial</p>
+      
+      <div class="table-responsive">
+        <table class="percentiles-table">
+          <thead>
+            <tr>
+              <th>%ile</th>
+              <th>T</th>
+              <th class="soc-header">SOC</th>
+              <th class="vis-header">VIS</th>
+              <th class="hea-header">HEA</th>
+              <th class="tou-header">TOU</th>
+              <th class="bod-header">BOD</th>
+              <th class="bal-header">BAL</th>
+              <th class="pla-header">PLA</th>
+              <th class="tot-header">TOT</th>
+              <th>T</th>
+              <th>%ile</th>
+            </tr>
+            <tr class="header-labels">
+              <th></th>
+              <th></th>
+              <th><small>Participación Social</small></th>
+              <th><small>Visión</small></th>
+              <th><small>Auditivo</small></th>
+              <th><small>Táctil</small></th>
+              <th><small>Conciencia Corporal</small></th>
+              <th><small>Equilibrio</small></th>
+              <th><small>Planificación</small></th>
+              <th><small>Total General</small></th>
+              <th></th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let row of percentilesData" 
+                [class.current-score]="isCurrentScoreRow(row)"
+                [class.highlight-row]="shouldHighlightRow(row)">
+              <td class="percentile-col">{{row.percentile}}</td>
+              <td class="t-col">{{row.t}}</td>
+              <td class="soc-col" [class.current-soc]="isCurrentValue('SOC', row.soc)">{{row.soc}}</td>
+              <td class="vis-col" [class.current-vis]="isCurrentValue('VIS', row.vis)">{{row.vis}}</td>
+              <td class="hea-col" [class.current-hea]="isCurrentValue('HEA', row.hea)">{{row.hea}}</td>
+              <td class="tou-col" [class.current-tou]="isCurrentValue('TOU', row.tou)">{{row.tou}}</td>
+              <td class="bod-col" [class.current-bod]="isCurrentValue('BOD', row.bod)">{{row.bod}}</td>
+              <td class="bal-col" [class.current-bal]="isCurrentValue('BAL', row.bal)">{{row.bal}}</td>
+              <td class="pla-col" [class.current-pla]="isCurrentValue('PLA', row.pla)">{{row.pla}}</td>
+              <td class="tot-col" [class.current-tot]="isCurrentValue('TOT', row.tot)">{{row.tot}}</td>
+              <td class="t-col">{{row.t}}</td>
+              <td class="percentile-col">{{row.percentile}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Leyenda de la tabla -->
+      <div class="table-legend">
+        <div class="row">
+          <div class="col-md-6">
+            <h6><i class="fas fa-info-circle"></i> Interpretación de Percentiles</h6>
+            <ul class="percentile-legend">
+              <li><span class="legend-high"></span> 75-99%: Rango superior</li>
+              <li><span class="legend-normal"></span> 25-74%: Rango normal</li>
+              <li><span class="legend-low"></span> 1-24%: Rango inferior</li>
+            </ul>
+          </div>
+          <div class="col-md-6">
+            <h6><i class="fas fa-crosshairs"></i> Puntajes Actuales</h6>
+            <div class="current-scores" *ngIf="selectedEvaluacion">
+              <div class="score-item"><span class="score-label">SOC:</span> <span class="score-value">{{sumasSeccion['Participación Social'] || 0}}</span></div>
+              <div class="score-item"><span class="score-label">VIS:</span> <span class="score-value">{{sumasSeccion['Visión'] || 0}}</span></div>
+              <div class="score-item"><span class="score-label">HEA:</span> <span class="score-value">{{sumasSeccion['Auditivo'] || 0}}</span></div>
+              <div class="score-item"><span class="score-label">TOU:</span> <span class="score-value">{{sumasSeccion['Táctil'] || 0}}</span></div>
+              <div class="score-item"><span class="score-label">BOD:</span> <span class="score-value">{{sumasSeccion['Conciencia Corporal'] || 0}}</span></div>
+              <div class="score-item"><span class="score-label">BAL:</span> <span class="score-value">{{sumasSeccion['Equilibrio/Movimiento'] || 0}}</span></div>
+              <div class="score-item"><span class="score-label">PLA:</span> <span class="score-value">{{sumasSeccion['Planificación/Ideas'] || 0}}</span></div>
+              <div class="score-item"><span class="score-label">TOT:</span> <span class="score-value">{{sumaTotal || 0}}</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Estadísticas adicionales -->

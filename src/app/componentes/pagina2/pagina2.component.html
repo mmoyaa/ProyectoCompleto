@@ -2027,7 +2027,7 @@
         </div>
 
         <!-- Botones de acción -->
-        <div class="form-actions">
+        <!-- <div class="form-actions">
           <button type="button" class="btn btn-info">
             <span class="btn-icon">📊</span>
             Generar Reporte
@@ -2035,8 +2035,8 @@
           <button type="button" class="btn btn-secondary">
             Limpiar Formulario
           </button>
-          <!-- BOTÓN ELIMINADO - Usar el botón principal de abajo -->
-        </div>
+         
+        </div> -->
 
         <!-- Leyenda -->
         <div class="form-legend">
@@ -2137,15 +2137,15 @@
           
           <div style="margin-top: 15px; color: white; font-size: 14px; opacity: 0.9;">
             <p><strong>📊 Progreso:</strong> {{currentProgress || 0}}% completado</p>
-            <p><strong>👤 Estado Paciente:</strong> 
+            <!-- <p><strong>👤 Estado Paciente:</strong> 
               <span *ngIf="selectedPatient" style="color: #28a745;">
                 ✅ {{selectedPatient?.nombre}} {{selectedPatient?.apellidoPaterno}} (ID: {{selectedPatient?.idPaciente || selectedPatient?.id}})
               </span>
               <span *ngIf="!selectedPatient" style="color: #ffc107;">
                 ⚠️ Sin paciente seleccionado
               </span>
-            </p>
-            <p><strong>📝 Debug Info:</strong> selectedPatient = {{selectedPatient | json}}</p>
+            </p> -->
+            <!-- <p><strong>📝 Debug Info:</strong> selectedPatient = {{selectedPatient | json}}</p> -->
           </div>
         </div>
       </form>
@@ -2153,15 +2153,15 @@
       <!-- Botón para guardar evaluación -->
       <div class="save-evaluation-section" *ngIf="selectedPatient">
         <div class="save-container">
-          <button 
+          <!-- <button 
             class="save-btn" 
             (click)="saveEvaluation()"
             [disabled]="!selectedPatient"
             [style.background-color]="isEditMode ? '#f59e0b' : '#3b82f6'">
             <span class="save-icon">{{isEditMode ? '�' : '�💾'}}</span>
             {{isEditMode ? 'Actualizar Evaluación' : 'Guardar Evaluación'}}
-          </button>
-          <div class="save-info">
+          </button> -->
+          <!-- <div class="save-info">
             <p class="progress-info">Progreso actual: {{currentProgress}}%</p>
             <p class="patient-info">Paciente: {{selectedPatient?.nombre}} {{selectedPatient?.apellidoPaterno}}</p>
             <p *ngIf="isEditMode" class="edit-info" style="color: #f59e0b; font-size: 12px; margin-top: 5px;">
@@ -2170,7 +2170,7 @@
             <p class="debug-info" style="color: #059669; font-size: 14px; font-weight: bold; margin-top: 8px; padding: 8px; background: #ecfdf5; border-radius: 4px; border-left: 4px solid #10b981;">
               🟢 BOTÓN ACTIVO - Click para guardar en base de datos
             </p>
-          </div>
+          </div> -->
         </div>
       </div>
     </div>
