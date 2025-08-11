@@ -1,0 +1,203 @@
+/* Estilos para el formulario de participación social */
+
+.container-fluid {
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+.card {
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  border: 1px solid rgba(0, 0, 0, 0.125);
+  border-radius: 0.375rem;
+}
+
+.card-header {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+  padding: 1rem 1.25rem;
+}
+
+.card-header.bg-primary {
+  background-color: #0d6efd !important;
+}
+
+.card-header.bg-info {
+  background-color: #0dcaf0 !important;
+}
+
+.card-header.bg-warning {
+  background-color: #ffc107 !important;
+}
+
+.card-header.bg-success {
+  background-color: #198754 !important;
+}
+
+.card-header.bg-danger {
+  background-color: #dc3545 !important;
+}
+
+.form-check-input {
+  margin-top: 0.125rem;
+  margin-left: 0;
+}
+
+.form-check-label {
+  font-weight: 500;
+  color: #495057;
+  cursor: pointer;
+}
+
+.border-bottom {
+  border-bottom: 1px solid #dee2e6 !important;
+}
+
+.row.align-items-center {
+  transition: background-color 0.2s ease;
+}
+
+.row.align-items-center:hover {
+  background-color: #f8f9fa;
+  border-radius: 0.25rem;
+}
+
+.btn-lg {
+  padding: 0.75rem 1.5rem;
+  font-size: 1.125rem;
+  border-radius: 0.5rem;
+}
+
+.alert {
+  border: 0;
+  border-radius: 0.5rem;
+  padding: 1rem 1.25rem;
+}
+
+.alert-success {
+  background-color: #d1edff;
+  border-color: #b8daff;
+  color: #004085;
+}
+
+.alert-danger {
+  background-color: #f8d7da;
+  border-color: #f5c6cb;
+  color: #721c24;
+}
+
+.spinner-border-sm {
+  width: 1rem;
+  height: 1rem;
+}
+
+.text-danger {
+  color: #dc3545 !important;
+}
+
+.text-center {
+  text-align: center !important;
+}
+
+.fw-bold {
+  font-weight: 700 !important;
+}
+
+.bg-light {
+  background-color: #f8f9fa !important;
+}
+
+.py-2 {
+  padding-top: 0.5rem !important;
+  padding-bottom: 0.5rem !important;
+}
+
+.rounded {
+  border-radius: 0.375rem !important;
+}
+
+.me-2 {
+  margin-right: 0.5rem !important;
+}
+
+.mb-0 {
+  margin-bottom: 0 !important;
+}
+
+.mt-1 {
+  margin-top: 0.25rem !important;
+}
+
+.small {
+  font-size: 0.875em;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .col-md-6 .row .col-3 {
+    padding: 0.25rem;
+  }
+  
+  .form-check-label {
+    font-size: 0.875rem;
+  }
+  
+  .card-body {
+    padding: 1rem;
+  }
+  
+  .btn-lg {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+}
+
+/* Estados de validación */
+.form-control.is-invalid {
+  border-color: #dc3545;
+  box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+.form-control:focus {
+  border-color: #80bdff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Animación para los radio buttons */
+.form-check-input:checked {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+  transform: scale(1.1);
+  transition: all 0.2s ease;
+}
+
+.form-check-input:focus {
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* Estilos para hover en las filas de preguntas */
+.border-bottom:hover .form-check-label {
+  color: #0d6efd;
+}
+
+/* Estilos para los iconos */
+.fas {
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+}
+
+/* Loading spinner personalizado */
+@keyframes spinner-border {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spinner-border {
+  display: inline-block;
+  width: 2rem;
+  height: 2rem;
+  vertical-align: text-bottom;
+  border: 0.25em solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spinner-border 0.75s linear infinite;
+}

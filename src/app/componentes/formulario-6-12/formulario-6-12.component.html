@@ -1,0 +1,736 @@
+<div class="container-fluid py-4">
+  <div class="row justify-content-center">
+    <div class="col-12 col-lg-10">
+      
+      <!-- Header del formulario -->
+      <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+          <h3 class="mb-0">
+            <i class="fas fa-brain me-2"></i>
+            Formulario de Evaluación Sensorial (6-12 años)
+          </h3>
+        </div>
+        <div class="card-body">
+          <p class="mb-0">
+            Este formulario evalúa las habilidades sensoriales y de participación social del niño o niña. 
+            Por favor, marque la opción que mejor describa el comportamiento actual en cada una de las 8 áreas evaluadas: 
+            <strong>Participación Social, Visión, Oído, Tacto, Gusto y Olfato, Conciencia del Cuerpo, Equilibrio y Movimiento, y Planificación e Ideas</strong>.
+          </p>
+        </div>
+      </div>
+
+      <!-- Mensajes de estado -->
+      <div *ngIf="mensaje" class="alert" 
+           [ngClass]="{'alert-success': tipoMensaje === 'success', 'alert-danger': tipoMensaje === 'error'}"
+           role="alert">
+        <i class="fas" [ngClass]="{'fa-check-circle': tipoMensaje === 'success', 'fa-exclamation-triangle': tipoMensaje === 'error'}"></i>
+        {{ mensaje }}
+        <button type="button" class="btn-close float-end" (click)="limpiarMensaje()"></button>
+      </div>
+
+      <!-- Formulario principal -->
+      <form [formGroup]="formularioParticipacion" (ngSubmit)="onSubmit()">
+        
+        <!-- Información del niño/a -->
+        <div class="card mb-4">
+          <div class="card-header">
+            <h5 class="mb-0">
+              <i class="fas fa-child me-2"></i>
+              Información del Niño/a
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="nombreNino" class="form-label">Nombre del Niño/a *</label>
+                  <input type="text" 
+                         class="form-control" 
+                         id="nombreNino" 
+                         formControlName="nombreNino"
+                         [class.is-invalid]="formularioParticipacion.get('nombreNino')?.touched && formularioParticipacion.get('nombreNino')?.invalid">
+                  <div class="invalid-feedback">
+                    {{ getErrorMessage('nombreNino') }}
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="mb-3">
+                  <label for="edad" class="form-label">Edad *</label>
+                  <input type="number" 
+                         class="form-control" 
+                         id="edad" 
+                         formControlName="edad"
+                         min="6" 
+                         max="12"
+                         [class.is-invalid]="formularioParticipacion.get('edad')?.touched && formularioParticipacion.get('edad')?.invalid">
+                  <div class="invalid-feedback">
+                    {{ getErrorMessage('edad') }}
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="mb-3">
+                  <label for="fechaEvaluacion" class="form-label">Fecha de Evaluación *</label>
+                  <input type="date" 
+                         class="form-control" 
+                         id="fechaEvaluacion" 
+                         formControlName="fechaEvaluacion"
+                         [class.is-invalid]="formularioParticipacion.get('fechaEvaluacion')?.touched && formularioParticipacion.get('fechaEvaluacion')?.invalid">
+                  <div class="invalid-feedback">
+                    {{ getErrorMessage('fechaEvaluacion') }}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="evaluador" class="form-label">Evaluador *</label>
+                  <input type="text" 
+                         class="form-control" 
+                         id="evaluador" 
+                         formControlName="evaluador"
+                         placeholder="Nombre del evaluador"
+                         [class.is-invalid]="formularioParticipacion.get('evaluador')?.touched && formularioParticipacion.get('evaluador')?.invalid">
+                  <div class="invalid-feedback">
+                    {{ getErrorMessage('evaluador') }}
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="observaciones" class="form-label">Observaciones Generales</label>
+                  <textarea class="form-control" 
+                            id="observaciones" 
+                            formControlName="observaciones"
+                            rows="3"
+                            placeholder="Observaciones adicionales (opcional)"></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sección de Participación Social -->
+        <div class="card mb-4">
+          <div class="card-header bg-info text-white">
+            <h5 class="mb-0">
+              <i class="fas fa-handshake me-2"></i>
+              PARTICIPACIÓN SOCIAL
+            </h5>
+            <small>Su niño o niña...</small>
+          </div>
+          <div class="card-body">
+            
+            <!-- Encabezados de la tabla -->
+            <div class="row mb-3 fw-bold text-center bg-light py-2 rounded">
+              <div class="col-md-6 text-start">
+                <strong>Comportamiento</strong>
+              </div>
+              <div class="col-md-6">
+                <div class="row">
+                  <div class="col-3"><strong>Nunca</strong></div>
+                  <div class="col-3"><strong>Ocasionalmente</strong></div>
+                  <div class="col-3"><strong>Frecuentemente</strong></div>
+                  <div class="col-3"><strong>Siempre</strong></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Preguntas de Participación Social -->
+            <div *ngFor="let pregunta of preguntasParticipacion; let i = index" 
+                 class="row align-items-center py-3 border-bottom">
+              
+              <!-- Número y texto de la pregunta -->
+              <div class="col-md-6">
+                <label class="form-label mb-0">
+                  <strong>{{ pregunta.id }}.</strong> {{ pregunta.texto }}
+                  <span class="text-danger">*</span>
+                </label>
+              </div>
+              
+              <!-- Opciones de respuesta -->
+              <div class="col-md-6">
+                <div class="row text-center">
+                  <div *ngFor="let opcion of opcionesRespuesta" class="col-3">
+                    <div class="form-check">
+                      <input class="form-check-input" 
+                             type="radio" 
+                             [name]="'pregunta_' + pregunta.id"
+                             [id]="'pregunta_' + pregunta.id + '_' + opcion.valor"
+                             [value]="opcion.valor"
+                             [formControlName]="'pregunta_' + pregunta.id">
+                      <label class="form-check-label" 
+                             [for]="'pregunta_' + pregunta.id + '_' + opcion.valor">
+                        {{ opcion.valor }}
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Mensaje de error para pregunta requerida -->
+                <div *ngIf="formularioParticipacion.get('pregunta_' + pregunta.id)?.touched && 
+                           formularioParticipacion.get('pregunta_' + pregunta.id)?.invalid" 
+                     class="text-danger small mt-1">
+                  <i class="fas fa-exclamation-circle me-1"></i>
+                  Por favor, seleccione una opción
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Sección de Visión -->
+        <div class="card mb-4">
+          <div class="card-header bg-warning text-dark">
+            <h5 class="mb-0">
+              <i class="fas fa-eye me-2"></i>
+              VISIÓN
+            </h5>
+            <small>Su niño o niña...</small>
+          </div>
+          <div class="card-body">
+            
+            <!-- Encabezados de la tabla -->
+            <div class="row mb-3 fw-bold text-center bg-light py-2 rounded">
+              <div class="col-md-6 text-start">
+                <strong>Comportamiento</strong>
+              </div>
+              <div class="col-md-6">
+                <div class="row">
+                  <div class="col-3"><strong>Nunca</strong></div>
+                  <div class="col-3"><strong>Ocasionalmente</strong></div>
+                  <div class="col-3"><strong>Frecuentemente</strong></div>
+                  <div class="col-3"><strong>Siempre</strong></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Preguntas de Visión -->
+            <div *ngFor="let pregunta of preguntasVision; let i = index" 
+                 class="row align-items-center py-3 border-bottom">
+              
+              <!-- Número y texto de la pregunta -->
+              <div class="col-md-6">
+                <label class="form-label mb-0">
+                  <strong>{{ pregunta.id }}.</strong> {{ pregunta.texto }}
+                  <span class="text-danger">*</span>
+                </label>
+              </div>
+              
+              <!-- Opciones de respuesta -->
+              <div class="col-md-6">
+                <div class="row text-center">
+                  <div *ngFor="let opcion of opcionesRespuesta" class="col-3">
+                    <div class="form-check">
+                      <input class="form-check-input" 
+                             type="radio" 
+                             [name]="'pregunta_' + pregunta.id"
+                             [id]="'pregunta_' + pregunta.id + '_' + opcion.valor"
+                             [value]="opcion.valor"
+                             [formControlName]="'pregunta_' + pregunta.id">
+                      <label class="form-check-label" 
+                             [for]="'pregunta_' + pregunta.id + '_' + opcion.valor">
+                        {{ opcion.valor }}
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Mensaje de error para pregunta requerida -->
+                <div *ngIf="formularioParticipacion.get('pregunta_' + pregunta.id)?.touched && 
+                           formularioParticipacion.get('pregunta_' + pregunta.id)?.invalid" 
+                     class="text-danger small mt-1">
+                  <i class="fas fa-exclamation-circle me-1"></i>
+                  Por favor, seleccione una opción
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Sección de Oído -->
+        <div class="card mb-4">
+          <div class="card-header bg-success text-white">
+            <h5 class="mb-0">
+              <i class="fas fa-volume-up me-2"></i>
+              OÍDO
+            </h5>
+            <small>Su niño o niña...</small>
+          </div>
+          <div class="card-body">
+            
+            <!-- Encabezados de la tabla -->
+            <div class="row mb-3 fw-bold text-center bg-light py-2 rounded">
+              <div class="col-md-6 text-start">
+                <strong>Comportamiento</strong>
+              </div>
+              <div class="col-md-6">
+                <div class="row">
+                  <div class="col-3"><strong>Nunca</strong></div>
+                  <div class="col-3"><strong>Ocasionalmente</strong></div>
+                  <div class="col-3"><strong>Frecuentemente</strong></div>
+                  <div class="col-3"><strong>Siempre</strong></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Preguntas de Oído -->
+            <div *ngFor="let pregunta of preguntasOido; let i = index" 
+                 class="row align-items-center py-3 border-bottom">
+              
+              <!-- Número y texto de la pregunta -->
+              <div class="col-md-6">
+                <label class="form-label mb-0">
+                  <strong>{{ pregunta.id }}.</strong> {{ pregunta.texto }}
+                  <span class="text-danger">*</span>
+                </label>
+              </div>
+              
+              <!-- Opciones de respuesta -->
+              <div class="col-md-6">
+                <div class="row text-center">
+                  <div *ngFor="let opcion of opcionesRespuesta" class="col-3">
+                    <div class="form-check">
+                      <input class="form-check-input" 
+                             type="radio" 
+                             [name]="'pregunta_' + pregunta.id"
+                             [id]="'pregunta_' + pregunta.id + '_' + opcion.valor"
+                             [value]="opcion.valor"
+                             [formControlName]="'pregunta_' + pregunta.id">
+                      <label class="form-check-label" 
+                             [for]="'pregunta_' + pregunta.id + '_' + opcion.valor">
+                        {{ opcion.valor }}
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Mensaje de error para pregunta requerida -->
+                <div *ngIf="formularioParticipacion.get('pregunta_' + pregunta.id)?.touched && 
+                           formularioParticipacion.get('pregunta_' + pregunta.id)?.invalid" 
+                     class="text-danger small mt-1">
+                  <i class="fas fa-exclamation-circle me-1"></i>
+                  Por favor, seleccione una opción
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Sección de Tacto -->
+        <div class="card mb-4">
+          <div class="card-header bg-danger text-white">
+            <h5 class="mb-0">
+              <i class="fas fa-hand-paper me-2"></i>
+              TACTO
+            </h5>
+            <small>Su niño o niña...</small>
+          </div>
+          <div class="card-body">
+            
+            <!-- Encabezados de la tabla -->
+            <div class="row mb-3 fw-bold text-center bg-light py-2 rounded">
+              <div class="col-md-6 text-start">
+                <strong>Comportamiento</strong>
+              </div>
+              <div class="col-md-6">
+                <div class="row">
+                  <div class="col-3"><strong>Nunca</strong></div>
+                  <div class="col-3"><strong>Ocasionalmente</strong></div>
+                  <div class="col-3"><strong>Frecuentemente</strong></div>
+                  <div class="col-3"><strong>Siempre</strong></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Preguntas de Tacto -->
+            <div *ngFor="let pregunta of preguntasTacto; let i = index" 
+                 class="row align-items-center py-3 border-bottom">
+              
+              <!-- Número y texto de la pregunta -->
+              <div class="col-md-6">
+                <label class="form-label mb-0">
+                  <strong>{{ pregunta.id }}.</strong> {{ pregunta.texto }}
+                  <span class="text-danger">*</span>
+                </label>
+              </div>
+              
+              <!-- Opciones de respuesta -->
+              <div class="col-md-6">
+                <div class="row text-center">
+                  <div *ngFor="let opcion of opcionesRespuesta" class="col-3">
+                    <div class="form-check">
+                      <input class="form-check-input" 
+                             type="radio" 
+                             [name]="'pregunta_' + pregunta.id"
+                             [id]="'pregunta_' + pregunta.id + '_' + opcion.valor"
+                             [value]="opcion.valor"
+                             [formControlName]="'pregunta_' + pregunta.id">
+                      <label class="form-check-label" 
+                             [for]="'pregunta_' + pregunta.id + '_' + opcion.valor">
+                        {{ opcion.valor }}
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Mensaje de error para pregunta requerida -->
+                <div *ngIf="formularioParticipacion.get('pregunta_' + pregunta.id)?.touched && 
+                           formularioParticipacion.get('pregunta_' + pregunta.id)?.invalid" 
+                     class="text-danger small mt-1">
+                  <i class="fas fa-exclamation-circle me-1"></i>
+                  Por favor, seleccione una opción
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Sección de Gusto y Olfato -->
+        <div class="card mb-4">
+          <div class="card-header bg-secondary text-white">
+            <h5 class="mb-0">
+              <i class="fas fa-seedling me-2"></i>
+              GUSTO Y OLFATO
+            </h5>
+            <small>Su niño o niña...</small>
+          </div>
+          <div class="card-body">
+            
+            <!-- Encabezados de la tabla -->
+            <div class="row mb-3 fw-bold text-center bg-light py-2 rounded">
+              <div class="col-md-6 text-start">
+                <strong>Comportamiento</strong>
+              </div>
+              <div class="col-md-6">
+                <div class="row">
+                  <div class="col-3"><strong>Nunca</strong></div>
+                  <div class="col-3"><strong>Ocasionalmente</strong></div>
+                  <div class="col-3"><strong>Frecuentemente</strong></div>
+                  <div class="col-3"><strong>Siempre</strong></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Preguntas de Gusto y Olfato -->
+            <div *ngFor="let pregunta of preguntasGustoOlfato; let i = index" 
+                 class="row align-items-center py-3 border-bottom">
+              
+              <!-- Número y texto de la pregunta -->
+              <div class="col-md-6">
+                <label class="form-label mb-0">
+                  <strong>{{ pregunta.id }}.</strong> {{ pregunta.texto }}
+                  <span class="text-danger">*</span>
+                </label>
+              </div>
+              
+              <!-- Opciones de respuesta -->
+              <div class="col-md-6">
+                <div class="row text-center">
+                  <div *ngFor="let opcion of opcionesRespuesta" class="col-3">
+                    <div class="form-check">
+                      <input class="form-check-input" 
+                             type="radio" 
+                             [name]="'pregunta_' + pregunta.id"
+                             [id]="'pregunta_' + pregunta.id + '_' + opcion.valor"
+                             [value]="opcion.valor"
+                             [formControlName]="'pregunta_' + pregunta.id">
+                      <label class="form-check-label" 
+                             [for]="'pregunta_' + pregunta.id + '_' + opcion.valor">
+                        {{ opcion.valor }}
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Mensaje de error para pregunta requerida -->
+                <div *ngIf="formularioParticipacion.get('pregunta_' + pregunta.id)?.touched && 
+                           formularioParticipacion.get('pregunta_' + pregunta.id)?.invalid" 
+                     class="text-danger small mt-1">
+                  <i class="fas fa-exclamation-circle me-1"></i>
+                  Por favor, seleccione una opción
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Sección de Conciencia del Cuerpo -->
+        <div class="card mb-4">
+          <div class="card-header bg-dark text-white">
+            <h5 class="mb-0">
+              <i class="fas fa-male me-2"></i>
+              CONCIENCIA DEL CUERPO
+            </h5>
+            <small>Su niño o niña...</small>
+          </div>
+          <div class="card-body">
+            
+            <!-- Encabezados de la tabla -->
+            <div class="row mb-3 fw-bold text-center bg-light py-2 rounded">
+              <div class="col-md-6 text-start">
+                <strong>Comportamiento</strong>
+              </div>
+              <div class="col-md-6">
+                <div class="row">
+                  <div class="col-3"><strong>Nunca</strong></div>
+                  <div class="col-3"><strong>Ocasionalmente</strong></div>
+                  <div class="col-3"><strong>Frecuentemente</strong></div>
+                  <div class="col-3"><strong>Siempre</strong></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Preguntas de Conciencia del Cuerpo -->
+            <div *ngFor="let pregunta of preguntasConcienciaCuerpo; let i = index" 
+                 class="row align-items-center py-3 border-bottom">
+              
+              <!-- Número y texto de la pregunta -->
+              <div class="col-md-6">
+                <label class="form-label mb-0">
+                  <strong>{{ pregunta.id }}.</strong> {{ pregunta.texto }}
+                  <span class="text-danger">*</span>
+                </label>
+              </div>
+              
+              <!-- Opciones de respuesta -->
+              <div class="col-md-6">
+                <div class="row text-center">
+                  <div *ngFor="let opcion of opcionesRespuesta" class="col-3">
+                    <div class="form-check">
+                      <input class="form-check-input" 
+                             type="radio" 
+                             [name]="'pregunta_' + pregunta.id"
+                             [id]="'pregunta_' + pregunta.id + '_' + opcion.valor"
+                             [value]="opcion.valor"
+                             [formControlName]="'pregunta_' + pregunta.id">
+                      <label class="form-check-label" 
+                             [for]="'pregunta_' + pregunta.id + '_' + opcion.valor">
+                        {{ opcion.valor }}
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Mensaje de error para pregunta requerida -->
+                <div *ngIf="formularioParticipacion.get('pregunta_' + pregunta.id)?.touched && 
+                           formularioParticipacion.get('pregunta_' + pregunta.id)?.invalid" 
+                     class="text-danger small mt-1">
+                  <i class="fas fa-exclamation-circle me-1"></i>
+                  Por favor, seleccione una opción
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Sección de Equilibrio y Movimiento -->
+        <div class="card mb-4">
+          <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">
+              <i class="fas fa-balance-scale me-2"></i>
+              EQUILIBRIO Y MOVIMIENTO
+            </h5>
+            <small>Su niño o niña...</small>
+          </div>
+          <div class="card-body">
+            
+            <!-- Encabezados de la tabla -->
+            <div class="row mb-3 fw-bold text-center bg-light py-2 rounded">
+              <div class="col-md-6 text-start">
+                <strong>Comportamiento</strong>
+              </div>
+              <div class="col-md-6">
+                <div class="row">
+                  <div class="col-3"><strong>Nunca</strong></div>
+                  <div class="col-3"><strong>Ocasionalmente</strong></div>
+                  <div class="col-3"><strong>Frecuentemente</strong></div>
+                  <div class="col-3"><strong>Siempre</strong></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Preguntas de Equilibrio y Movimiento -->
+            <div *ngFor="let pregunta of preguntasEquilibrioMovimiento; let i = index" 
+                 class="row align-items-center py-3 border-bottom">
+              
+              <!-- Número y texto de la pregunta -->
+              <div class="col-md-6">
+                <label class="form-label mb-0">
+                  <strong>{{ pregunta.id }}.</strong> {{ pregunta.texto }}
+                  <span class="text-danger">*</span>
+                </label>
+              </div>
+              
+              <!-- Opciones de respuesta -->
+              <div class="col-md-6">
+                <div class="row text-center">
+                  <div *ngFor="let opcion of opcionesRespuesta" class="col-3">
+                    <div class="form-check">
+                      <input class="form-check-input" 
+                             type="radio" 
+                             [name]="'pregunta_' + pregunta.id"
+                             [id]="'pregunta_' + pregunta.id + '_' + opcion.valor"
+                             [value]="opcion.valor"
+                             [formControlName]="'pregunta_' + pregunta.id">
+                      <label class="form-check-label" 
+                             [for]="'pregunta_' + pregunta.id + '_' + opcion.valor">
+                        {{ opcion.valor }}
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Mensaje de error para pregunta requerida -->
+                <div *ngIf="formularioParticipacion.get('pregunta_' + pregunta.id)?.touched && 
+                           formularioParticipacion.get('pregunta_' + pregunta.id)?.invalid" 
+                     class="text-danger small mt-1">
+                  <i class="fas fa-exclamation-circle me-1"></i>
+                  Por favor, seleccione una opción
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Sección de Planificación e Ideas -->
+        <div class="card mb-4">
+          <div class="card-header bg-info text-white">
+            <h5 class="mb-0">
+              <i class="fas fa-lightbulb me-2"></i>
+              PLANIFICACIÓN E IDEAS
+            </h5>
+            <small>Su niño o niña...</small>
+          </div>
+          <div class="card-body">
+            
+            <!-- Encabezados de la tabla -->
+            <div class="row mb-3 fw-bold text-center bg-light py-2 rounded">
+              <div class="col-md-6 text-start">
+                <strong>Comportamiento</strong>
+              </div>
+              <div class="col-md-6">
+                <div class="row">
+                  <div class="col-3"><strong>Nunca</strong></div>
+                  <div class="col-3"><strong>Ocasionalmente</strong></div>
+                  <div class="col-3"><strong>Frecuentemente</strong></div>
+                  <div class="col-3"><strong>Siempre</strong></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Preguntas de Planificación e Ideas -->
+            <div *ngFor="let pregunta of preguntasPlanificacionIdeas; let i = index" 
+                 class="row align-items-center py-3 border-bottom">
+              
+              <!-- Número y texto de la pregunta -->
+              <div class="col-md-6">
+                <label class="form-label mb-0">
+                  <strong>{{ pregunta.id }}.</strong> {{ pregunta.texto }}
+                  <span class="text-danger">*</span>
+                </label>
+              </div>
+              
+              <!-- Opciones de respuesta -->
+              <div class="col-md-6">
+                <div class="row text-center">
+                  <div *ngFor="let opcion of opcionesRespuesta" class="col-3">
+                    <div class="form-check">
+                      <input class="form-check-input" 
+                             type="radio" 
+                             [name]="'pregunta_' + pregunta.id"
+                             [id]="'pregunta_' + pregunta.id + '_' + opcion.valor"
+                             [value]="opcion.valor"
+                             [formControlName]="'pregunta_' + pregunta.id">
+                      <label class="form-check-label" 
+                             [for]="'pregunta_' + pregunta.id + '_' + opcion.valor">
+                        {{ opcion.valor }}
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Mensaje de error para pregunta requerida -->
+                <div *ngIf="formularioParticipacion.get('pregunta_' + pregunta.id)?.touched && 
+                           formularioParticipacion.get('pregunta_' + pregunta.id)?.invalid" 
+                     class="text-danger small mt-1">
+                  <i class="fas fa-exclamation-circle me-1"></i>
+                  Por favor, seleccione una opción
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Botones de acción -->
+        <div class="card">
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-6">
+                <button type="button" 
+                        class="btn btn-outline-info me-2" 
+                        (click)="calcularPuntuacion()"
+                        [disabled]="loading || formularioParticipacion.invalid">
+                  <i class="fas fa-calculator me-2"></i>
+                  Calcular Puntuación
+                </button>
+                <button type="button" 
+                        class="btn btn-outline-secondary" 
+                        (click)="resetForm()"
+                        [disabled]="loading">
+                  <i class="fas fa-undo me-2"></i>
+                  Limpiar Formulario
+                </button>
+              </div>
+              <div class="col-md-6 text-end">
+                <button type="submit" 
+                        class="btn btn-success btn-lg"
+                        [disabled]="loading || formularioParticipacion.invalid">
+                  <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
+                  <i *ngIf="!loading" class="fas fa-save me-2"></i>
+                  {{ loading ? 'Guardando...' : 'Guardar Evaluación' }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </form>
+
+      <!-- Leyenda -->
+      <div class="card mt-4">
+        <div class="card-body">
+          <h6 class="card-title">
+            <i class="fas fa-info-circle me-2"></i>
+            Leyenda de Opciones:
+          </h6>
+          <div class="row">
+            <div class="col-md-3">
+              <strong>N - Nunca:</strong> El comportamiento no se observa
+            </div>
+            <div class="col-md-3">
+              <strong>O - Ocasionalmente:</strong> Ocurre algunas veces
+            </div>
+            <div class="col-md-3">
+              <strong>F - Frecuentemente:</strong> Ocurre la mayoría de las veces
+            </div>
+            <div class="col-md-3">
+              <strong>S - Siempre:</strong> El comportamiento se presenta consistentemente
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

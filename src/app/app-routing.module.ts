@@ -5,9 +5,9 @@ import { Pagina1Component } from './componentes/pagina1/pagina1.component';
 import { Pagina2Component } from './componentes/pagina2/pagina2.component';
 import { HomeComponent } from './componentes/share/home/home.component';
 import { ListaEvaluacionesComponent } from './componentes/lista-evaluaciones/lista-evaluaciones.component';
-import { TestRadioComponent } from './componentes/test-radio/test-radio.component';
 import { GraficosComponent } from './componentes/graficos/graficos.component';
 import { Pagina3Component } from './componentes/pagina3/pagina3.component';
+import { Formulario612Component } from './componentes/formulario-6-12/formulario-6-12.component';
 
 
 const routes: Routes = [
@@ -18,8 +18,8 @@ const routes: Routes = [
   { path:'evaluaciones', component: ListaEvaluacionesComponent },
   { path:'graficos', component: GraficosComponent },
   { path:'home', component: HomeComponent },
-  { path:'test-radio', component: TestRadioComponent },
    { path:'pagina3', component: Pagina3Component },
+   { path:'formulario-6-12', component: Formulario612Component },
 ];
 
 @NgModule({

@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { CommonModule } from '@angular/common';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -13,9 +14,9 @@ import { FooterComponent } from './componentes/share/footer/footer.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { HomeComponent } from './componentes/share/home/home.component';
 import { ListaEvaluacionesComponent } from './componentes/lista-evaluaciones/lista-evaluaciones.component';
-import { TestRadioComponent } from './componentes/test-radio/test-radio.component';
 import { GraficosComponent } from './componentes/graficos/graficos.component';
 import { Pagina3Component } from './componentes/pagina3/pagina3.component';
+import { Formulario612Component } from './componentes/formulario-6-12/formulario-6-12.component';
 
 
   @NgModule({
@@ -28,13 +29,14 @@ import { Pagina3Component } from './componentes/pagina3/pagina3.component';
     FooterComponent,
     HomeComponent,
     ListaEvaluacionesComponent,
-    TestRadioComponent,
     GraficosComponent,
     Pagina3Component,
+    Formulario612Component,
     
   ],
   imports: [
     BrowserModule,
+    CommonModule,
     AppRoutingModule,HttpClientModule, FormsModule,  ReactiveFormsModule, NgbModule,
   ],
   providers: [],
