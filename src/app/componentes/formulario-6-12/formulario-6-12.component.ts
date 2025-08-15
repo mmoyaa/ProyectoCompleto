@@ -1,5 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { Input } from '@angular/core';
+import { PacienteService } from 'src/app/services/paciente.service';
+import { EvaluacionService } from 'src/app/services/evaluacion.service';
 
 @Component({
   selector: 'app-formulario-6-12',
@@ -7,10 +11,16 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
   styleUrls: ['./formulario-6-12.component.css']
 })
 export class Formulario612Component implements OnInit {
+  @Input() paciente: any;
   formularioParticipacion!: FormGroup;
   loading = false;
   mensaje = '';
   tipoMensaje: 'success' | 'error' | '' = '';
+  
+  // Variables para el modal de pacientes
+  mostrarModalPacientes = false;
+  listaPacientes: any[] = [];
+  loadingPacientes = false;
 
   // Preguntas de participación social
   preguntasParticipacion = [
@@ -352,11 +362,19 @@ export class Formulario612Component implements OnInit {
     { valor: 'S', texto: 'Siempre' }
   ];
 
-  constructor(private fb: FormBuilder) {
+  constructor(
+    private fb: FormBuilder,
+    private pacienteService: PacienteService,
+    private evaluacionService: EvaluacionService,
+    private router: Router
+  ) {
     this.initializeForm();
   }
 
   ngOnInit(): void {
+    this.initializeForm();
+    // Cargar la lista de pacientes automáticamente
+    this.cargarListaPacientes();
   }
 
   private initializeForm(): void {
@@ -371,42 +389,42 @@ export class Formulario612Component implements OnInit {
     
     // Agregar controles para participación social
     this.preguntasParticipacion.forEach(pregunta => {
-      controls[`pregunta_${pregunta.id}`] = ['', Validators.required];
+      controls[`pregunta_${pregunta.id}`] = [''];
     });
     
     // Agregar controles para visión
     this.preguntasVision.forEach(pregunta => {
-      controls[`pregunta_${pregunta.id}`] = ['', Validators.required];
+      controls[`pregunta_${pregunta.id}`] = [''];
     });
     
     // Agregar controles para oído
     this.preguntasOido.forEach(pregunta => {
-      controls[`pregunta_${pregunta.id}`] = ['', Validators.required];
+      controls[`pregunta_${pregunta.id}`] = [''];
     });
     
     // Agregar controles para tacto
     this.preguntasTacto.forEach(pregunta => {
-      controls[`pregunta_${pregunta.id}`] = ['', Validators.required];
+      controls[`pregunta_${pregunta.id}`] = [''];
     });
     
     // Agregar controles para gusto y olfato
     this.preguntasGustoOlfato.forEach(pregunta => {
-      controls[`pregunta_${pregunta.id}`] = ['', Validators.required];
+      controls[`pregunta_${pregunta.id}`] = [''];
     });
     
     // Agregar controles para conciencia del cuerpo
     this.preguntasConcienciaCuerpo.forEach(pregunta => {
-      controls[`pregunta_${pregunta.id}`] = ['', Validators.required];
+      controls[`pregunta_${pregunta.id}`] = [''];
     });
     
     // Agregar controles para equilibrio y movimiento
     this.preguntasEquilibrioMovimiento.forEach(pregunta => {
-      controls[`pregunta_${pregunta.id}`] = ['', Validators.required];
+      controls[`pregunta_${pregunta.id}`] = [''];
     });
     
     // Agregar controles para planificación e ideas
     this.preguntasPlanificacionIdeas.forEach(pregunta => {
-      controls[`pregunta_${pregunta.id}`] = ['', Validators.required];
+      controls[`pregunta_${pregunta.id}`] = [''];
     });
     
     this.formularioParticipacion = this.fb.group(controls);
@@ -418,8 +436,17 @@ export class Formulario612Component implements OnInit {
       this.mensaje = '';
       this.tipoMensaje = '';
 
-      // Preparar datos para enviar
-      const datosFormulario = {
+      // Usar el paciente recibido por @Input()
+      if (!this.paciente) {
+        this.mensaje = 'Error: No hay paciente seleccionado.';
+        this.tipoMensaje = 'error';
+        this.loading = false;
+        return;
+      }
+
+      // Preparar datos para enviar (formato específico para evaluaciones)
+      const datosEvaluacion = {
+        idPaciente: this.paciente.idPaciente || this.paciente.id || this.paciente.rut,
         informacionNino: {
           nombre: this.formularioParticipacion.value.nombreNino,
           edad: this.formularioParticipacion.value.edad,
@@ -430,59 +457,69 @@ export class Formulario612Component implements OnInit {
         respuestasParticipacion: this.preguntasParticipacion.map(pregunta => ({
           preguntaId: pregunta.id,
           preguntaTexto: pregunta.texto,
-          respuesta: this.formularioParticipacion.value[`pregunta_${pregunta.id}`]
+          respuesta: this.formularioParticipacion.value[`pregunta_${pregunta.id}`] || 'Sin respuesta'
         })),
         respuestasVision: this.preguntasVision.map(pregunta => ({
           preguntaId: pregunta.id,
           preguntaTexto: pregunta.texto,
-          respuesta: this.formularioParticipacion.value[`pregunta_${pregunta.id}`]
+          respuesta: this.formularioParticipacion.value[`pregunta_${pregunta.id}`] || 'Sin respuesta'
         })),
         respuestasOido: this.preguntasOido.map(pregunta => ({
           preguntaId: pregunta.id,
           preguntaTexto: pregunta.texto,
-          respuesta: this.formularioParticipacion.value[`pregunta_${pregunta.id}`]
+          respuesta: this.formularioParticipacion.value[`pregunta_${pregunta.id}`] || 'Sin respuesta'
         })),
         respuestasTacto: this.preguntasTacto.map(pregunta => ({
           preguntaId: pregunta.id,
           preguntaTexto: pregunta.texto,
-          respuesta: this.formularioParticipacion.value[`pregunta_${pregunta.id}`]
+          respuesta: this.formularioParticipacion.value[`pregunta_${pregunta.id}`] || 'Sin respuesta'
         })),
         respuestasGustoOlfato: this.preguntasGustoOlfato.map(pregunta => ({
           preguntaId: pregunta.id,
           preguntaTexto: pregunta.texto,
-          respuesta: this.formularioParticipacion.value[`pregunta_${pregunta.id}`]
+          respuesta: this.formularioParticipacion.value[`pregunta_${pregunta.id}`] || 'Sin respuesta'
         })),
         respuestasConcienciaCuerpo: this.preguntasConcienciaCuerpo.map(pregunta => ({
           preguntaId: pregunta.id,
           preguntaTexto: pregunta.texto,
-          respuesta: this.formularioParticipacion.value[`pregunta_${pregunta.id}`]
+          respuesta: this.formularioParticipacion.value[`pregunta_${pregunta.id}`] || 'Sin respuesta'
         })),
         respuestasEquilibrioMovimiento: this.preguntasEquilibrioMovimiento.map(pregunta => ({
           preguntaId: pregunta.id,
           preguntaTexto: pregunta.texto,
-          respuesta: this.formularioParticipacion.value[`pregunta_${pregunta.id}`]
+          respuesta: this.formularioParticipacion.value[`pregunta_${pregunta.id}`] || 'Sin respuesta'
         })),
         respuestasPlanificacionIdeas: this.preguntasPlanificacionIdeas.map(pregunta => ({
           preguntaId: pregunta.id,
           preguntaTexto: pregunta.texto,
-          respuesta: this.formularioParticipacion.value[`pregunta_${pregunta.id}`]
+          respuesta: this.formularioParticipacion.value[`pregunta_${pregunta.id}`] || 'Sin respuesta'
         }))
       };
 
-      // Simular envío al backend (aquí puedes integrar con tu servicio real)
-      setTimeout(() => {
-        console.log('Datos del formulario sensorial completo:', datosFormulario);
-        this.mensaje = 'Formulario sensorial guardado correctamente';
-        this.tipoMensaje = 'success';
-        this.loading = false;
-        
-        // Opcional: resetear formulario después del éxito
-        // this.resetForm();
-      }, 1500);
+      console.log('Datos a enviar:', datosEvaluacion);
+
+      // Guardar usando el servicio de evaluación específico
+      this.evaluacionService.guardarEvaluacionFormulario612(datosEvaluacion).subscribe({
+        next: (response) => {
+          console.log('Evaluación sensorial guardada exitosamente:', response);
+          this.mensaje = `Evaluación sensorial de ${this.formularioParticipacion.value.nombreNino} guardada correctamente en la base de datos.`;
+          this.tipoMensaje = 'success';
+          this.loading = false;
+          
+          // Scroll hacia arriba para mostrar el mensaje
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        },
+        error: (error) => {
+          console.error('Error al guardar evaluación:', error);
+          this.mensaje = `Error al guardar la evaluación: ${error.error?.message || error.message || 'Error desconocido'}`;
+          this.tipoMensaje = 'error';
+          this.loading = false;
+        }
+      });
 
     } else {
       this.markFormGroupTouched();
-      this.mensaje = 'Por favor, complete todos los campos obligatorios';
+      this.mensaje = 'Por favor, complete los campos de información básica (Nombre, Edad, Fecha de Evaluación y Evaluador)';
       this.tipoMensaje = 'error';
     }
   }
@@ -734,5 +771,146 @@ export class Formulario612Component implements OnInit {
 
     this.mensaje = `Total: ${porcentajeGeneral}% | Participación: ${porcentajeParticipacion}% | Visión: ${porcentajeVision}% | Oído: ${porcentajeOido}% | Tacto: ${porcentajeTacto}% | Gusto/Olfato: ${porcentajeGustoOlfato}% | Conciencia: ${porcentajeConcienciaCuerpo}% | Equilibrio: ${porcentajeEquilibrioMovimiento}% | Planificación: ${porcentajePlanificacionIdeas}%`;
     this.tipoMensaje = 'success';
+  }
+
+  // Métodos para manejo de pacientes (igual que en pagina1)
+  
+  // Método para abrir el modal de pacientes
+  abrirModalPacientes(): void {
+    console.log('Abriendo modal de pacientes...');
+    this.mostrarModalPacientes = true;
+    this.cargarListaPacientes();
+  }
+
+  // Método para cerrar el modal de pacientes
+  cerrarModalPacientes(): void {
+    console.log('Cerrando modal de pacientes...');
+    this.mostrarModalPacientes = false;
+    this.listaPacientes = [];
+  }
+
+  // Método para cargar la lista de pacientes
+  cargarListaPacientes(): void {
+    this.loadingPacientes = true;
+    
+    this.pacienteService.obtenerPacientesCompletos().subscribe({
+      next: (pacientes) => {
+        this.listaPacientes = pacientes;
+        this.loadingPacientes = false;
+        console.log('Lista de pacientes cargada:', pacientes);
+      },
+      error: (error) => {
+        console.error('Error al cargar pacientes:', error);
+        this.loadingPacientes = false;
+        this.mensaje = 'Error al cargar la lista de pacientes';
+        this.tipoMensaje = 'error';
+      }
+    });
+  }
+
+  // Método para formatear fecha
+  formatearFecha(fecha: string): string {
+    if (!fecha) return 'N/A';
+    return new Date(fecha).toLocaleDateString('es-CL');
+  }
+
+  // Método para formatear nombre completo
+  formatearNombreCompleto(paciente: any): string {
+    const nombres = [paciente.nombre, paciente.apellidoPaterno, paciente.apellidoMaterno]
+      .filter(n => n && n.trim() !== '')
+      .join(' ');
+    return nombres || 'N/A';
+  }
+
+  // Método para cargar un paciente seleccionado en el formulario
+  cargarPacienteEnFormulario(paciente: any): void {
+    // Limpiar mensajes previos
+    this.limpiarMensaje();
+    
+    // Cargar datos del paciente en el formulario de evaluación
+    this.formularioParticipacion.patchValue({
+      nombreNino: this.formatearNombreCompleto(paciente),
+      edad: this.calcularEdad(paciente.fechaNacimiento) || '',
+      fechaEvaluacion: new Date().toISOString().split('T')[0],
+      evaluador: '',
+      observaciones: `Evaluación para paciente ID: ${paciente.idPaciente} - RUT: ${paciente.rut}`
+    });
+
+    // Cerrar el modal
+    this.cerrarModalPacientes();
+
+    // Mostrar mensaje de confirmación
+    this.mensaje = `Datos de ${this.formatearNombreCompleto(paciente)} cargados en el formulario de evaluación`;
+    this.tipoMensaje = 'success';
+
+    // Scroll hacia arriba para ver el formulario
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    console.log('Paciente cargado en formulario de evaluación:', paciente);
+  }
+
+  // Método para manejar la selección de paciente desde el dropdown
+  onPacienteSeleccionado(event: any): void {
+    const nombreSeleccionado = event.target.value;
+    
+    if (nombreSeleccionado) {
+      // Buscar el paciente completo en la lista
+      const pacienteSeleccionado = this.listaPacientes.find(p => 
+        this.formatearNombreCompleto(p) === nombreSeleccionado
+      );
+      
+      if (pacienteSeleccionado) {
+        // Cargar los datos adicionales del paciente
+        this.formularioParticipacion.patchValue({
+          edad: this.calcularEdad(pacienteSeleccionado.fechaNacimiento) || '',
+          fechaEvaluacion: new Date().toISOString().split('T')[0],
+          observaciones: `Evaluación para paciente ID: ${pacienteSeleccionado.idPaciente} - RUT: ${pacienteSeleccionado.rut}`
+        });
+        
+        // Mostrar mensaje de confirmación
+        this.mensaje = `Datos de ${nombreSeleccionado} cargados correctamente`;
+        this.tipoMensaje = 'success';
+        
+        console.log('Paciente seleccionado desde dropdown:', pacienteSeleccionado);
+      }
+    } else {
+      // Si no hay selección, limpiar los campos relacionados
+      this.formularioParticipacion.patchValue({
+        edad: '',
+        observaciones: ''
+      });
+      this.limpiarMensaje();
+    }
+  }
+
+  // Método para calcular edad (si tienes fecha de nacimiento)
+  private calcularEdad(fechaNacimiento: string): number | null {
+    if (!fechaNacimiento) return null;
+    
+    const hoy = new Date();
+    const nacimiento = new Date(fechaNacimiento);
+    let edad = hoy.getFullYear() - nacimiento.getFullYear();
+    const mesActual = hoy.getMonth();
+    const mesNacimiento = nacimiento.getMonth();
+    
+    if (mesActual < mesNacimiento || (mesActual === mesNacimiento && hoy.getDate() < nacimiento.getDate())) {
+      edad--;
+    }
+    
+    return edad;
+  }
+
+  // Método para navegar a la evaluación de un paciente específico
+  irAEvaluacion(pacienteId: number): void {
+    console.log('Cargando evaluación para paciente ID:', pacienteId);
+    
+    // Buscar el paciente en la lista
+    const paciente = this.listaPacientes.find(p => p.idPaciente === pacienteId);
+    if (paciente) {
+      this.cargarPacienteEnFormulario(paciente);
+    } else {
+      this.mensaje = 'No se pudo cargar los datos del paciente';
+      this.tipoMensaje = 'error';
+    }
   }
 }

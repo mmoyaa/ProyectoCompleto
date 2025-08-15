@@ -436,7 +436,6 @@ export class Pagina2Component implements OnInit, AfterViewInit {
         // Aquí podrías hacer una llamada al servicio para obtener el paciente
       } else {
         alert('⚠️ No hay paciente seleccionado. Por favor, selecciona un paciente antes de guardar.');
-        return;
       }
     }
 

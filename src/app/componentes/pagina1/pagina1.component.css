@@ -1,393 +1,216 @@
-/* Contenedor principal */
-.container {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 15px;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+/* Estilos para el formulario de registro de pacientes */
+
+.container-fluid {
+  background-color: #f8f9fa;
+  min-height: 100vh;
 }
 
-/* Tarjeta principal */
 .card {
-  background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  border: 1px solid rgba(0, 0, 0, 0.125);
+  border-radius: 0.375rem;
 }
 
 .card-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 20px;
-  text-align: center;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+  padding: 1rem 1.25rem;
 }
 
-.card-header h2 {
-  margin: 0 0 8px 0;
-  font-size: 1.7rem;
-  font-weight: 600;
+.card-header.bg-primary {
+  background-color: #0d6efd !important;
 }
 
-.subtitle {
-  margin: 0;
-  font-size: 1rem;
-  opacity: 0.9;
+.card-header.bg-info {
+  background-color: #0dcaf0 !important;
 }
 
-.card-body {
-  padding: 20px;
+.card-header.bg-warning {
+  background-color: #ffc107 !important;
 }
 
-/* Secciones del formulario */
-.form-section {
-  margin-bottom: 25px;
+.card-header.bg-success {
+  background-color: #198754 !important;
 }
 
-.form-section h3 {
-  color: #333;
-  font-size: 1.2rem;
-  margin-bottom: 15px;
-  padding-bottom: 8px;
-  border-bottom: 2px solid #e9ecef;
+.card-header.bg-danger {
+  background-color: #dc3545 !important;
 }
 
-/* Filas del formulario */
-.form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 15px;
-  margin-bottom: 15px;
+.form-check-input {
+  margin-top: 0.125rem;
+  margin-left: 0;
 }
 
-.form-group {
-  display: flex;
-  flex-direction: column;
-}
-
-.form-group.full-width {
-  grid-column: 1 / -1;
-}
-
-/* Etiquetas */
-label {
-  font-weight: 600;
-  color: #333;
-  margin-bottom: 6px;
-  font-size: 0.9rem;
-}
-
-/* Controles del formulario */
-.form-control {
-  padding: 10px 14px;
-  border: 2px solid #e9ecef;
-  border-radius: 6px;
-  font-size: 0.95rem;
-  transition: all 0.3s ease;
-  background-color: #ffffff;
-}
-
-.form-control:focus {
-  outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-}
-
-.form-control.error {
-  border-color: #dc3545;
-  box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
-}
-
-.form-control::placeholder {
-  color: #6c757d;
-}
-
-/* Select específico */
-select.form-control {
-  cursor: pointer;
-}
-
-/* Textarea específico */
-textarea.form-control {
-  resize: vertical;
-  min-height: 60px;
-}
-
-/* Mensajes de error */
-.error-message {
-  color: #dc3545;
-  font-size: 0.8rem;
-  margin-top: 4px;
+.form-check-label {
   font-weight: 500;
-}
-
-/* Mensajes de estado */
-.message {
-  padding: 12px 16px;
-  border-radius: 6px;
-  margin-bottom: 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  color: #495057;
   cursor: pointer;
-  transition: opacity 0.3s ease;
 }
 
-.message.success {
-  background-color: #d4edda;
-  color: #155724;
-  border: 1px solid #c3e6cb;
+.btn-lg {
+  padding: 0.75rem 1.5rem;
+  font-size: 1.125rem;
+  border-radius: 0.5rem;
 }
 
-.message.error {
+.alert {
+  border: 0;
+  border-radius: 0.5rem;
+  padding: 1rem 1.25rem;
+}
+
+.alert-success {
+  background-color: #d1edff;
+  border-color: #b8daff;
+  color: #004085;
+}
+
+.alert-danger {
   background-color: #f8d7da;
+  border-color: #f5c6cb;
   color: #721c24;
-  border: 1px solid #f5c6cb;
 }
 
-.close-btn {
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-  color: inherit;
-  opacity: 0.7;
-  transition: opacity 0.3s ease;
+.spinner-border-sm {
+  width: 1rem;
+  height: 1rem;
 }
 
-.close-btn:hover {
-  opacity: 1;
+.text-danger {
+  color: #dc3545 !important;
 }
 
-/* Botones */
-.form-actions {
-  display: flex;
-  gap: 12px;
-  justify-content: flex-end;
-  margin-top: 20px;
-  padding-top: 15px;
-  border-top: 1px solid #e9ecef;
+.text-center {
+  text-align: center !important;
 }
 
-.btn {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 6px;
-  font-size: 0.9rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  min-width: 140px;
-  justify-content: center;
+.fw-bold {
+  font-weight: 700 !important;
 }
 
-.btn-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+.bg-light {
+  background-color: #f8f9fa !important;
 }
 
-.btn-primary:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+.py-2 {
+  padding-top: 0.5rem !important;
+  padding-bottom: 0.5rem !important;
 }
 
-.btn-secondary {
-  background-color: #6c757d;
-  color: white;
+.rounded {
+  border-radius: 0.375rem !important;
 }
 
-.btn-secondary:hover:not(:disabled) {
-  background-color: #5a6268;
-  transform: translateY(-2px);
+.me-2 {
+  margin-right: 0.5rem !important;
 }
 
-.btn-info {
-  background-color: #17a2b8;
-  color: white;
+.mb-0 {
+  margin-bottom: 0 !important;
 }
 
-.btn-info:hover:not(:disabled) {
-  background-color: #138496;
-  transform: translateY(-2px);
+.mt-1 {
+  margin-top: 0.25rem !important;
 }
 
-.btn-success {
-  background-color: #28a745;
-  color: white;
+.small {
+  font-size: 0.875em;
 }
 
-.btn-success:hover:not(:disabled) {
-  background-color: #218838;
-  transform: translateY(-2px);
-}
-
-/* Iconos en botones */
-.btn-icon {
-  margin-right: 8px;
-  font-size: 1.1rem;
-}
-
-.btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none !important;
-}
-
-/* Spinner de carga */
-.spinner {
-  width: 16px;
-  height: 16px;
-  border: 2px solid transparent;
-  border-top: 2px solid currentColor;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-/* Información adicional */
-.form-info {
-  margin-top: 15px;
-  text-align: center;
-}
-
-.form-info small {
-  color: #6c757d;
-  font-style: italic;
-  font-size: 0.8rem;
-}
-
-/* Responsive */
+/* Responsive adjustments */
 @media (max-width: 768px) {
-  .container {
-    padding: 10px;
-  }
-  
-  .card-header {
-    padding: 20px;
-  }
-  
-  .card-header h2 {
-    font-size: 1.5rem;
-  }
-  
   .card-body {
-    padding: 20px;
+    padding: 1rem;
   }
   
-  .form-row {
-    grid-template-columns: 1fr;
-    gap: 15px;
-  }
-  
-  .form-actions {
-    flex-direction: column;
-  }
-  
-  .btn {
+  .btn-lg {
     width: 100%;
+    margin-bottom: 0.5rem;
+  }
+  
+  .text-end {
+    text-align: left !important;
   }
 }
 
 /* Estados de validación */
-.form-control:valid:not(:placeholder-shown) {
-  border-color: #28a745;
+.form-control.is-invalid,
+.form-select.is-invalid {
+  border-color: #dc3545;
+  box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
 }
 
-.form-control:valid:not(:placeholder-shown):focus {
-  border-color: #28a745;
-  box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.1);
+.form-control:focus,
+.form-select:focus {
+  border-color: #80bdff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
 
-/* Checkbox personalizado */
-.checkbox-container {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
+/* Animación para los checkboxes */
+.form-check-input:checked {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+  transform: scale(1.1);
+  transition: all 0.2s ease;
 }
 
-.checkbox-input {
-  display: none;
+.form-check-input:focus {
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
 }
 
-.checkbox-label {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  cursor: pointer;
-  font-weight: 600;
-  color: #333;
-  transition: color 0.3s ease;
+/* Estilos para los iconos */
+.fas {
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
 }
 
-.checkbox-custom {
-  width: 20px;
-  height: 20px;
-  border: 2px solid #667eea;
-  border-radius: 4px;
-  position: relative;
-  transition: all 0.3s ease;
-  background-color: #ffffff;
-}
-
-.checkbox-input:checked + .checkbox-label .checkbox-custom {
-  background-color: #667eea;
-  border-color: #667eea;
-}
-
-.checkbox-input:checked + .checkbox-label .checkbox-custom::after {
-  content: '✓';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  color: white;
-  font-size: 14px;
-  font-weight: bold;
-}
-
-.checkbox-help {
-  color: #6c757d;
-  font-size: 0.8rem;
-  font-style: italic;
-  margin-left: 30px;
-}
-
-.checkbox-label:hover .checkbox-custom {
-  border-color: #5a6fd8;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-}
-
-/* Animación para el formulario de representante */
-.form-section {
-  animation: fadeInUp 0.6s ease forwards;
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
+/* Loading spinner personalizado */
+@keyframes spinner-border {
   to {
-    opacity: 1;
-    transform: translateY(0);
+    transform: rotate(360deg);
   }
 }
 
-/* Efecto hover en la tarjeta */
-.card {
-  transition: transform 0.3s ease;
+.spinner-border {
+  display: inline-block;
+  width: 2rem;
+  height: 2rem;
+  vertical-align: text-bottom;
+  border: 0.25em solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spinner-border 0.75s linear infinite;
 }
 
-.card:hover {
-  transform: translateY(-5px);
+/* Mejoras específicas para formularios */
+.form-label {
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 0.5rem;
 }
 
-/* ========== ESTILOS DEL MODAL ========== */
+.invalid-feedback {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+/* Espaciado mejorado */
+.mb-3 {
+  margin-bottom: 1rem !important;
+}
+
+.mb-4 {
+  margin-bottom: 1.5rem !important;
+}
+
+/* Texto de ayuda */
+.form-text {
+  font-size: 0.875rem;
+  color: #6c757d;
+  font-style: italic;
+}
+
+/* ========== ESTILOS DEL MODAL (mantener los originales) ========== */
 
 /* Overlay del modal */
 .modal-overlay {
@@ -691,6 +514,11 @@ textarea.form-control {
   margin-bottom: 20px;
 }
 
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
 .no-data {
   text-align: center;
   padding: 60px 20px;
@@ -702,7 +530,7 @@ textarea.form-control {
   margin: 0;
 }
 
-/* ========== RESPONSIVE ========== */
+/* ========== RESPONSIVE PARA MODAL ========== */
 
 @media (max-width: 768px) {
   .modal-container {

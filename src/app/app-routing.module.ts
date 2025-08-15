@@ -6,8 +6,11 @@ import { Pagina2Component } from './componentes/pagina2/pagina2.component';
 import { HomeComponent } from './componentes/share/home/home.component';
 import { ListaEvaluacionesComponent } from './componentes/lista-evaluaciones/lista-evaluaciones.component';
 import { GraficosComponent } from './componentes/graficos/graficos.component';
+import { Grafico612Component } from './componentes/grafico6-12/grafico6-12.component';
 import { Pagina3Component } from './componentes/pagina3/pagina3.component';
 import { Formulario612Component } from './componentes/formulario-6-12/formulario-6-12.component';
+
+import { AllFormulariosComponent } from './componentes/all-formularios/all-formularios.component';
 
 
 const routes: Routes = [
@@ -19,7 +22,9 @@ const routes: Routes = [
   { path:'graficos', component: GraficosComponent },
   { path:'home', component: HomeComponent },
    { path:'pagina3', component: Pagina3Component },
-   { path:'formulario-6-12', component: Formulario612Component },
+  { path:'formulario-6-12', component: Formulario612Component },
+  { path:'grafico6-12', component: Grafico612Component },
+    { path:'all-formularios', component: AllFormulariosComponent },
 ];
 
 @NgModule({

@@ -16,6 +16,10 @@
             Por favor, marque la opción que mejor describa el comportamiento actual en cada una de las 8 áreas evaluadas: 
             <strong>Participación Social, Visión, Oído, Tacto, Gusto y Olfato, Conciencia del Cuerpo, Equilibrio y Movimiento, y Planificación e Ideas</strong>.
           </p>
+          <div *ngIf="paciente" class="mt-2">
+            <b>Paciente:</b> {{ paciente.nombre }} {{ paciente.apellidoPaterno }}{{ paciente.apellidoMaterno ? ' ' + paciente.apellidoMaterno : '' }}<br>
+            <b>RUT:</b> {{ paciente.rut }}
+          </div>
         </div>
       </div>
 
@@ -44,14 +48,35 @@
               <div class="col-md-6">
                 <div class="mb-3">
                   <label for="nombreNino" class="form-label">Nombre del Niño/a *</label>
-                  <input type="text" 
-                         class="form-control" 
-                         id="nombreNino" 
-                         formControlName="nombreNino"
-                         [class.is-invalid]="formularioParticipacion.get('nombreNino')?.touched && formularioParticipacion.get('nombreNino')?.invalid">
+                  <select class="form-select" 
+                          id="nombreNino" 
+                          formControlName="nombreNino"
+                          (change)="onPacienteSeleccionado($event)"
+                          [disabled]="loadingPacientes"
+                          [class.is-invalid]="formularioParticipacion.get('nombreNino')?.touched && formularioParticipacion.get('nombreNino')?.invalid">
+                    <option value="" *ngIf="!loadingPacientes">Seleccione un paciente...</option>
+                    <option value="" *ngIf="loadingPacientes">Cargando pacientes...</option>
+                    <option *ngFor="let paciente of listaPacientes" 
+                            [value]="formatearNombreCompleto(paciente)"
+                            [attr.data-paciente]="paciente.idPaciente">
+                      {{ formatearNombreCompleto(paciente) }} - {{ paciente.rut }}
+                    </option>
+                  </select>
                   <div class="invalid-feedback">
                     {{ getErrorMessage('nombreNino') }}
                   </div>
+                  <small class="form-text text-muted">
+                    <i class="fas fa-info-circle me-1"></i>
+                    <span *ngIf="!loadingPacientes && listaPacientes.length > 0">
+                      Seleccione un paciente ({{ listaPacientes.length }} disponibles)
+                    </span>
+                    <span *ngIf="loadingPacientes">
+                      <i class="fas fa-spinner fa-spin me-1"></i>Cargando lista de pacientes...
+                    </span>
+                    <span *ngIf="!loadingPacientes && listaPacientes.length === 0">
+                      <i class="fas fa-exclamation-triangle me-1"></i>No hay pacientes registrados
+                    </span>
+                  </small>
                 </div>
               </div>
               <div class="col-md-3">
@@ -679,6 +704,13 @@
               <div class="col-md-6">
                 <button type="button" 
                         class="btn btn-outline-info me-2" 
+                        (click)="abrirModalPacientes()"
+                        [disabled]="loading">
+                  <i class="fas fa-users me-2"></i>
+                  Ver Pacientes
+                </button>
+                <button type="button" 
+                        class="btn btn-outline-info me-2" 
                         (click)="calcularPuntuacion()"
                         [disabled]="loading || formularioParticipacion.invalid">
                   <i class="fas fa-calculator me-2"></i>
@@ -731,6 +763,101 @@
         </div>
       </div>
 
+    </div>
+  </div>
+</div>
+
+<!-- Modal para mostrar lista de pacientes -->
+<div class="modal-overlay" *ngIf="mostrarModalPacientes" (click)="cerrarModalPacientes()">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Seleccionar Paciente para Evaluación</h2>
+      <button class="modal-close" (click)="cerrarModalPacientes()" aria-label="Cerrar modal">×</button>
+    </div>
+    
+    <div class="modal-body">
+      <!-- Loading indicator -->
+      <div *ngIf="loadingPacientes" class="loading-container">
+        <div class="spinner-large"></div>
+        <p>Cargando pacientes...</p>
+      </div>
+      
+      <!-- Tabla de pacientes -->
+      <div *ngIf="!loadingPacientes && listaPacientes.length > 0" class="table-container">
+        <div class="table-info">
+          <p>Total de pacientes: <strong>{{ listaPacientes.length }}</strong></p>
+          <small class="text-muted">Seleccione un paciente para cargar sus datos en el formulario de evaluación</small>
+        </div>
+        
+        <table class="pacientes-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre Completo</th>
+              <th>RUT</th>
+              <th>Teléfono</th>
+              <th>Correo</th>
+              <th>Tutor/Representante</th>
+              <th>Fecha Creación</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let paciente of listaPacientes; let i = index">
+              <td>{{ paciente.idPaciente }}</td>
+              <td class="nombre-completo">{{ formatearNombreCompleto(paciente) }}</td>
+              <td class="rut">{{ paciente.rut }}</td>
+              <td>{{ paciente.telefono || 'N/A' }}</td>
+              <td>{{ paciente.correo || 'N/A' }}</td>
+              <td class="tutor-info">
+                <div *ngIf="paciente.tutor === 1" class="tutor-badge">
+                  <span class="badge tutor">TUTOR</span>
+                  <small>{{ paciente.nombreTutor }}</small>
+                </div>
+                <div *ngIf="paciente.idRepresentante" class="representante-badge">
+                  <span class="badge representante">REPRESENTANTE</span>
+                  <small>{{ paciente.nombreRepresentante }} ({{ paciente.relacionRepresentante }})</small>
+                </div>
+                <div *ngIf="paciente.tutor === 0 && !paciente.idRepresentante" class="sin-tutor">
+                  <span class="badge adulto">ADULTO</span>
+                </div>
+              </td>
+              <td>{{ formatearFecha(paciente.fechaCreacion) }}</td>
+              <td class="acciones">
+                <div class="action-buttons">
+                  <button 
+                    class="btn-evaluation" 
+                    (click)="cargarPacienteEnFormulario(paciente)"
+                    title="Cargar datos en formulario de evaluación"
+                    [attr.aria-label]="'Evaluar a ' + formatearNombreCompleto(paciente)">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                      <path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492zM5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0z"/>
+                      <path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52l-.094-.319zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115l.094-.319z"/>
+                    </svg>
+                    Evaluar
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      
+      <!-- Mensaje cuando no hay pacientes -->
+      <div *ngIf="!loadingPacientes && listaPacientes.length === 0" class="no-data">
+        <p>No se encontraron pacientes registrados.</p>
+        <p><small>Debe registrar pacientes primero en la sección "Agregar Paciente"</small></p>
+      </div>
+    </div>
+    
+    <div class="modal-footer">
+      <button class="btn btn-secondary" (click)="cerrarModalPacientes()">
+        Cerrar
+      </button>
+      <button class="btn btn-info" (click)="cargarListaPacientes()" [disabled]="loadingPacientes">
+        <span *ngIf="loadingPacientes" class="spinner"></span>
+        Actualizar
+      </button>
     </div>
   </div>
 </div>

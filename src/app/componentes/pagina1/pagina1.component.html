@@ -1,369 +1,298 @@
-<div class="container">
-  <div class="card">
-    <div class="card-header">
-      <h2>Agregar Nuevo Paciente</h2>
-      <p class="subtitle">Complete el formulario para registrar un nuevo paciente en el sistema</p>
-    </div>
-    
-    <div class="card-body">
-      <!-- Mensajes de estado -->
-      <div *ngIf="mensaje" class="message" [ngClass]="tipoMensaje" (click)="limpiarMensaje()">
-        <span>{{ mensaje }}</span>
-        <button type="button" class="close-btn" aria-label="Cerrar mensaje">×</button>
+<div class="container-fluid py-4">
+  <div class="row justify-content-center">
+    <div class="col-12 col-lg-10">
+      
+      <!-- Header del formulario -->
+      <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+          <h3 class="mb-0">
+            <i class="fas fa-user-plus me-2"></i>
+            Registro de Nuevo Paciente
+          </h3>
+        </div>
+        <div class="card-body">
+          <p class="mb-0">
+            Complete los datos del paciente para registrarlo en el sistema. 
+            Los campos marcados con <strong>*</strong> son obligatorios.
+          </p>
+        </div>
       </div>
 
-      <!-- Formulario -->
-      <form [formGroup]="pacienteForm" (ngSubmit)="onSubmit()" class="patient-form">
+      <!-- Mensajes de estado -->
+      <div *ngIf="mensaje" class="alert" 
+           [ngClass]="{'alert-success': tipoMensaje === 'success', 'alert-danger': tipoMensaje === 'error'}"
+           role="alert">
+        <i class="fas" [ngClass]="{'fa-check-circle': tipoMensaje === 'success', 'fa-exclamation-triangle': tipoMensaje === 'error'}"></i>
+        {{ mensaje }}
+        <button type="button" class="btn-close float-end" (click)="limpiarMensaje()"></button>
+      </div>
+
+      <!-- Formulario principal -->
+      <form [formGroup]="pacienteForm" (ngSubmit)="onSubmit()">
         
-        <!-- Información Personal -->
-        <div class="form-section">
-          <h3>Información Personal</h3>
-          
-          <div class="form-row">
-            <div class="form-group">
-              <label for="nombre">Nombre *</label>
-              <input 
-                id="nombre"
-                type="text" 
-                formControlName="nombre"
-                class="form-control"
-                [class.error]="pacienteForm.get('nombre')?.invalid && pacienteForm.get('nombre')?.touched"
-                placeholder="Ingrese el nombre"
-                maxlength="100">
-              <div class="error-message" *ngIf="getErrorMessage('nombre')">
-                {{ getErrorMessage('nombre') }}
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label for="apellidoPaterno">Apellido Paterno *</label>
-              <input 
-                id="apellidoPaterno"
-                type="text" 
-                formControlName="apellidoPaterno"
-                class="form-control"
-                [class.error]="pacienteForm.get('apellidoPaterno')?.invalid && pacienteForm.get('apellidoPaterno')?.touched"
-                placeholder="Ingrese el apellido paterno"
-                maxlength="100">
-              <div class="error-message" *ngIf="getErrorMessage('apellidoPaterno')">
-                {{ getErrorMessage('apellidoPaterno') }}
-              </div>
-            </div>
+        <!-- Información del Paciente -->
+        <div class="card mb-4">
+          <div class="card-header">
+            <h5 class="mb-0">
+              <i class="fas fa-user me-2"></i>
+              Información del Paciente
+            </h5>
           </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label for="apellidoMaterno">Apellido Materno</label>
-              <input 
-                id="apellidoMaterno"
-                type="text" 
-                formControlName="apellidoMaterno"
-                class="form-control"
-                [class.error]="pacienteForm.get('apellidoMaterno')?.invalid && pacienteForm.get('apellidoMaterno')?.touched"
-                placeholder="Ingrese el apellido materno (opcional)"
-                maxlength="100">
-              <div class="error-message" *ngIf="getErrorMessage('apellidoMaterno')">
-                {{ getErrorMessage('apellidoMaterno') }}
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="nombre" class="form-label">Nombre *</label>
+                  <input type="text" 
+                         class="form-control" 
+                         id="nombre" 
+                         formControlName="nombre"
+                         [class.is-invalid]="pacienteForm.get('nombre')?.touched && pacienteForm.get('nombre')?.invalid">
+                  <div class="invalid-feedback">
+                    {{ getErrorMessage('nombre') }}
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="apellidoPaterno" class="form-label">Apellido Paterno *</label>
+                  <input type="text" 
+                         class="form-control" 
+                         id="apellidoPaterno" 
+                         formControlName="apellidoPaterno"
+                         [class.is-invalid]="pacienteForm.get('apellidoPaterno')?.touched && pacienteForm.get('apellidoPaterno')?.invalid">
+                  <div class="invalid-feedback">
+                    {{ getErrorMessage('apellidoPaterno') }}
+                  </div>
+                </div>
               </div>
             </div>
-
-            <div class="form-group">
-              <label for="rut">RUT *</label>
-              <input 
-                id="rut"
-                type="text" 
-                formControlName="rut"
-                (input)="formatearRut($event)"
-                class="form-control"
-                [class.error]="pacienteForm.get('rut')?.invalid && pacienteForm.get('rut')?.touched"
-                placeholder="12345678-9"
-                maxlength="12">
-              <div class="error-message" *ngIf="getErrorMessage('rut')">
-                {{ getErrorMessage('rut') }}
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="apellidoMaterno" class="form-label">Apellido Materno</label>
+                  <input type="text" 
+                         class="form-control" 
+                         id="apellidoMaterno" 
+                         formControlName="apellidoMaterno"
+                         placeholder="Apellido materno (opcional)">
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="rut" class="form-label">RUT *</label>
+                  <input type="text" 
+                         class="form-control" 
+                         id="rut" 
+                         formControlName="rut"
+                         (input)="formatearRut($event)"
+                         placeholder="12345678-9"
+                         [class.is-invalid]="pacienteForm.get('rut')?.touched && pacienteForm.get('rut')?.invalid">
+                  <div class="invalid-feedback">
+                    {{ getErrorMessage('rut') }}
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label for="nacionalidad">Nacionalidad</label>
-              <select 
-                id="nacionalidad"
-                formControlName="nacionalidad"
-                class="form-control">
-                <option value="Chilena">Chilena</option>
-                <option value="Argentina">Argentina</option>
-                <option value="Peruana">Peruana</option>
-                <option value="Boliviana">Boliviana</option>
-                <option value="Brasileña">Brasileña</option>
-                <option value="Colombiana">Colombiana</option>
-                <option value="Ecuatoriana">Ecuatoriana</option>
-                <option value="Venezolana">Venezolana</option>
-                <option value="Otra">Otra</option>
-              </select>
-            </div>
-
-            <!-- Checkbox para representante -->
-            <div class="form-group">
-              <div class="checkbox-container">
-                <input 
-                  type="checkbox" 
-                  id="tieneRepresentante"
-                  formControlName="tieneRepresentante"
-                  class="checkbox-input">
-                <label for="tieneRepresentante" class="checkbox-label">
-                  <span class="checkbox-custom"></span>
-                  ¿Tiene Representante?
-                </label>
-                <small class="checkbox-help">Marque si el paciente necesita un representante legal</small>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="nacionalidad" class="form-label">Nacionalidad</label>
+                  <select class="form-select" 
+                          id="nacionalidad" 
+                          formControlName="nacionalidad">
+                    <option value="Chilena">Chilena</option>
+                    <option value="Argentina">Argentina</option>
+                    <option value="Peruana">Peruana</option>
+                    <option value="Boliviana">Boliviana</option>
+                    <option value="Brasileña">Brasileña</option>
+                    <option value="Colombiana">Colombiana</option>
+                    <option value="Ecuatoriana">Ecuatoriana</option>
+                    <option value="Venezolana">Venezolana</option>
+                    <option value="Otra">Otra</option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <div class="form-check">
+                    <input type="checkbox" 
+                           id="tieneRepresentante"
+                           formControlName="tieneRepresentante"
+                           class="form-check-input">
+                    <label for="tieneRepresentante" class="form-check-label">
+                      ¿Tiene Representante Legal?
+                    </label>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Formulario del Representante (se muestra condicionalmente) -->
-        <div class="form-section" *ngIf="tieneRepresentante">
-          <h3>Información del Representante</h3>
-          
-          <div class="form-row">
-            <div class="form-group">
-              <label for="nombreRepresentante">Nombre del Representante *</label>
-              <input 
-                id="nombreRepresentante"
-                type="text" 
-                formControlName="nombreRepresentante"
-                class="form-control"
-                [class.error]="pacienteForm.get('nombreRepresentante')?.invalid && pacienteForm.get('nombreRepresentante')?.touched"
-                placeholder="Ingrese el nombre del representante"
-                maxlength="100">
-              <div class="error-message" *ngIf="getErrorMessage('nombreRepresentante')">
-                {{ getErrorMessage('nombreRepresentante') }}
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label for="apellidoRepresentante">Apellido del Representante *</label>
-              <input 
-                id="apellidoRepresentante"
-                type="text" 
-                formControlName="apellidoRepresentante"
-                class="form-control"
-                [class.error]="pacienteForm.get('apellidoRepresentante')?.invalid && pacienteForm.get('apellidoRepresentante')?.touched"
-                placeholder="Ingrese el apellido del representante"
-                maxlength="100">
-              <div class="error-message" *ngIf="getErrorMessage('apellidoRepresentante')">
-                {{ getErrorMessage('apellidoRepresentante') }}
-              </div>
-            </div>
+        <!-- Información del Representante -->
+        <div class="card mb-4" *ngIf="tieneRepresentante">
+          <div class="card-header bg-warning text-dark">
+            <h5 class="mb-0">
+              <i class="fas fa-user-shield me-2"></i>
+              INFORMACIÓN DEL REPRESENTANTE
+            </h5>
+            <small>Datos del representante legal</small>
           </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label for="rutRepresentante">RUT del Representante *</label>
-              <input 
-                id="rutRepresentante"
-                type="text" 
-                formControlName="rutRepresentante"
-                (input)="formatearRut($event, 'rutRepresentante')"
-                class="form-control"
-                [class.error]="pacienteForm.get('rutRepresentante')?.invalid && pacienteForm.get('rutRepresentante')?.touched"
-                placeholder="12345678-9"
-                maxlength="12">
-              <div class="error-message" *ngIf="getErrorMessage('rutRepresentante')">
-                {{ getErrorMessage('rutRepresentante') }}
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="nombreRepresentante" class="form-label">Nombre del Representante *</label>
+                  <input type="text" 
+                         class="form-control" 
+                         id="nombreRepresentante" 
+                         formControlName="nombreRepresentante"
+                         [class.is-invalid]="pacienteForm.get('nombreRepresentante')?.touched && pacienteForm.get('nombreRepresentante')?.invalid">
+                  <div class="invalid-feedback">
+                    {{ getErrorMessage('nombreRepresentante') }}
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="apellidoRepresentante" class="form-label">Apellido del Representante *</label>
+                  <input type="text" 
+                         class="form-control" 
+                         id="apellidoRepresentante" 
+                         formControlName="apellidoRepresentante"
+                         [class.is-invalid]="pacienteForm.get('apellidoRepresentante')?.touched && pacienteForm.get('apellidoRepresentante')?.invalid">
+                  <div class="invalid-feedback">
+                    {{ getErrorMessage('apellidoRepresentante') }}
+                  </div>
+                </div>
               </div>
             </div>
-
-            <div class="form-group">
-              <label for="relacionRepresentante">Relación con el Paciente *</label>
-              <select 
-                id="relacionRepresentante"
-                formControlName="relacionRepresentante"
-                class="form-control"
-                [class.error]="pacienteForm.get('relacionRepresentante')?.invalid && pacienteForm.get('relacionRepresentante')?.touched">
-                <option value="">Seleccione una relación</option>
-                <option value="Padre">Padre</option>
-                <option value="Madre">Madre</option>
-                <option value="Tutor Legal">Tutor Legal</option>
-                <option value="Apoderado">Apoderado</option>
-                <option value="Cónyuge">Cónyuge</option>
-                <option value="Hijo/a">Hijo/a</option>
-                <option value="Hermano/a">Hermano/a</option>
-                <option value="Otro Familiar">Otro Familiar</option>
-                <option value="Representante Legal">Representante Legal</option>
-              </select>
-              <div class="error-message" *ngIf="getErrorMessage('relacionRepresentante')">
-                {{ getErrorMessage('relacionRepresentante') }}
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="rutRepresentante" class="form-label">RUT del Representante *</label>
+                  <input type="text" 
+                         class="form-control" 
+                         id="rutRepresentante" 
+                         formControlName="rutRepresentante"
+                         (input)="formatearRut($event, 'rutRepresentante')"
+                         placeholder="12345678-9"
+                         [class.is-invalid]="pacienteForm.get('rutRepresentante')?.touched && pacienteForm.get('rutRepresentante')?.invalid">
+                  <div class="invalid-feedback">
+                    {{ getErrorMessage('rutRepresentante') }}
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label for="telefonoRepresentante">Teléfono del Representante</label>
-              <input 
-                id="telefonoRepresentante"
-                type="tel" 
-                formControlName="telefonoRepresentante"
-                class="form-control"
-                [class.error]="pacienteForm.get('telefonoRepresentante')?.invalid && pacienteForm.get('telefonoRepresentante')?.touched"
-                placeholder="+56 9 1234 5678"
-                maxlength="20">
-              <div class="error-message" *ngIf="getErrorMessage('telefonoRepresentante')">
-                {{ getErrorMessage('telefonoRepresentante') }}
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="relacionRepresentante" class="form-label">Relación con el Paciente *</label>
+                  <select class="form-select" 
+                          id="relacionRepresentante" 
+                          formControlName="relacionRepresentante"
+                          [class.is-invalid]="pacienteForm.get('relacionRepresentante')?.touched && pacienteForm.get('relacionRepresentante')?.invalid">
+                    <option value="">Seleccione una relación</option>
+                    <option value="Padre">Padre</option>
+                    <option value="Madre">Madre</option>
+                    <option value="Tutor Legal">Tutor Legal</option>
+                    <option value="Apoderado">Apoderado</option>
+                    <option value="Cónyuge">Cónyuge</option>
+                    <option value="Hijo/a">Hijo/a</option>
+                    <option value="Hermano/a">Hermano/a</option>
+                    <option value="Otro Familiar">Otro Familiar</option>
+                    <option value="Representante Legal">Representante Legal</option>
+                  </select>
+                  <div class="invalid-feedback">
+                    {{ getErrorMessage('relacionRepresentante') }}
+                  </div>
+                </div>
               </div>
-            </div>
-
-            <div class="form-group">
-              <label for="correoRepresentante">Correo del Representante</label>
-              <input 
-                id="correoRepresentante"
-                type="email" 
-                formControlName="correoRepresentante"
-                class="form-control"
-                [class.error]="pacienteForm.get('correoRepresentante')?.invalid && pacienteForm.get('correoRepresentante')?.touched"
-                placeholder="representante@correo.com"
-                maxlength="150">
-              <div class="error-message" *ngIf="getErrorMessage('correoRepresentante')">
-                {{ getErrorMessage('correoRepresentante') }}
-              </div>
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label for="direccionRepresentante">Dirección del Representante</label>
-              <textarea 
-                id="direccionRepresentante"
-                formControlName="direccionRepresentante"
-                class="form-control"
-                [class.error]="pacienteForm.get('direccionRepresentante')?.invalid && pacienteForm.get('direccionRepresentante')?.touched"
-                placeholder="Ingrese la dirección del representante"
-                rows="2"
-                maxlength="255">
-              </textarea>
-              <div class="error-message" *ngIf="getErrorMessage('direccionRepresentante')">
-                {{ getErrorMessage('direccionRepresentante') }}
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label for="nacionalidadRepresentante">Nacionalidad del Representante</label>
-              <select 
-                id="nacionalidadRepresentante"
-                formControlName="nacionalidadRepresentante"
-                class="form-control">
-                <option value="Chilena">Chilena</option>
-                <option value="Argentina">Argentina</option>
-                <option value="Peruana">Peruana</option>
-                <option value="Boliviana">Boliviana</option>
-                <option value="Brasileña">Brasileña</option>
-                <option value="Colombiana">Colombiana</option>
-                <option value="Ecuatoriana">Ecuatoriana</option>
-                <option value="Venezolana">Venezolana</option>
-                <option value="Otra">Otra</option>
-              </select>
             </div>
           </div>
         </div>
 
         <!-- Información de Contacto -->
-        <div class="form-section">
-          <h3>Información de Contacto</h3>
-          
-          <div class="form-row">
-            <div class="form-group">
-              <label for="telefono">Teléfono</label>
-              <input 
-                id="telefono"
-                type="tel" 
-                formControlName="telefono"
-                class="form-control"
-                [class.error]="pacienteForm.get('telefono')?.invalid && pacienteForm.get('telefono')?.touched"
-                placeholder="+56 9 1234 5678"
-                maxlength="20">
-              <div class="error-message" *ngIf="getErrorMessage('telefono')">
-                {{ getErrorMessage('telefono') }}
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label for="correo">Correo Electrónico</label>
-              <input 
-                id="correo"
-                type="email" 
-                formControlName="correo"
-                class="form-control"
-                [class.error]="pacienteForm.get('correo')?.invalid && pacienteForm.get('correo')?.touched"
-                placeholder="ejemplo@correo.com"
-                maxlength="150">
-              <div class="error-message" *ngIf="getErrorMessage('correo')">
-                {{ getErrorMessage('correo') }}
-              </div>
-            </div>
+        <div class="card mb-4">
+          <div class="card-header bg-success text-white">
+            <h5 class="mb-0">
+              <i class="fas fa-address-book me-2"></i>
+              INFORMACIÓN DE CONTACTO
+            </h5>
+            <small>Datos de contacto del paciente</small>
           </div>
-
-          <div class="form-row">
-            <div class="form-group full-width">
-              <label for="direccion">Dirección</label>
-              <textarea 
-                id="direccion"
-                formControlName="direccion"
-                class="form-control"
-                [class.error]="pacienteForm.get('direccion')?.invalid && pacienteForm.get('direccion')?.touched"
-                placeholder="Ingrese la dirección completa"
-                rows="2"
-                maxlength="255">
-              </textarea>
-              <div class="error-message" *ngIf="getErrorMessage('direccion')">
-                {{ getErrorMessage('direccion') }}
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="telefono" class="form-label">Teléfono</label>
+                  <input type="tel" 
+                         class="form-control" 
+                         id="telefono" 
+                         formControlName="telefono"
+                         placeholder="+56 9 1234 5678">
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="correo" class="form-label">Correo Electrónico</label>
+                  <input type="email" 
+                         class="form-control" 
+                         id="correo" 
+                         formControlName="correo"
+                         placeholder="ejemplo@correo.com">
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12">
+                <div class="mb-3">
+                  <label for="direccion" class="form-label">Dirección</label>
+                  <textarea class="form-control" 
+                            id="direccion" 
+                            formControlName="direccion"
+                            rows="3"
+                            placeholder="Dirección completa del paciente"></textarea>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
         <!-- Botones de acción -->
-        <div class="form-actions">
-          <button 
-            type="button" 
-            class="btn btn-success"
-            (click)="abrirModalPacientes()"
-            [disabled]="loading">
-            <span class="btn-icon">👥</span>
-            Ver Pacientes
-          </button>
-          
-          <button 
-            type="button" 
-            class="btn btn-info"
-            (click)="probarConexion()"
-            [disabled]="loading">
-            <span *ngIf="loading" class="spinner"></span>
-            Probar Conexión
-          </button>
-          
-          <button 
-            type="button" 
-            class="btn btn-secondary"
-            (click)="resetForm()"
-            [disabled]="loading">
-            Limpiar
-          </button>
-          
-          <button 
-            type="submit" 
-            class="btn btn-primary"
-            [disabled]="loading || pacienteForm.invalid">
-            <span *ngIf="loading" class="spinner"></span>
-            {{ loading ? 'Guardando...' : 'Guardar Paciente' }}
-          </button>
+        <div class="card">
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-6">
+                <button type="button" 
+                        class="btn btn-outline-info me-2" 
+                        (click)="abrirModalPacientes()"
+                        [disabled]="loading">
+                  <i class="fas fa-users me-2"></i>
+                  Ver Pacientes
+                </button>
+                <button type="button" 
+                        class="btn btn-outline-secondary" 
+                        (click)="resetForm()"
+                        [disabled]="loading">
+                  <i class="fas fa-undo me-2"></i>
+                  Limpiar Formulario
+                </button>
+              </div>
+              <div class="col-md-6 text-end">
+                <button type="submit" 
+                        class="btn btn-success btn-lg"
+                        [disabled]="loading || pacienteForm.invalid">
+                  <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
+                  <i *ngIf="!loading" class="fas fa-save me-2"></i>
+                  {{ loading ? 'Guardando...' : 'Guardar Paciente' }}
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <!-- Información de campos obligatorios -->
-        <div class="form-info">
-          <small>* Campos obligatorios</small>
-        </div>
       </form>
+
     </div>
   </div>
 </div>

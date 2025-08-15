@@ -17,6 +17,9 @@ import { ListaEvaluacionesComponent } from './componentes/lista-evaluaciones/lis
 import { GraficosComponent } from './componentes/graficos/graficos.component';
 import { Pagina3Component } from './componentes/pagina3/pagina3.component';
 import { Formulario612Component } from './componentes/formulario-6-12/formulario-6-12.component';
+import { Grafico612Component } from './componentes/grafico6-12/grafico6-12.component';
+
+import { AllFormulariosComponent } from './componentes/all-formularios/all-formularios.component';
 
 
   @NgModule({
@@ -31,7 +34,9 @@ import { Formulario612Component } from './componentes/formulario-6-12/formulario
     ListaEvaluacionesComponent,
     GraficosComponent,
     Pagina3Component,
-    Formulario612Component,
+  Formulario612Component,
+  Grafico612Component,
+    AllFormulariosComponent,
     
   ],
   imports: [

@@ -1,0 +1,24 @@
+<div class="all-formularios-container">
+  <h2>Seleccionar Paciente</h2>
+  <select [(ngModel)]="pacienteSeleccionado">
+    <option [ngValue]="null">-- Selecciona un paciente --</option>
+    <option *ngFor="let paciente of pacientes" [ngValue]="paciente">
+      {{ paciente.nombre }} {{ paciente.apellidoPaterno }}{{ paciente.apellidoMaterno ? ' ' + paciente.apellidoMaterno : '' }} - {{ paciente.rut }}
+    </option>
+  </select>
+
+  <div *ngIf="pacienteSeleccionado">
+    <h2>Seleccionar tipo de formulario</h2>
+    <select [(ngModel)]="tipoFormularioSeleccionado">
+      <option [ngValue]="null">-- Selecciona tipo de formulario --</option>
+      <option *ngFor="let tipo of tipoFormularios" [ngValue]="tipo.value">{{ tipo.label }}</option>
+    </select>
+  </div>
+
+  <div *ngIf="tipoFormularioSeleccionado === '1-3'">
+ 
+  </div>
+  <div *ngIf="tipoFormularioSeleccionado === '6-12'">
+    <app-formulario-6-12 [paciente]="pacienteSeleccionado"></app-formulario-6-12>
+  </div>
+</div>

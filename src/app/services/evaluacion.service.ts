@@ -159,16 +159,39 @@ export class EvaluacionService {
   }
 
   /**
-   * Verificar si un paciente tiene evaluaciones
+   * Guardar evaluación completa del formulario 6-12
    */
-  pacienteTieneEvaluaciones(idPaciente: number): Observable<boolean> {
-    return this.obtenerEvaluacionesPorPaciente(idPaciente)
+  guardarEvaluacionFormulario612(datosFormulario: any): Observable<any> {
+    // Convertir el formato del formulario al formato esperado por el backend
+    const evaluacionData: EvaluacionSensorial = {
+      idPaciente: datosFormulario.idPaciente, // Usar el ID real del paciente
+      progreso: 100, // Evaluación completa
+      respuestas: {
+        informacionNino: datosFormulario.informacionNino,
+        respuestasParticipacion: datosFormulario.respuestasParticipacion,
+        respuestasVision: datosFormulario.respuestasVision,
+        respuestasOido: datosFormulario.respuestasOido,
+        respuestasTacto: datosFormulario.respuestasTacto,
+        respuestasGustoOlfato: datosFormulario.respuestasGustoOlfato,
+        respuestasConcienciaCuerpo: datosFormulario.respuestasConcienciaCuerpo,
+        respuestasEquilibrioMovimiento: datosFormulario.respuestasEquilibrioMovimiento,
+        respuestasPlanificacionIdeas: datosFormulario.respuestasPlanificacionIdeas
+      },
+      evaluadorNombre: datosFormulario.informacionNino?.evaluador,
+      observaciones: datosFormulario.informacionNino?.observaciones,
+      estado: 'Completada'
+    };
+
+    return this.crearEvaluacion(evaluacionData);
+  }
+
+  /**
+   * Test de conectividad para evaluaciones
+   */
+  testConectividadEvaluacion(datos: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/test-evaluacion`, datos)
       .pipe(
-        map(evaluaciones => evaluaciones && evaluaciones.length > 0),
-        catchError(() => {
-          // En caso de error, asumir que no tiene evaluaciones
-          return [false];
-        })
+        catchError(this.handleError)
       );
   }
 
