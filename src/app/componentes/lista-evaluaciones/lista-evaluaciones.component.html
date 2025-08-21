@@ -78,7 +78,6 @@
 
   <!-- Lista de evaluaciones -->
   <div class="evaluaciones-section" *ngIf="!loading || evaluaciones.length > 0">
-    
     <!-- Sin evaluaciones -->
     <div class="no-evaluaciones" *ngIf="evaluaciones.length === 0 && !loading">
       <div class="empty-icon">📋</div>
@@ -95,7 +94,6 @@
       <div class="table-header">
         <h3>Lista de Evaluaciones ({{evaluaciones.length}})</h3>
       </div>
-      
       <div class="table-wrapper">
         <table class="evaluaciones-table">
           <thead>
@@ -108,6 +106,7 @@
               <th>Estado</th>
               <th>Evaluador</th>
               <th>Última Actualización</th>
+                <th>Formulario</th>
               <th>Acciones</th>
             </tr>
           </thead>
@@ -116,7 +115,6 @@
               <td class="id-cell">
                 <span class="id-badge">#{{evaluacion.idEvaluacion}}</span>
               </td>
-              
               <td class="paciente-cell">
                 <div class="paciente-info">
                   <div class="paciente-avatar">
@@ -130,15 +128,15 @@
                   </div>
                 </div>
               </td>
-              
               <td class="rut-cell">{{evaluacion.rut}}</td>
-              
               <td class="fecha-cell">
                 <div class="fecha-container">
                   <div class="fecha-main">{{formatearFecha(evaluacion.fechaEvaluacion)}}</div>
                 </div>
               </td>
-              
+                <td class="formulario-cell">
+                  {{evaluacion.tipoFormulario === '1-3' ? '1 a 3' : (evaluacion.tipoFormulario === '6-12' ? '6 a 12' : 'N/A')}}
+                </td>
               <td class="progreso-cell">
                 <div class="progreso-container">
                   <div class="progreso-bar">
@@ -151,14 +149,12 @@
                   <span class="progreso-text">{{evaluacion.progreso}}%</span>
                 </div>
               </td>
-              
               <td class="estado-cell">
                 <span class="estado-badge" [ngClass]="obtenerClaseEstado(evaluacion.estado)">
                   <span class="estado-icon">{{obtenerIconoEstado(evaluacion.estado)}}</span>
                   {{evaluacion.estado || 'Sin estado'}}
                 </span>
               </td>
-              
               <td class="evaluador-cell">
                 <div class="evaluador-info" *ngIf="evaluacion.evaluadorNombre; else sinEvaluador">
                   <div class="evaluador-nombre">{{evaluacion.evaluadorNombre}}</div>
@@ -168,13 +164,11 @@
                   <span class="sin-evaluador">No especificado</span>
                 </ng-template>
               </td>
-              
               <td class="actualizacion-cell">
                 <div class="fecha-actualizacion">
                   {{formatearFecha(evaluacion.fechaActualizacion || evaluacion.fechaCreacion)}}
                 </div>
               </td>
-              
               <td class="acciones-cell">
                 <div class="action-buttons">
                   <button 
@@ -186,7 +180,6 @@
                       <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/>
                     </svg>
                   </button>
-                  
                   <button 
                     class="btn-action btn-edit" 
                     (click)="editarEvaluacion(evaluacion)"
@@ -195,7 +188,6 @@
                       <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708L7.707 11.707c-.147.147-.34.22-.54.22H4.5a.5.5 0 0 1-.5-.5V8.793c0-.2.073-.394.22-.54l8.146-8.147zm.707.707L10 3.707 12.293 6l2.853-2.853-2.146-2.147zM9 4.707 6.707 7 9 9.293 11.293 7 9 4.707zM6 8.707V11h2.293L6 8.707z"/>
                     </svg>
                   </button>
-                  
                   <button 
                     class="btn-action btn-delete" 
                     (click)="eliminarEvaluacion(evaluacion)"
@@ -211,5 +203,8 @@
         </table>
       </div>
     </div>
+
+    <!-- Detalle de evaluación -->
+    <app-detalle-evaluacion *ngIf="evaluacionSeleccionada" [evaluacion]="evaluacionSeleccionada"></app-detalle-evaluacion>
   </div>
 </div>

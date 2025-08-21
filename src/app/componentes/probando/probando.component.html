@@ -1,0 +1,170 @@
+<div class="probando-container">
+  <h2>Componente Probando</h2>
+  <form [formGroup]="probandoForm" class="probando-form">
+    <!-- Fila principal con botón Nuevo, nacionalidad, tipoPersona, input/buscar y país -->
+    <div class="row align-items-end">
+        <div class="col-md-2">
+          <button type="button" class="btn btn-primary" (click)="habilitarFormulario()">Nuevo</button>
+        </div>
+        <div class="col-md-3">
+          <div class="form-group">
+            <label><input type="radio" formControlName="nacionalidad" value="chileno"> Chileno</label>
+            <label><input type="radio" formControlName="nacionalidad" value="extranjero"> Extranjero</label>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="form-group">
+            <label><input type="radio" formControlName="tipoPersona" value="natural"> Persona Natural</label>
+            <label><input type="radio" formControlName="tipoPersona" value="juridica"> Persona Jurídica</label>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="input-group">
+            <input *ngIf="probandoForm.get('nacionalidad')?.value === 'chileno' && probandoForm.get('tipoPersona')?.value === 'natural'" type="text" class="form-control" placeholder="rut sin DV" formControlName="rutSinDv">
+            <input *ngIf="probandoForm.get('nacionalidad')?.value === 'chileno' && probandoForm.get('tipoPersona')?.value === 'juridica'" type="text" class="form-control" placeholder="rut juridico" formControlName="rutJuridico">
+            <input *ngIf="probandoForm.get('nacionalidad')?.value === 'extranjero' && probandoForm.get('tipoPersona')?.value === 'natural'" type="text" class="form-control" placeholder="pasaporte" formControlName="pasaporteNatural">
+            <input *ngIf="probandoForm.get('nacionalidad')?.value === 'extranjero' && probandoForm.get('tipoPersona')?.value === 'juridica'" type="text" class="form-control" placeholder="tax id" formControlName="taxId">
+            <button type="button" class="btn btn-secondary">Buscar</button>
+          </div>
+          <div *ngIf="probandoForm.get('nacionalidad')?.value === 'extranjero'" class="mt-2">
+            <input type="text" class="form-control" formControlName="pais" placeholder="País">
+          </div>
+        </div>
+      </div>
+    
+  <!-- ...existing code... -->
+        <input type="text" class="form-control" placeholder="Primer Nombre" formControlName="primerNombre">
+    <span *ngIf="probandoForm.get('primerNombre')?.invalid && probandoForm.get('primerNombre')?.touched" class="text-danger" style="font-size:1.2em; margin-left:4px;">*</span>
+  
+      <div class="col-md-3">
+        <!-- RUT/Pasaporte ya está arriba -->
+      </div>
+      <div class="col-md-3">
+        <input type="text" class="form-control" placeholder="Dirección" formControlName="direccion">
+      </div>
+      <div class="col-md-3">
+        <input type="text" class="form-control" placeholder="Oficina/Depto" formControlName="oficinaDepto">
+      </div>
+  
+    <div class="row mt-3">
+      <div class="col-md-3">
+        <input type="text" class="form-control" placeholder="Primer Apellido" formControlName="primerApellido">
+    <span *ngIf="probandoForm.get('primerApellido')?.invalid && probandoForm.get('primerApellido')?.touched" class="text-danger" style="font-size:1.2em; margin-left:4px;">*</span>
+      </div>
+      <div class="col-md-3">
+        <input type="text" class="form-control" placeholder="Celular" formControlName="celular">
+      </div>
+      <div class="col-md-3">
+        <input type="text" class="form-control" placeholder="Comuna" formControlName="comuna">
+      </div>
+      <div class="col-md-3">
+        <input type="text" class="form-control" placeholder="Oficina" formControlName="oficina">
+      </div>
+    </div>
+    <div class="row mt-3">
+      <div class="col-md-3">
+        <input type="text" class="form-control" placeholder="Segundo Apellido" formControlName="segundoApellido">
+    <span *ngIf="probandoForm.get('segundoApellido')?.invalid && probandoForm.get('segundoApellido')?.touched" class="text-danger" style="font-size:1.2em; margin-left:4px;">*</span>
+      </div>
+      <div class="col-md-3">
+        <input type="text" class="form-control" placeholder="Email" formControlName="email">
+      </div>
+      <div class="col-md-3">
+        <input type="text" class="form-control" placeholder="Teléfono Fijo" formControlName="telefonoFijo">
+      </div>
+      <div class="col-md-3">
+        <input type="text" class="form-control" placeholder="Poder Notarial" formControlName="poderNotarial">
+      </div>
+    </div>
+    <div class="row mt-3">
+      <div class="col-md-3">
+        <select class="form-select"><option>Profesión</option></select>
+      </div>
+      <div class="col-md-3">
+        <select class="form-select"><option>Estado Civil</option></select>
+      </div>
+    </div>
+    <div class="row mt-3">
+      <div class="col-md-3">
+        <label>
+          <input type="checkbox" formControlName="existeRepresentante"> ¿Existe representante?
+        </label>
+      </div>
+      <div class="col-md-3">
+        <button type="button" class="btn btn-secondary">Nueva Persona</button>
+      </div>
+    </div>
+
+    <!-- Bloque de representante solo si existeRepresentante está seleccionado -->
+    <div *ngIf="probandoForm.get('existeRepresentante')?.value">
+      <div class="row mt-3">
+        <div class="col-md-3">
+          <label><input type="radio" formControlName="nacionalidadRepresentante" value="1"> Chileno</label>
+          <label><input type="radio" formControlName="nacionalidadRepresentante" value="extranjero"> Extranjero</label>
+        </div>
+        <div class="col-md-3">
+          <input type="text" class="form-control" placeholder="RUT sin DV" formControlName="rutSinDvRepresentante">
+        </div>
+        <div class="col-md-2">
+          <button type="button" class="btn btn-secondary">Buscar</button>
+        </div>
+      </div>
+      <div class="row mt-3">
+        <div class="col-md-3">
+          <ng-container *ngIf="probandoForm.get('nacionalidadRepresentante')?.value === '1'; else pasaporteInput">
+            <input type="text" class="form-control" placeholder="Rut Representante" formControlName="rutRepresentante">
+          </ng-container>
+          <ng-template #pasaporteInput>
+            <input type="text" class="form-control" placeholder="Pasaporte" formControlName="pasaporteRepresentante">
+          </ng-template>
+        </div>
+    <span *ngIf="probandoForm.get('rutRepresentante')?.invalid && probandoForm.get('rutRepresentante')?.touched" class="text-danger" style="font-size:1.2em; margin-left:4px;">*</span>
+        <div class="col-md-3">
+          <select class="form-select" formControlName="estadoCivilRepresentante">
+            <option value="" disabled selected>Estado Civil</option>
+            <option value="soltero">Soltero</option>
+            <option value="casado">Casado</option>
+            <option value="viudo">Viudo</option>
+            <option value="divorciado">Divorciado</option>
+          </select>
+        </div>
+      </div>
+      <div class="row mt-3">
+        <div class="col-md-3"><input type="text" class="form-control" placeholder="Nombre Representante" formControlName="nombreRepresentante"></div>
+        <div class="col-md-3">
+          <div class="input-group">
+            <input type="text" class="form-control" placeholder="Cod pai" formControlName="celularCodPaiRepresentante" style="max-width: 70px;">
+            <input type="text" class="form-control" placeholder="Área" formControlName="celularAreaRepresentante" style="max-width: 70px;">
+            <input type="text" class="form-control" placeholder="Número" formControlName="celularNumeroRepresentante">
+          </div>
+        </div>
+      </div>
+      <div class="row mt-3">
+        <div class="col-md-3"><input type="text" class="form-control" placeholder="Apellidos Representante" formControlName="apellidosRepresentante"></div>
+        <div class="col-md-3"><input type="email" class="form-control" placeholder="Email Representante" formControlName="emailRepresentante"></div>
+      </div>
+      <div class="row mt-3">
+        <div class="col-md-3">
+          <select class="form-select" formControlName="profesionRepresentante">
+            <option value="" disabled selected>Profesión</option>
+            <option value="abogado">Abogado</option>
+            <option value="ingeniero">Ingeniero</option>
+            <option value="doctor">Doctor</option>
+            <option value="otro">Otro</option>
+          </select>
+        </div>
+      </div>
+      <div class="text-danger" style="font-size: 0.9em;">* Datos Requeridos</div>
+    </div>
+    <div class="row mt-4">
+      <div class="col-md-2">
+        <button type="submit" class="btn btn-success" [disabled]="!probandoForm.valid">Guardar</button>
+        <span *ngIf="probandoForm.get('nombreRepresentante')?.invalid && probandoForm.get('nombreRepresentante')?.touched" class="text-danger" style="font-size:1.2em; margin-left:4px;">*</span>
+      </div>
+      <div class="col-md-2">
+        <button type="button" class="btn btn-primary">Nuevo</button>
+        <span *ngIf="probandoForm.get('apellidosRepresentante')?.invalid && probandoForm.get('apellidosRepresentante')?.touched" class="text-danger" style="font-size:1.2em; margin-left:4px;">*</span>
+      </div>
+    </div>
+  </form>
+</div>

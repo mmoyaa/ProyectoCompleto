@@ -1,0 +1,19 @@
+/* Radios más grandes */
+input[type="radio"] {
+  width: 1.5em;
+  height: 1.5em;
+}
+/* Checkboxes más grandes */
+input[type="checkbox"] {
+  width: 1.5em;
+  height: 1.5em;
+}
+.probando-container {
+  padding: 2rem;
+  background: #f3f4f6;
+  border-radius: 8px;
+  text-align: center;
+}
+.probando-container h2 {
+  color: #2563eb;
+}

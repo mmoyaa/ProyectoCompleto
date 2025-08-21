@@ -1,0 +1,129 @@
+
+<div class="container-fluid py-4">
+  <div class="row justify-content-center">
+    <div class="col-12 col-lg-10">
+      <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+          <h3 class="mb-0">
+            <i class="fas fa-brain me-2"></i>
+            Formulario de Evaluación Sensorial (1-12 años)
+          </h3>
+        </div>
+        <div class="card-body">
+          <p class="mb-0">
+            Este formulario evalúa las habilidades sensoriales y de participación social del niño o niña. Por favor, marque la opción que mejor describa el comportamiento actual en cada una de las 8 áreas evaluadas.
+          </p>
+          <div *ngIf="paciente" class="mt-2">
+            <b>Paciente:</b> {{ paciente.nombre }} {{ paciente.apellidoPaterno }}<br>
+            <b>RUT:</b> {{ paciente.rut }}
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="mensaje" class="alert" [ngClass]="{'alert-success': tipoMensaje === 'success', 'alert-danger': tipoMensaje === 'error'}" role="alert">
+        <i class="fas" [ngClass]="{'fa-check-circle': tipoMensaje === 'success', 'fa-exclamation-triangle': tipoMensaje === 'error'}"></i>
+        {{ mensaje }}
+        <button type="button" class="btn-close float-end" (click)="mensaje=''" aria-label="Cerrar"></button>
+      </div>
+
+      <form [formGroup]="formularioEvaluacion" (ngSubmit)="onSubmit()">
+   
+
+        <!-- Secciones de preguntas -->
+        <ng-container *ngFor="let seccion of [
+          {titulo: 'VISIÓN', preguntas: preguntasVision, color: 'bg-warning text-dark', icon: 'fa-eye'},
+          {titulo: 'AUDITIVO', preguntas: preguntasAuditivo, color: 'bg-success text-white', icon: 'fa-volume-up'},
+          {titulo: 'TÁCTIL', preguntas: preguntasTactil, color: 'bg-danger text-white', icon: 'fa-hand-paper'},
+          {titulo: 'GUSTO Y OLFATO', preguntas: preguntasGustoOlfato, color: 'bg-secondary text-white', icon: 'fa-seedling'},
+          {titulo: 'CONCIENCIA CORPORAL', preguntas: preguntasConcienciaCorporal, color: 'bg-dark text-white', icon: 'fa-male'},
+          {titulo: 'EQUILIBRIO Y MOVIMIENTO', preguntas: preguntasEquilibrioMovimiento, color: 'bg-primary text-white', icon: 'fa-balance-scale'},
+          {titulo: 'PLANIFICACIÓN E IDEAS', preguntas: preguntasPlanificacionIdeas, color: 'bg-info text-white', icon: 'fa-lightbulb'},
+          {titulo: 'PARTICIPACIÓN SOCIAL', preguntas: preguntasParticipacionSocial, color: 'bg-info text-white', icon: 'fa-handshake'}
+        ]">
+          <div class="card mb-4">
+            <div class="card-header" [ngClass]="seccion.color">
+              <h5 class="mb-0">
+                <i class="fas" [ngClass]="seccion.icon + ' me-2'"></i>
+                {{ seccion.titulo }}
+              </h5>
+              <small>Su niño o niña...</small>
+            </div>
+            <div class="card-body">
+              <div class="row mb-3 fw-bold text-center bg-light py-2 rounded">
+                <div class="col-md-6 text-start">
+                  <strong>Comportamiento</strong>
+                </div>
+                <div class="col-md-6">
+                  <div class="row">
+                    <div class="col-3"><strong>Nunca</strong></div>
+                    <div class="col-3"><strong>Ocasionalmente</strong></div>
+                    <div class="col-3"><strong>Frecuentemente</strong></div>
+                    <div class="col-3"><strong>Siempre</strong></div>
+                  </div>
+                </div>
+              </div>
+              <div *ngFor="let pregunta of seccion.preguntas" class="row align-items-center py-3 border-bottom">
+                <div class="col-md-6">
+                  <label class="form-label mb-0">
+                    <strong>{{ pregunta.id }}.</strong> {{ pregunta.texto }}
+                    <span class="text-danger">*</span>
+                  </label>
+                </div>
+                <div class="col-md-6">
+                  <div class="row text-center">
+                    <div *ngFor="let opcion of opcionesRespuesta" class="col-3">
+                      <div class="form-check">
+                        <input class="form-check-input" type="radio" [name]="'pregunta_' + pregunta.id" [id]="'pregunta_' + pregunta.id + '_' + opcion.valor" [value]="opcion.valor" [formControlName]="'pregunta_' + pregunta.id">
+                        <label class="form-check-label" [for]="'pregunta_' + pregunta.id + '_' + opcion.valor">{{ opcion.valor }}</label>
+                      </div>
+                    </div>
+                  </div>
+                  <div *ngIf="formularioEvaluacion.get('pregunta_' + pregunta.id)?.touched && formularioEvaluacion.get('pregunta_' + pregunta.id)?.invalid" class="text-danger small mt-1">
+                    <i class="fas fa-exclamation-circle me-1"></i>
+                    Por favor, seleccione una opción
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+
+        <div class="card">
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-6">
+                <button type="button" class="btn btn-outline-info me-2" (click)="cargarListaPacientes()" [disabled]="loading">
+                  <i class="fas fa-users me-2"></i>
+                  Ver Pacientes
+                </button>
+                <button type="button" class="btn btn-outline-secondary" (click)="formularioEvaluacion.reset()" [disabled]="loading">
+                  <i class="fas fa-undo me-2"></i>
+                  Limpiar Formulario
+                </button>
+              </div>
+              <div class="col-md-6 text-end">
+                <button type="submit" class="btn btn-success btn-lg" [disabled]="loading || formularioEvaluacion.invalid">
+                  <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
+                  <i *ngIf="!loading" class="fas fa-save me-2"></i>
+                  {{ loading ? 'Guardando...' : 'Guardar Evaluación' }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+
+      <div class="card mt-4">
+        <div class="card-body">
+          <h6 class="card-title"><i class="fas fa-info-circle me-2"></i> Leyenda de Opciones:</h6>
+          <div class="row">
+            <div class="col-md-3"><strong>N - Nunca:</strong> El comportamiento no se observa</div>
+            <div class="col-md-3"><strong>O - Ocasionalmente:</strong> Ocurre algunas veces</div>
+            <div class="col-md-3"><strong>F - Frecuentemente:</strong> Ocurre la mayoría de las veces</div>
+            <div class="col-md-3"><strong>S - Siempre:</strong> El comportamiento se presenta consistentemente</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

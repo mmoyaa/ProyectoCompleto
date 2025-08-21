@@ -10,6 +10,8 @@ export interface EvaluacionSensorial {
   fechaEvaluacion?: string;
   progreso: number;
   respuestas: any;
+  tipoFormulario?: string; // '1-3' o '6-12'
+  evaluador?: string; // compatibilidad con formulario 1-3
   evaluadorNombre?: string;
   evaluadorCorreo?: string;
   observaciones?: string;
@@ -76,6 +78,7 @@ export class EvaluacionService {
       idPaciente: evaluacion.idPaciente,
       progreso: evaluacion.progreso,
       respuestas: evaluacion.respuestas,
+      tipoFormulario: evaluacion.tipoFormulario,
       evaluadorNombre: evaluacion.evaluadorNombre,
       evaluadorCorreo: evaluacion.evaluadorCorreo,
       observaciones: evaluacion.observaciones,
@@ -95,6 +98,7 @@ export class EvaluacionService {
     const evaluacionData = {
       progreso: evaluacion.progreso,
       respuestas: evaluacion.respuestas,
+      tipoFormulario: evaluacion.tipoFormulario,
       evaluadorNombre: evaluacion.evaluadorNombre,
       evaluadorCorreo: evaluacion.evaluadorCorreo,
       observaciones: evaluacion.observaciones,
@@ -177,6 +181,7 @@ export class EvaluacionService {
         respuestasEquilibrioMovimiento: datosFormulario.respuestasEquilibrioMovimiento,
         respuestasPlanificacionIdeas: datosFormulario.respuestasPlanificacionIdeas
       },
+      tipoFormulario: '6-12',
       evaluadorNombre: datosFormulario.informacionNino?.evaluador,
       observaciones: datosFormulario.informacionNino?.observaciones,
       estado: 'Completada'

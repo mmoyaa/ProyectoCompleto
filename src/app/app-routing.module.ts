@@ -11,10 +11,13 @@ import { Pagina3Component } from './componentes/pagina3/pagina3.component';
 import { Formulario612Component } from './componentes/formulario-6-12/formulario-6-12.component';
 
 import { AllFormulariosComponent } from './componentes/all-formularios/all-formularios.component';
+import { Formulario13Component } from './componentes/formulario-1-3/formulario-1-3.component';
+import { Pagina5Component } from './componentes/pagina5/pagina5.component';
+import { ProbandoComponent } from './componentes/probando/probando.component';
 
 
 const routes: Routes = [
-  { path: '', redirectTo: '/home', pathMatch: 'full' },
+  { path: '', redirectTo: '/all-formularios', pathMatch: 'full' },
   { path:'paso1', component: Paso1Component },
   { path:'pagina1', component: Pagina1Component },
   { path:'pagina2', component: Pagina2Component },
@@ -25,6 +28,9 @@ const routes: Routes = [
   { path:'formulario-6-12', component: Formulario612Component },
   { path:'grafico6-12', component: Grafico612Component },
     { path:'all-formularios', component: AllFormulariosComponent },
+  { path:'formulario6-13', component:Formulario13Component },
+  { path:'pagina5', component: Pagina5Component },
+  { path:'probando', component: ProbandoComponent },
 ];
 
 @NgModule({

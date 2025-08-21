@@ -381,10 +381,10 @@ export class Formulario612Component implements OnInit {
     const controls: any = {};
     
     // Campos de información del niño
-    controls['nombreNino'] = ['', Validators.required];
-    controls['edad'] = ['', [Validators.required, Validators.min(6), Validators.max(12)]];
-    controls['fechaEvaluacion'] = [new Date().toISOString().split('T')[0], Validators.required];
-    controls['evaluador'] = ['', Validators.required];
+  controls['nombreNino'] = [''];
+  controls['edad'] = ['', [Validators.min(6), Validators.max(12)]];
+  controls['fechaEvaluacion'] = [new Date().toISOString().split('T')[0]];
+  controls['evaluador'] = [''];
     controls['observaciones'] = [''];
     
     // Agregar controles para participación social

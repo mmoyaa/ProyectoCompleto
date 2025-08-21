@@ -12,6 +12,7 @@ export class ListaEvaluacionesComponent implements OnInit {
   estadisticas: EvaluacionEstadisticas | null = null;
   loading = false;
   error = '';
+  evaluacionSeleccionada: EvaluacionSensorial | null = null;
 
   constructor(
     private evaluacionService: EvaluacionService,
@@ -54,8 +55,7 @@ export class ListaEvaluacionesComponent implements OnInit {
   }
 
   verDetalle(evaluacion: EvaluacionSensorial): void {
-    // Navegar a una página de detalle (puedes implementar esto después)
-    console.log('Ver detalle de evaluación:', evaluacion);
+    this.evaluacionSeleccionada = evaluacion;
   }
 
   editarEvaluacion(evaluacion: EvaluacionSensorial): void {

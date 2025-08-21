@@ -18,8 +18,12 @@ import { GraficosComponent } from './componentes/graficos/graficos.component';
 import { Pagina3Component } from './componentes/pagina3/pagina3.component';
 import { Formulario612Component } from './componentes/formulario-6-12/formulario-6-12.component';
 import { Grafico612Component } from './componentes/grafico6-12/grafico6-12.component';
+import { Formulario13Component } from './componentes/formulario-1-3/formulario-1-3.component';
 
 import { AllFormulariosComponent } from './componentes/all-formularios/all-formularios.component';
+import { Pagina5Component } from './componentes/pagina5/pagina5.component';
+import { DetalleEvaluacionComponent } from './componentes/lista-evaluaciones/detalle-evaluacion.component';
+import { ProbandoComponent } from './componentes/probando/probando.component';
 
 
   @NgModule({
@@ -36,7 +40,11 @@ import { AllFormulariosComponent } from './componentes/all-formularios/all-formu
     Pagina3Component,
   Formulario612Component,
   Grafico612Component,
-    AllFormulariosComponent,
+  Formulario13Component,
+  AllFormulariosComponent,
+  Pagina5Component,
+  DetalleEvaluacionComponent,
+  ProbandoComponent,
     
   ],
   imports: [

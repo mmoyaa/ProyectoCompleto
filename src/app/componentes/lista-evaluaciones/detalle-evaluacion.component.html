@@ -1,0 +1,23 @@
+<div *ngIf="evaluacion">
+  <h2>Detalle de Evaluación Sensorial</h2>
+  <div class="info">
+    <b>Paciente:</b> {{ evaluacion.nombreCompleto }}<br>
+    <b>RUT:</b> {{ evaluacion.rut }}<br>
+    <b>Fecha:</b> {{ evaluacion.fechaEvaluacion | date:'medium' }}<br>
+    <b>Evaluador:</b> {{ evaluacion.evaluadorNombre || evaluacion.evaluador || 'No especificado' }}<br>
+    <b>Formulario:</b> {{ evaluacion.tipoFormulario === '1-3' ? '1 a 3' : (evaluacion.tipoFormulario === '6-12' ? '6 a 12' : 'N/A') }}
+  </div>
+  <hr>
+  <h4>Respuestas</h4>
+  <div *ngIf="evaluacion.respuestas && evaluacion.respuestas.length > 0">
+    <div *ngFor="let respuesta of evaluacion.respuestas">
+      <div class="pregunta">
+        <b>{{ respuesta.preguntaId }}.</b> {{ respuesta.preguntaTexto }}
+        <span class="badge">{{ respuesta.respuesta }}</span>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="!evaluacion.respuestas || evaluacion.respuestas.length === 0">
+    <span>No hay respuestas guardadas para esta evaluación.</span>
+  </div>
+</div>
