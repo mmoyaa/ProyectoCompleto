@@ -65,6 +65,16 @@
   }
 }
 
+/* Animación de rotación para iconos Bootstrap */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .btn-group {
@@ -79,5 +89,37 @@
   
   .table-responsive {
     font-size: 0.875rem;
+  }
+}
+
+/* Estilos para modal de vista previa */
+.modal-xl {
+  max-width: 90vw;
+}
+
+.modal-body iframe {
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+}
+
+.modal-body img {
+  border: 2px solid #dee2e6;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* Ajustes responsivos para modal */
+@media (max-width: 768px) {
+  .modal-xl {
+    max-width: 95vw;
+  }
+  
+  .modal-body iframe {
+    height: 400px !important;
+  }
+  
+  .btn-group-sm .btn {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.4rem;
   }
 }

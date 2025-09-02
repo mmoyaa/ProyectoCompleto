@@ -13,6 +13,7 @@ export interface FormatoDocumento {
   idFormato: number;
   nombre: string;
   extension: string;
+  mimeType?: string;
   activo?: boolean;
 }
 

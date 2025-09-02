@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { DocumentoService, TipoDocumento, FormatoDocumento, DocumentoCCMM } from '../../services/documento.service';
 
 @Component({
@@ -16,6 +17,12 @@ export class DocumentosComponent implements OnInit {
   archivoSeleccionado: File | null = null;
   previsualizacion: string | null = null;
   
+  // Variables para vista previa de documentos
+  documentoVistaPrevia: DocumentoCCMM | null = null;
+  urlVistaPrevia: SafeResourceUrl | string | null = null;
+  cargandoVistaPrevia = false;
+  errorVistaPrevia: string | null = null;
+  
   loading = false;
   loadingTipos = false;
   loadingFormatos = false;
@@ -26,7 +33,8 @@ export class DocumentosComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    public documentoService: DocumentoService
+    public documentoService: DocumentoService,
+    private sanitizer: DomSanitizer
   ) { }
 
   ngOnInit(): void {
@@ -258,5 +266,125 @@ export class DocumentosComponent implements OnInit {
   getFormatoNombre(idFormato: number): string {
     const formato = this.formatosDocumento.find(f => f.idFormato === idFormato);
     return formato ? formato.extension.toUpperCase() : 'Desconocido';
+  }
+
+  // ==================== MÉTODOS PARA VISTA PREVIA ====================
+
+  previsualizarDocumento(documento: DocumentoCCMM): void {
+    if (!documento.idDocumento) {
+      this.mostrarMensaje('No se puede previsualizar este documento', 'error');
+      return;
+    }
+
+    this.documentoVistaPrevia = documento;
+    this.cargandoVistaPrevia = true;
+    this.errorVistaPrevia = null;
+    this.urlVistaPrevia = null;
+
+    // Obtener documento completo con el archivo base64
+    this.documentoService.obtenerDocumentoPorId(documento.idDocumento).subscribe({
+      next: (documentoCompleto) => {
+        this.procesarVistaPrevia(documentoCompleto);
+        this.abrirModalVistaPrevia();
+      },
+      error: (error) => {
+        console.error('❌ Error al obtener documento para vista previa:', error);
+        this.errorVistaPrevia = 'Error al cargar el documento: ' + (error.error?.message || error.message);
+        this.cargandoVistaPrevia = false;
+        this.abrirModalVistaPrevia();
+      }
+    });
+  }
+
+  private procesarVistaPrevia(documento: any): void {
+    try {
+      if (!documento.archivo) {
+        this.errorVistaPrevia = 'El documento no contiene datos del archivo';
+        this.cargandoVistaPrevia = false;
+        return;
+      }
+
+      const formato = this.formatosDocumento.find(f => f.idFormato === documento.idFormato);
+      if (!formato) {
+        this.errorVistaPrevia = 'Formato de documento no reconocido';
+        this.cargandoVistaPrevia = false;
+        return;
+      }
+
+      // Crear blob desde base64
+      const binaryData = atob(documento.archivo);
+      const arrayBuffer = new ArrayBuffer(binaryData.length);
+      const uint8Array = new Uint8Array(arrayBuffer);
+      
+      for (let i = 0; i < binaryData.length; i++) {
+        uint8Array[i] = binaryData.charCodeAt(i);
+      }
+
+      const blob = new Blob([arrayBuffer], { type: formato.mimeType });
+      const url = URL.createObjectURL(blob);
+
+      if (this.esPdf(documento)) {
+        // Para PDFs, usar el sanitizer para iframe
+        this.urlVistaPrevia = this.sanitizer.bypassSecurityTrustResourceUrl(url);
+      } else if (this.esImagen(documento)) {
+        // Para imágenes, usar directamente la URL
+        this.urlVistaPrevia = url;
+      }
+
+      this.cargandoVistaPrevia = false;
+    } catch (error) {
+      console.error('❌ Error al procesar vista previa:', error);
+      this.errorVistaPrevia = 'Error al procesar el archivo para vista previa';
+      this.cargandoVistaPrevia = false;
+    }
+  }
+
+  esImagen(documento: DocumentoCCMM): boolean {
+    const formato = this.formatosDocumento.find(f => f.idFormato === documento.idFormato);
+    if (!formato) return false;
+    
+    const extensionesImagen = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'];
+    return extensionesImagen.includes(formato.extension.toLowerCase());
+  }
+
+  esPdf(documento: DocumentoCCMM): boolean {
+    const formato = this.formatosDocumento.find(f => f.idFormato === documento.idFormato);
+    if (!formato) return false;
+    
+    return formato.extension.toLowerCase() === 'pdf';
+  }
+
+  private abrirModalVistaPrevia(): void {
+    const modalElement = document.getElementById('modalVistaPrevia');
+    if (modalElement) {
+      // Usar Bootstrap modal sin importar bootstrap
+      const modal = (window as any).bootstrap?.Modal?.getOrCreateInstance(modalElement) || 
+                   new (window as any).bootstrap.Modal(modalElement);
+      modal.show();
+      
+      // Limpiar URL cuando se cierre el modal
+      modalElement.addEventListener('hidden.bs.modal', () => {
+        if (this.urlVistaPrevia && typeof this.urlVistaPrevia === 'string') {
+          URL.revokeObjectURL(this.urlVistaPrevia);
+        }
+        this.documentoVistaPrevia = null;
+        this.urlVistaPrevia = null;
+        this.errorVistaPrevia = null;
+      }, { once: true });
+    }
+  }
+
+  reintentar(): void {
+    if (this.documentoVistaPrevia) {
+      this.previsualizarDocumento(this.documentoVistaPrevia);
+    }
+  }
+
+  // Método seguro para formatear tamaño
+  formatearTamanoSeguro(tamano: number | undefined): string {
+    if (tamano && tamano > 0) {
+      return this.documentoService.formatearTamano(tamano);
+    }
+    return 'N/A';
   }
 }
