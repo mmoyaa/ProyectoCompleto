@@ -1,0 +1,267 @@
+<div class="container-fluid py-4">
+  <div class="row">
+    <div class="col-12">
+      <!-- Header -->
+      <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+          <h3 class="mb-0">
+            <i class="fas fa-file-upload me-2"></i>
+            Gestión de Documentos CCMM
+          </h3>
+        </div>
+        <div class="card-body">
+          <p class="mb-0">
+            Sistema para la gestión y almacenamiento de documentos del Centro de Comunicación, Multimedia y Medios (CCMM). 
+            Puede subir fotos, documentos, decretos y resoluciones en formatos PDF, JPG y JPEG.
+          </p>
+        </div>
+      </div>
+
+      <!-- Mensajes -->
+      <div *ngIf="mensaje" class="alert" 
+           [ngClass]="{'alert-success': tipoMensaje === 'success', 'alert-danger': tipoMensaje === 'error'}" 
+           role="alert">
+        <i class="fas" 
+           [ngClass]="{'fa-check-circle': tipoMensaje === 'success', 'fa-exclamation-triangle': tipoMensaje === 'error'}"></i>
+        {{ mensaje }}
+        <button type="button" class="btn-close float-end" (click)="mensaje=''" aria-label="Cerrar"></button>
+      </div>
+
+      <!-- Formulario de Subida -->
+      <div class="card mb-4">
+        <div class="card-header bg-secondary text-white">
+          <h5 class="mb-0">
+            <i class="fas fa-plus-circle me-2"></i>
+            Subir Nuevo Documento
+          </h5>
+        </div>
+        <div class="card-body">
+          <form [formGroup]="formularioDocumento" (ngSubmit)="subirDocumento()">
+            <div class="row">
+              <!-- Tipo de Documento -->
+              <div class="col-md-4">
+                <div class="mb-3">
+                  <label for="tipoDocumento" class="form-label">
+                    <i class="fas fa-tags me-1"></i>
+                    Tipo de Documento *
+                  </label>
+                  <select class="form-select" 
+                          id="tipoDocumento" 
+                          formControlName="tipoDocumento"
+                          [disabled]="loadingTipos"
+                          [class.is-invalid]="formularioDocumento.get('tipoDocumento')?.touched && formularioDocumento.get('tipoDocumento')?.invalid">
+                    <option value="">Seleccione un tipo...</option>
+                    <option *ngIf="loadingTipos" disabled>Cargando tipos...</option>
+                    <option *ngFor="let tipo of tiposDocumento" [value]="tipo.idTipo">
+                      {{ tipo.nombre }}
+                      <span *ngIf="tipo.descripcion"> - {{ tipo.descripcion }}</span>
+                    </option>
+                  </select>
+                  <div class="invalid-feedback">
+                    El tipo de documento es requerido
+                  </div>
+                </div>
+              </div>
+
+              <!-- Formato -->
+              <div class="col-md-4">
+                <div class="mb-3">
+                  <label for="formato" class="form-label">
+                    <i class="fas fa-file-alt me-1"></i>
+                    Formato *
+                  </label>
+                  <select class="form-select" 
+                          id="formato" 
+                          formControlName="formato"
+                          (change)="onFormatoChange()"
+                          [disabled]="loadingFormatos"
+                          [class.is-invalid]="formularioDocumento.get('formato')?.touched && formularioDocumento.get('formato')?.invalid">
+                    <option value="">Seleccione un formato...</option>
+                    <option *ngIf="loadingFormatos" disabled>Cargando formatos...</option>
+                    <option *ngFor="let formato of formatosDocumento" [value]="formato.idFormato">
+                      {{ formato.extension.toUpperCase() }} - {{ formato.nombre }}
+                    </option>
+                  </select>
+                  <div class="invalid-feedback">
+                    El formato es requerido
+                  </div>
+                </div>
+              </div>
+
+              <!-- Nombre del Archivo -->
+              <div class="col-md-4">
+                <div class="mb-3">
+                  <label for="nombreArchivo" class="form-label">
+                    <i class="fas fa-signature me-1"></i>
+                    Nombre del Archivo *
+                  </label>
+                  <input type="text" 
+                         class="form-control" 
+                         id="nombreArchivo" 
+                         formControlName="nombreArchivo"
+                         placeholder="Nombre descriptivo del archivo"
+                         [class.is-invalid]="formularioDocumento.get('nombreArchivo')?.touched && formularioDocumento.get('nombreArchivo')?.invalid">
+                  <div class="invalid-feedback">
+                    El nombre del archivo es requerido
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Selección de Archivo -->
+            <div class="row">
+              <div class="col-md-8">
+                <div class="mb-3">
+                  <label for="archivo" class="form-label">
+                    <i class="fas fa-upload me-1"></i>
+                    Seleccionar Archivo *
+                  </label>
+                  <input type="file" 
+                         class="form-control" 
+                         id="archivo" 
+                         (change)="onArchivoSeleccionado($event)"
+                         accept=".pdf,.jpg,.jpeg">
+                  <div class="form-text">
+                    <i class="fas fa-info-circle me-1"></i>
+                    Formatos permitidos: PDF, JPG, JPEG. Tamaño máximo: 10MB
+                  </div>
+                </div>
+              </div>
+
+              <!-- Previsualización -->
+              <div class="col-md-4" *ngIf="previsualizacion">
+                <div class="mb-3">
+                  <label class="form-label">Previsualización</label>
+                  <div class="text-center">
+                    <img [src]="previsualizacion" 
+                         alt="Previsualización" 
+                         class="img-thumbnail" 
+                         style="max-height: 150px; max-width: 100%;">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Información del Archivo Seleccionado -->
+            <div *ngIf="archivoSeleccionado" class="alert alert-info">
+              <h6><i class="fas fa-file me-2"></i>Archivo Seleccionado:</h6>
+              <ul class="mb-0">
+                <li><strong>Nombre:</strong> {{ archivoSeleccionado.name }}</li>
+                <li><strong>Tamaño:</strong> {{ documentoService.formatearTamano(archivoSeleccionado.size) }}</li>
+                <li><strong>Tipo:</strong> {{ archivoSeleccionado.type }}</li>
+              </ul>
+            </div>
+
+            <!-- Botones -->
+            <div class="d-flex gap-2">
+              <button type="submit" 
+                      class="btn btn-primary" 
+                      [disabled]="loading || !formularioDocumento.valid || !archivoSeleccionado">
+                <i class="fas fa-upload me-2"></i>
+                <span *ngIf="!loading">Subir Documento</span>
+                <span *ngIf="loading">
+                  <i class="fas fa-spinner fa-spin me-2"></i>Subiendo...
+                </span>
+              </button>
+              
+              <button type="button" 
+                      class="btn btn-outline-secondary" 
+                      (click)="limpiarFormularioPublico()"
+                      [disabled]="loading">
+                <i class="fas fa-eraser me-2"></i>
+                Limpiar
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Lista de Documentos -->
+      <div class="card">
+        <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">
+            <i class="fas fa-list me-2"></i>
+            Documentos Guardados
+          </h5>
+          <button class="btn btn-outline-light btn-sm" 
+                  (click)="cargarDocumentos()" 
+                  [disabled]="loadingDocumentos">
+            <i class="fas fa-refresh me-1" [class.fa-spin]="loadingDocumentos"></i>
+            Actualizar
+          </button>
+        </div>
+        <div class="card-body">
+          <!-- Loading -->
+          <div *ngIf="loadingDocumentos" class="text-center py-4">
+            <i class="fas fa-spinner fa-spin fa-2x text-primary"></i>
+            <p class="mt-2">Cargando documentos...</p>
+          </div>
+
+          <!-- Sin documentos -->
+          <div *ngIf="!loadingDocumentos && documentos.length === 0" class="text-center py-4">
+            <i class="fas fa-folder-open fa-3x text-muted mb-3"></i>
+            <h5>No hay documentos guardados</h5>
+            <p class="text-muted">Sube tu primer documento usando el formulario superior</p>
+          </div>
+
+          <!-- Tabla de documentos -->
+          <div *ngIf="!loadingDocumentos && documentos.length > 0" class="table-responsive">
+            <table class="table table-hover">
+              <thead class="table-dark">
+                <tr>
+                  <th><i class="fas fa-file me-1"></i>Nombre</th>
+                  <th><i class="fas fa-tags me-1"></i>Tipo</th>
+                  <th><i class="fas fa-file-alt me-1"></i>Formato</th>
+                  <th><i class="fas fa-calendar me-1"></i>Fecha</th>
+                  <th><i class="fas fa-weight-hanging me-1"></i>Tamaño</th>
+                  <th><i class="fas fa-cogs me-1"></i>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let documento of documentos">
+                  <td>
+                    <i class="fas fa-file-alt me-2 text-primary"></i>
+                    {{ documento.nombreArchivo }}
+                  </td>
+                  <td>
+                    <span class="badge bg-secondary">
+                      {{ getTipoDocumentoNombre(documento.idTipo) }}
+                    </span>
+                  </td>
+                  <td>
+                    <span class="badge bg-info">
+                      {{ getFormatoNombre(documento.idFormato) }}
+                    </span>
+                  </td>
+                  <td>
+                    <small>{{ documento.fechaCreacion | date:'dd/MM/yyyy HH:mm' }}</small>
+                  </td>
+                  <td>
+                    <small *ngIf="documento.tamano">
+                      {{ documentoService.formatearTamano(documento.tamano) }}
+                    </small>
+                    <small *ngIf="!documento.tamano" class="text-muted">N/A</small>
+                  </td>
+                  <td>
+                    <div class="btn-group btn-group-sm">
+                      <button class="btn btn-outline-primary" 
+                              (click)="descargarDocumento(documento)"
+                              title="Descargar">
+                        <i class="fas fa-download"></i>
+                      </button>
+                      <button class="btn btn-outline-danger" 
+                              (click)="eliminarDocumento(documento)"
+                              title="Eliminar">
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

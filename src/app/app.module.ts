@@ -24,6 +24,7 @@ import { AllFormulariosComponent } from './componentes/all-formularios/all-formu
 import { Pagina5Component } from './componentes/pagina5/pagina5.component';
 import { DetalleEvaluacionComponent } from './componentes/lista-evaluaciones/detalle-evaluacion.component';
 import { ProbandoComponent } from './componentes/probando/probando.component';
+import { DocumentosComponent } from './componentes/documentos/documentos.component';
 
 
   @NgModule({
@@ -45,6 +46,7 @@ import { ProbandoComponent } from './componentes/probando/probando.component';
   Pagina5Component,
   DetalleEvaluacionComponent,
   ProbandoComponent,
+  DocumentosComponent,
     
   ],
   imports: [

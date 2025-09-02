@@ -1,17 +1,15 @@
 
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, AfterViewInit, OnChanges, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { PacienteService } from 'src/app/services/paciente.service';
-import { EvaluacionService } from 'src/app/services/evaluacion.service';
-
-
+import { EvaluacionService, EvaluacionSensorial } from 'src/app/services/evaluacion.service';
 
 @Component({
   selector: 'app-pagina5',
   templateUrl: './pagina5.component.html',
   styleUrls: ['./pagina5.component.css']
 })
-export class Pagina5Component implements OnInit {
+export class Pagina5Component implements OnInit, AfterViewInit, OnChanges {
   formularioEvaluacion!: FormGroup;
   loading = false;
   mensaje = '';
@@ -19,6 +17,12 @@ export class Pagina5Component implements OnInit {
   listaPacientes: any[] = [];
   loadingPacientes = false;
   @Input() paciente: any = null;
+  @Input() evaluacionData: EvaluacionSensorial | null = null;
+
+  // Variables de progreso
+  totalQuestions = 80;
+  answeredQuestions = 0;
+  progressPercentage = 0;
 
   opcionesRespuesta = [
     { valor: 'N', texto: 'Nunca' },
@@ -135,6 +139,82 @@ export class Pagina5Component implements OnInit {
   ngOnInit(): void {
     this.initializeForm();
     this.cargarListaPacientes();
+    this.setupProgressTracking();
+    
+    // Si hay datos de evaluación, cargarlos después de que el formulario esté inicializado
+    if (this.evaluacionData) {
+      setTimeout(() => {
+        console.log('📋 Ejecutando carga de datos de evaluación desde ngOnInit...');
+        this.cargarDatosEvaluacion();
+      }, 100);
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    // Detectar cuando cambien los datos de evaluación desde el componente padre
+    if (changes['evaluacionData'] && changes['evaluacionData'].currentValue) {
+      console.log('📋 Datos de evaluación cambiaron desde componente padre');
+      setTimeout(() => {
+        this.cargarDatosEvaluacion();
+      }, 200);
+    }
+  }
+
+  ngAfterViewInit(): void {
+    console.log('✅ Vista inicializada - Configurando event listeners para pagina5');
+    this.updateProgress();
+    this.setupRadioEventListeners();
+  }
+
+  private setupProgressTracking(): void {
+    // Configurar después de un pequeño delay para asegurar que el DOM esté cargado
+    setTimeout(() => {
+      this.updateProgress();
+      this.attachRadioListeners();
+    }, 100);
+  }
+
+  private setupRadioEventListeners(): void {
+    console.log('🔧 Configurando event listeners para radio buttons en pagina5...');
+    
+    // Usar setTimeout para asegurar que el DOM esté completamente renderizado
+    setTimeout(() => {
+      const radioButtons = document.querySelectorAll('input[type="radio"]');
+      console.log(`📊 Configurando listeners para ${radioButtons.length} radio buttons`);
+      
+      radioButtons.forEach((radio: any) => {
+        radio.addEventListener('change', () => {
+          console.log(`🔘 Radio button cambiado: ${radio.name} = ${radio.value}`);
+          this.updateProgress();
+        });
+      });
+    }, 100);
+  }
+
+  private attachRadioListeners(): void {
+    // Obtener todos los radio buttons del formulario
+    const radioButtons = document.querySelectorAll('input[type="radio"]');
+    
+    radioButtons.forEach(radio => {
+      radio.addEventListener('change', () => {
+        this.updateProgress();
+      });
+    });
+  }
+
+  private updateProgress(): void {
+    console.log('🔄 Actualizando progreso en pagina5...');
+    
+    // Contar todas las preguntas con respuestas seleccionadas
+    const allRadioGroups = document.querySelectorAll('input[type="radio"]:checked');
+    this.answeredQuestions = allRadioGroups.length;
+    
+    console.log(`📝 Preguntas respondidas encontradas: ${this.answeredQuestions}`);
+    
+    // Calcular porcentaje
+    this.progressPercentage = Math.round((this.answeredQuestions / this.totalQuestions) * 100);
+    
+    console.log(`📊 Progreso actualizado: ${this.answeredQuestions}/${this.totalQuestions} = ${this.progressPercentage}%`);
   }
 
   private initializeForm(): void {
@@ -154,6 +234,169 @@ export class Pagina5Component implements OnInit {
     this.formularioEvaluacion = this.fb.group(controls);
   }
 
+  // Método para guardar evaluación sin requerir 100% de completitud (como pagina2)
+  saveEvaluation(event?: Event): void {
+    // Prevenir el comportamiento por defecto del formulario
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    
+    // ALERTA INMEDIATA PARA CONFIRMAR QUE SE EJECUTA
+    alert('🚀 ¡BOTÓN FUNCIONANDO! - Guardando evaluación (1-3 años) en tabla EvaluacionesSensoriales');
+    console.log('🚀 Iniciando saveEvaluation() para pagina5...');
+
+    if (!this.paciente) {
+      alert('⚠️ No hay paciente seleccionado. Por favor, selecciona un paciente antes de guardar.');
+      return;
+    }
+
+    // Actualizar progreso antes de guardar
+    this.updateProgress();
+
+    if (this.answeredQuestions === 0) {
+      console.error('❌ No hay preguntas respondidas');
+      alert('Por favor, responde al menos una pregunta antes de guardar.');
+      return;
+    }
+
+    console.log('📝 Recopilando respuestas...');
+    const responses = this.collectResponses();
+    console.log('📋 Respuestas recopiladas:', responses);
+    
+    const progreso = this.totalQuestions > 0 ? Math.round((this.answeredQuestions / this.totalQuestions) * 100) : 0;
+    
+    // Determinar el estado de la evaluación
+    const estado = progreso === 100 ? 'Completada' : 'En Progreso';
+    
+    const evaluacionData: EvaluacionSensorial = {
+      idPaciente: parseInt(this.paciente.idPaciente || this.paciente.id),
+      progreso: progreso,
+      respuestas: responses,
+      tipoFormulario: '1-3', // Identificar que es el formulario de 1-3 años
+      evaluadorNombre: 'Dr. Evaluador (1-3 años)',
+      evaluadorCorreo: 'evaluador@test.com',
+      observaciones: `Evaluación 1-3 años guardada el ${new Date().toLocaleString()}`,
+      estado: estado
+    };
+
+    console.log('💾 Datos de evaluación preparados:', evaluacionData);
+
+    // Guardar en base de datos
+    console.log('🔄 Enviando a base de datos...');
+    
+    this.evaluacionService.guardarEvaluacion(evaluacionData).subscribe({
+      next: (response) => {
+        console.log('✅ Evaluación guardada exitosamente:', response);
+        alert(`✅ Evaluación guardada exitosamente para ${this.paciente.nombre}\nProgreso: ${progreso}%\nEstado: ${estado}`);
+        
+        // También mantener copia en localStorage como respaldo
+        this.saveEvaluationToStorage({
+          pacienteId: this.paciente.id,
+          pacienteNombre: this.paciente.nombre,
+          fechaEvaluacion: new Date().toISOString(),
+          preguntasRespondidas: this.answeredQuestions,
+          porcentajeCompletado: progreso,
+          respuestas: responses,
+          estado: estado,
+          tipoFormulario: '1-3 años'
+        });
+      },
+      error: (error) => {
+        console.error('❌ Error al guardar evaluación:', error);
+        alert(`❌ Error al guardar la evaluación en la base de datos.\n\nDetalles: ${error.message}\n\nLa evaluación se guardará localmente como respaldo.`);
+        
+        // En caso de error, guardar solo localmente
+        this.saveEvaluationToStorage({
+          pacienteId: this.paciente.id,
+          pacienteNombre: this.paciente.nombre,
+          fechaEvaluacion: new Date().toISOString(),
+          preguntasRespondidas: this.answeredQuestions,
+          porcentajeCompletado: progreso,
+          respuestas: responses,
+          estado: estado,
+          guardadoLocal: true,
+          tipoFormulario: '1-3 años'
+        });
+      }
+    });
+  }
+
+  private collectResponses(): any[] {
+    console.log('📝 Recopilando respuestas...');
+    
+    const responses: any[] = [];
+    const checkedInputs = document.querySelectorAll('input[type="radio"]:checked');
+    
+    console.log(`📊 Radio buttons seleccionados encontrados: ${checkedInputs.length}`);
+    
+    checkedInputs.forEach((input: any, index) => {
+      const questionElement = input.closest('.question-card, .question-item');
+      const questionText = questionElement?.querySelector('.question-text, .pregunta-titulo')?.textContent || `Pregunta ${index + 1}`;
+      
+      responses.push({
+        id: index + 1,
+        name: input.name,
+        pregunta: questionText.trim(),
+        respuesta: input.value,
+        puntaje: this.getScoreFromValue(input.value)
+      });
+      
+      console.log(`📝 Respuesta ${index + 1}: ${input.name} = ${input.value}`);
+    });
+    
+    console.log(`📊 Total de respuestas recopiladas: ${responses.length}`);
+    return responses;
+  }
+
+  // Método auxiliar para obtener puntaje
+  private getScoreFromValue(value: string): number {
+    switch(value) {
+      case 'N': return 1;  // Nunca
+      case 'O': return 2;  // Ocasionalmente
+      case 'F': return 3;  // Frecuentemente
+      case 'S': return 4;  // Siempre
+      default: return 2;
+    }
+  }
+
+  private saveEvaluationToStorage(evaluationData: any): void {
+    const existingEvaluations = JSON.parse(localStorage.getItem('evaluaciones') || '[]');
+    
+    // Verificar si ya existe una evaluación para este paciente
+    const existingIndex = existingEvaluations.findIndex((evaluation: any) => evaluation.pacienteId === evaluationData.pacienteId);
+    
+    if (existingIndex >= 0) {
+      // Actualizar evaluación existente
+      existingEvaluations[existingIndex] = evaluationData;
+    } else {
+      // Agregar nueva evaluación
+      existingEvaluations.push(evaluationData);
+    }
+    
+    localStorage.setItem('evaluaciones', JSON.stringify(existingEvaluations));
+  }
+
+  // Método para verificar si hay respuestas (usado en el HTML)
+  hasAnswers(): boolean {
+    // Verificar si hay radio buttons seleccionados
+    const checkedInputs = document.querySelectorAll('input[type="radio"]:checked');
+    const hasAnswers = checkedInputs.length > 0;
+    
+    console.log(`🔍 hasAnswers() verificando... ${checkedInputs.length} respuestas encontradas`);
+    console.log(`📊 hasAnswers(): ${hasAnswers} (answeredQuestions: ${this.answeredQuestions})`);
+    
+    return hasAnswers;
+  }
+
+  // Método para obtener el progreso actual (usado en el HTML)  
+  get currentProgress(): number {
+    const progress = this.totalQuestions > 0 ? Math.round((this.answeredQuestions / this.totalQuestions) * 100) : 0;
+    console.log(`📊 currentProgress: ${progress}% (${this.answeredQuestions}/${this.totalQuestions})`);
+    return progress;
+  }
+
+  // Método original onSubmit (mantenido para compatibilidad con formularios que requieren 100%)
   onSubmit(): void {
     if (this.formularioEvaluacion.valid) {
       this.loading = true;
@@ -251,5 +494,192 @@ export class Pagina5Component implements OnInit {
     this.mensaje = `Datos de ${paciente.nombre} cargados en el formulario.`;
     this.tipoMensaje = 'success';
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  private cargarDatosEvaluacion(): void {
+    if (!this.evaluacionData) return;
+
+    console.log('🔄 Cargando datos de evaluación existente:', this.evaluacionData);
+    console.log('📋 Estructura completa:', JSON.stringify(this.evaluacionData, null, 2));
+
+    // Cargar información básica del paciente desde evaluacionData directamente
+    if (this.evaluacionData.nombreCompleto) {
+      this.formularioEvaluacion.patchValue({
+        nombreNino: this.evaluacionData.nombreCompleto || '',
+        edad: '', // No está en la estructura actual
+        fechaEvaluacion: this.evaluacionData.fechaEvaluacion ? this.evaluacionData.fechaEvaluacion.split('T')[0] : '',
+        evaluador: this.evaluacionData.evaluadorNombre || '',
+        observaciones: this.evaluacionData.observaciones || ''
+      });
+      console.log('📝 Información básica cargada desde evaluacionData directamente');
+    }
+
+    // Cargar respuestas - la estructura principal es un string JSON
+    let respuestasCargadas = 0;
+    if (this.evaluacionData.respuestas) {
+      try {
+        let respuestasArray: any[] = [];
+        
+        // Si respuestas es un string, parsearlo
+        if (typeof this.evaluacionData.respuestas === 'string') {
+          console.log('🔄 Parseando respuestas desde string JSON...');
+          respuestasArray = JSON.parse(this.evaluacionData.respuestas);
+        }
+        // Si ya es un array
+        else if (Array.isArray(this.evaluacionData.respuestas)) {
+          respuestasArray = this.evaluacionData.respuestas;
+        }
+        // Si es un objeto con propiedad respuestas
+        else if (this.evaluacionData.respuestas.respuestas) {
+          respuestasArray = this.evaluacionData.respuestas.respuestas;
+        }
+
+        console.log('� Array de respuestas procesado:', respuestasArray);
+
+        // Mapear las respuestas al formulario
+        respuestasArray.forEach((respuesta: any) => {
+          if (respuesta.id && respuesta.respuesta) {
+            const controlName = `pregunta_${respuesta.id}`;
+            
+            // Mapear el valor "on" a los valores correctos del formulario
+            let valorMapeado = respuesta.respuesta;
+            
+            // Si el valor es "on", necesitamos determinar el valor correcto
+            // Basándome en el puntaje, podemos inferir la respuesta
+            if (respuesta.respuesta === 'on') {
+              if (respuesta.puntaje === 1) valorMapeado = 'N';      // Nunca
+              else if (respuesta.puntaje === 2) valorMapeado = 'O';  // Ocasionalmente  
+              else if (respuesta.puntaje === 3) valorMapeado = 'F';  // Frecuentemente
+              else if (respuesta.puntaje === 4) valorMapeado = 'S';  // Siempre
+              else valorMapeado = 'O'; // Valor por defecto
+            }
+            
+            this.formularioEvaluacion.patchValue({
+              [controlName]: valorMapeado
+            });
+            respuestasCargadas++;
+            console.log(`✅ Cargada respuesta: ${controlName} = ${valorMapeado} (puntaje: ${respuesta.puntaje}, original: ${respuesta.respuesta})`);
+          }
+        });
+
+      } catch (error) {
+        console.error('❌ Error al parsear respuestas:', error);
+        console.log('📋 Respuestas raw:', this.evaluacionData.respuestas);
+      }
+    }
+
+    console.log(`📊 Total de respuestas cargadas: ${respuestasCargadas}`);
+
+    // Forzar actualización del DOM y progreso después de cargar las respuestas
+    setTimeout(() => {
+      console.log('🎨 Paso 1: Iniciando marcado visual de radio buttons...');
+      this.marcarRadioButtonsVisualmente();
+      this.updateProgress();
+    }, 500);
+
+    // Intentar de nuevo después de más tiempo para asegurar que el DOM esté listo
+    setTimeout(() => {
+      console.log('🎨 Paso 2: Segundo intento de marcado visual...');
+      this.marcarRadioButtonsVisualmente();
+      this.forzarActualizacionFormulario();
+      this.updateProgress();
+      this.setupRadioEventListeners();
+    }, 1000);
+
+    console.log('✅ Datos de evaluación cargados en el formulario');
+  }
+
+  private forzarActualizacionFormulario(): void {
+    console.log('🔄 Forzando actualización del formulario...');
+    
+    // Forzar detección de cambios en Angular
+    const formValue = this.formularioEvaluacion.value;
+    Object.keys(formValue).forEach(controlName => {
+      if (controlName.startsWith('pregunta_') && formValue[controlName]) {
+        const control = this.formularioEvaluacion.get(controlName);
+        if (control) {
+          // Forzar que el control se marque como "touched" y disparar cambios
+          control.markAsTouched();
+          control.updateValueAndValidity();
+          console.log(`🔄 Control actualizado: ${controlName} = ${control.value}`);
+        }
+      }
+    });
+    
+    // Forzar actualización de todo el formulario
+    this.formularioEvaluacion.updateValueAndValidity();
+    console.log('✅ Formulario actualizado completamente');
+  }
+
+  private marcarRadioButtonsVisualmente(): void {
+    console.log('🎨 Marcando radio buttons visualmente...');
+    
+    const formValue = this.formularioEvaluacion.value;
+    let radiosMarcados = 0;
+    let radiosEncontrados = 0;
+    
+    // Verificar primero cuántos radio buttons hay en total
+    const totalRadiosEnDOM = document.querySelectorAll('input[type="radio"]').length;
+    console.log(`📊 Total de radio buttons en DOM: ${totalRadiosEnDOM}`);
+    
+    Object.keys(formValue).forEach(controlName => {
+      if (controlName.startsWith('pregunta_') && formValue[controlName]) {
+        radiosEncontrados++;
+        console.log(`🔍 Buscando: ${controlName} = ${formValue[controlName]}`);
+        
+        // Método 1: Buscar por name y value exactos
+        let radioButton = document.querySelector(`input[name="${controlName}"][value="${formValue[controlName]}"]`) as HTMLInputElement;
+        
+        if (radioButton) {
+          radioButton.checked = true;
+          // Disparar evento change para asegurar que Angular lo detecte
+          radioButton.dispatchEvent(new Event('change', { bubbles: true }));
+          radiosMarcados++;
+          console.log(`✅ Marcado radio button (método 1): ${controlName} = ${formValue[controlName]}`);
+        } else {
+          console.warn(`⚠️ No encontrado por name/value: ${controlName} = ${formValue[controlName]}`);
+          
+          // Método 2: Buscar por id más específico
+          radioButton = document.querySelector(`input[id="${controlName}_${formValue[controlName]}"]`) as HTMLInputElement;
+          if (radioButton) {
+            radioButton.checked = true;
+            radioButton.dispatchEvent(new Event('change', { bubbles: true }));
+            radiosMarcados++;
+            console.log(`✅ Marcado radio button (método 2): ${controlName} = ${formValue[controlName]}`);
+          } else {
+            // Método 3: Buscar todos los radio buttons del grupo y marcar el correcto
+            const radiosDelGrupo = document.querySelectorAll(`input[name="${controlName}"]`);
+            console.log(`🔍 Radio buttons del grupo ${controlName}:`, radiosDelGrupo.length);
+            
+            radiosDelGrupo.forEach((radio: any) => {
+              console.log(`   - Radio encontrado: value="${radio.value}", id="${radio.id}"`);
+              if (radio.value === formValue[controlName]) {
+                radio.checked = true;
+                radio.dispatchEvent(new Event('change', { bubbles: true }));
+                radiosMarcados++;
+                console.log(`✅ Marcado radio button (método 3): ${controlName} = ${formValue[controlName]}`);
+              }
+            });
+          }
+        }
+      }
+    });
+    
+    console.log(`🎨 Resultado del marcado:`);
+    console.log(`   - Controles procesados: ${radiosEncontrados}`);
+    console.log(`   - Radio buttons marcados: ${radiosMarcados}`);
+    
+    // Verificar estado final
+    const radiosChecked = document.querySelectorAll('input[type="radio"]:checked').length;
+    console.log(`📊 Estado final: ${radiosChecked} radio buttons marcados de ${totalRadiosEnDOM} totales`);
+    
+    // Si no se marcó ninguno, listar todos los radio buttons disponibles para debug
+    if (radiosMarcados === 0 && radiosEncontrados > 0) {
+      console.log('🔍 DEBUG: Listando todos los radio buttons para análisis...');
+      const todosLosRadios = document.querySelectorAll('input[type="radio"]');
+      todosLosRadios.forEach((radio: any, index) => {
+        console.log(`   ${index}: name="${radio.name}", value="${radio.value}", id="${radio.id}"`);
+      });
+    }
   }
 }

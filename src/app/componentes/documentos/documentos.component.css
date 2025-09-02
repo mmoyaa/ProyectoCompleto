@@ -1,0 +1,83 @@
+.card {
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: box-shadow 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.btn-group .btn {
+  margin: 0 2px;
+}
+
+.table td, .table th {
+  vertical-align: middle;
+}
+
+.img-thumbnail {
+  border: 2px solid #dee2e6;
+  border-radius: 8px;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+.alert {
+  border-radius: 8px;
+}
+
+.badge {
+  font-size: 0.8em;
+}
+
+.table-responsive {
+  border-radius: 8px;
+}
+
+.card-header {
+  font-weight: 600;
+}
+
+.form-text {
+  font-size: 0.875em;
+}
+
+.btn-close {
+  filter: brightness(0) invert(1);
+}
+
+/* Animaciones */
+.fade-in {
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .btn-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  
+  .btn-group .btn {
+    margin: 0;
+  }
+  
+  .table-responsive {
+    font-size: 0.875rem;
+  }
+}

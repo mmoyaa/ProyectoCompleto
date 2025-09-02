@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Input } from '@angular/core';
 import { PacienteService } from 'src/app/services/paciente.service';
-import { EvaluacionService } from 'src/app/services/evaluacion.service';
+import { EvaluacionService, EvaluacionSensorial } from 'src/app/services/evaluacion.service';
 
 @Component({
   selector: 'app-formulario-6-12',
@@ -12,6 +12,7 @@ import { EvaluacionService } from 'src/app/services/evaluacion.service';
 })
 export class Formulario612Component implements OnInit {
   @Input() paciente: any;
+  @Input() evaluacionData: EvaluacionSensorial | null = null;
   formularioParticipacion!: FormGroup;
   loading = false;
   mensaje = '';
@@ -375,6 +376,11 @@ export class Formulario612Component implements OnInit {
     this.initializeForm();
     // Cargar la lista de pacientes automáticamente
     this.cargarListaPacientes();
+    
+    // Si hay datos de evaluación, cargarlos en el formulario
+    if (this.evaluacionData) {
+      this.cargarDatosEvaluacion();
+    }
   }
 
   private initializeForm(): void {
@@ -912,5 +918,126 @@ export class Formulario612Component implements OnInit {
       this.mensaje = 'No se pudo cargar los datos del paciente';
       this.tipoMensaje = 'error';
     }
+  }
+
+  private cargarDatosEvaluacion(): void {
+    if (!this.evaluacionData) return;
+
+    console.log('🔄 Cargando datos de evaluación existente (6-12):', this.evaluacionData);
+    console.log('📋 Estructura completa (6-12):', JSON.stringify(this.evaluacionData, null, 2));
+
+    let respuestasCargadas = 0;
+
+    // Cargar información básica del paciente desde evaluacionData directamente
+    if (this.evaluacionData.nombreCompleto) {
+      this.formularioParticipacion.patchValue({
+        nombreNino: this.evaluacionData.nombreCompleto || '',
+        edad: '', // No está en la estructura actual
+        fechaEvaluacion: this.evaluacionData.fechaEvaluacion ? this.evaluacionData.fechaEvaluacion.split('T')[0] : '',
+        evaluador: this.evaluacionData.evaluadorNombre || '',
+        observaciones: this.evaluacionData.observaciones || ''
+      });
+      console.log('📝 Información básica cargada desde evaluacionData directamente (6-12)');
+    }
+
+    // Cargar respuestas - la estructura principal es un string JSON
+    if (this.evaluacionData.respuestas) {
+      try {
+        let respuestasArray: any[] = [];
+        
+        // Si respuestas es un string, parsearlo
+        if (typeof this.evaluacionData.respuestas === 'string') {
+          console.log('🔄 Parseando respuestas desde string JSON (6-12)...');
+          respuestasArray = JSON.parse(this.evaluacionData.respuestas);
+        }
+        // Si ya es un array
+        else if (Array.isArray(this.evaluacionData.respuestas)) {
+          respuestasArray = this.evaluacionData.respuestas;
+        }
+        // Si es un objeto con propiedad respuestas
+        else if (this.evaluacionData.respuestas.respuestas) {
+          respuestasArray = this.evaluacionData.respuestas.respuestas;
+        }
+
+        console.log('� Array de respuestas procesado (6-12):', respuestasArray);
+
+        // Mapear las respuestas al formulario
+        respuestasArray.forEach((respuesta: any) => {
+          if (respuesta.id && respuesta.respuesta) {
+            const controlName = `pregunta_${respuesta.id}`;
+            
+            // Mapear el valor "on" a los valores correctos del formulario
+            let valorMapeado = respuesta.respuesta;
+            
+            // Si el valor es "on", necesitamos determinar el valor correcto basado en el puntaje
+            if (respuesta.respuesta === 'on') {
+              if (respuesta.puntaje === 1) valorMapeado = 'N';      // Nunca
+              else if (respuesta.puntaje === 2) valorMapeado = 'O';  // Ocasionalmente  
+              else if (respuesta.puntaje === 3) valorMapeado = 'F';  // Frecuentemente
+              else if (respuesta.puntaje === 4) valorMapeado = 'S';  // Siempre
+              else valorMapeado = 'O'; // Valor por defecto
+            }
+            
+            if (this.formularioParticipacion.get(controlName)) {
+              this.formularioParticipacion.patchValue({
+                [controlName]: valorMapeado
+              });
+              respuestasCargadas++;
+              console.log(`✅ Cargada respuesta (6-12): ${controlName} = ${valorMapeado} (puntaje: ${respuesta.puntaje}, original: ${respuesta.respuesta})`);
+            }
+          }
+        });
+
+      } catch (error) {
+        console.error('❌ Error al parsear respuestas (6-12):', error);
+        console.log('📋 Respuestas raw (6-12):', this.evaluacionData.respuestas);
+      }
+    }
+
+    console.log(`📊 Total de respuestas cargadas (6-12): ${respuestasCargadas}`);
+
+    // Forzar actualización visual de los radio buttons
+    setTimeout(() => {
+      console.log('🎨 Iniciando marcado visual de radio buttons (6-12)...');
+      this.marcarRadioButtonsVisualmente();
+    }, 300);
+
+    console.log('✅ Datos de evaluación 6-12 cargados en el formulario');
+  }
+
+  private marcarRadioButtonsVisualmente(): void {
+    console.log('🎨 Marcando radio buttons visualmente en formulario 6-12...');
+    
+    const formValue = this.formularioParticipacion.value;
+    let radiosMarcados = 0;
+    
+    Object.keys(formValue).forEach(controlName => {
+      if (controlName.startsWith('pregunta_') && formValue[controlName]) {
+        // Buscar por name y value
+        const radioButton = document.querySelector(`input[name="${controlName}"][value="${formValue[controlName]}"]`) as HTMLInputElement;
+        if (radioButton) {
+          radioButton.checked = true;
+          radiosMarcados++;
+          console.log(`✅ Marcado radio button (6-12): ${controlName} = ${formValue[controlName]}`);
+        } else {
+          console.warn(`⚠️ No se encontró radio button (6-12): ${controlName} = ${formValue[controlName]}`);
+          
+          // Intentar encontrar por id alternativo
+          const radioById = document.querySelector(`input[id*="${controlName}"][value="${formValue[controlName]}"]`) as HTMLInputElement;
+          if (radioById) {
+            radioById.checked = true;
+            radiosMarcados++;
+            console.log(`✅ Marcado radio button por ID (6-12): ${controlName} = ${formValue[controlName]}`);
+          }
+        }
+      }
+    });
+    
+    console.log(`🎨 Radio buttons marcados visualmente (6-12): ${radiosMarcados}`);
+    
+    // Verificar si hay radio buttons en el DOM
+    const totalRadios = document.querySelectorAll('input[type="radio"]').length;
+    const radiosChecked = document.querySelectorAll('input[type="radio"]:checked').length;
+    console.log(`📊 Radio buttons en DOM (6-12): ${totalRadios}, marcados: ${radiosChecked}`);
   }
 }

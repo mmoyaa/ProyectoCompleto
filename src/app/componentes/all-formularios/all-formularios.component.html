@@ -18,9 +18,9 @@
 </div>
 
 
-<div  class="container-fluid"   *ngIf="tipoFormularioSeleccionado === '1-3'">
-  <app-pagina5    [paciente]="pacienteSeleccionado"></app-pagina5>
+<div class="formulario-completo" *ngIf="tipoFormularioSeleccionado === '1-3'">
+  <app-pagina5 [paciente]="pacienteSeleccionado" [evaluacionData]="evaluacionData"></app-pagina5>
 </div>
-<div class="container-fluid"  *ngIf="tipoFormularioSeleccionado === '6-12'">
-  <app-formulario-6-12 [paciente]="pacienteSeleccionado"></app-formulario-6-12>
+<div class="formulario-completo" *ngIf="tipoFormularioSeleccionado === '6-12'">
+  <app-formulario-6-12 [paciente]="pacienteSeleccionado" [evaluacionData]="evaluacionData"></app-formulario-6-12>
 </div>

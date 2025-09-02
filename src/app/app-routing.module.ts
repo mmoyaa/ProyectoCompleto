@@ -9,11 +9,11 @@ import { GraficosComponent } from './componentes/graficos/graficos.component';
 import { Grafico612Component } from './componentes/grafico6-12/grafico6-12.component';
 import { Pagina3Component } from './componentes/pagina3/pagina3.component';
 import { Formulario612Component } from './componentes/formulario-6-12/formulario-6-12.component';
-
 import { AllFormulariosComponent } from './componentes/all-formularios/all-formularios.component';
 import { Formulario13Component } from './componentes/formulario-1-3/formulario-1-3.component';
 import { Pagina5Component } from './componentes/pagina5/pagina5.component';
 import { ProbandoComponent } from './componentes/probando/probando.component';
+import { DocumentosComponent } from './componentes/documentos/documentos.component';
 
 
 const routes: Routes = [
@@ -31,6 +31,7 @@ const routes: Routes = [
   { path:'formulario6-13', component:Formulario13Component },
   { path:'pagina5', component: Pagina5Component },
   { path:'probando', component: ProbandoComponent },
+  { path:'documentos', component: DocumentosComponent },
 ];
 
 @NgModule({

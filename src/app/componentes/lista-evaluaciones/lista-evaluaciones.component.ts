@@ -59,13 +59,77 @@ export class ListaEvaluacionesComponent implements OnInit {
   }
 
   editarEvaluacion(evaluacion: EvaluacionSensorial): void {
-    // Navegar al formulario de evaluación para editar
-    this.router.navigate(['/pagina2'], { 
+    // Determinar qué formulario usar según el tipoFormulario
+    let rutaFormulario = '/pagina2'; // Por defecto 6-12 años (pagina2)
+    
+    if (evaluacion.tipoFormulario === '1-3') {
+      // Para evaluaciones de 1-3 años, usar all-formularios con parámetros específicos
+      this.router.navigate(['/all-formularios'], { 
+        queryParams: { 
+          pacienteId: evaluacion.rut || evaluacion.idPaciente,
+          evaluacionId: evaluacion.idEvaluacion,
+          tipoFormulario: '1-3'
+        } 
+      });
+      return;
+    } else if (evaluacion.tipoFormulario === '6-12') {
+      // Para evaluaciones de 6-12 años, usar all-formularios también
+      this.router.navigate(['/all-formularios'], { 
+        queryParams: { 
+          pacienteId: evaluacion.rut || evaluacion.idPaciente,
+          evaluacionId: evaluacion.idEvaluacion,
+          tipoFormulario: '6-12'
+        } 
+      });
+      return;
+    } else {
+      // Si no se especifica el tipo, intentar determinar por el número de respuestas o estructura
+      console.log('Tipo de formulario no especificado, determinando automáticamente...');
+      
+      // Si tiene respuestas en formato de pagina5 (1-3 años), usar all-formularios
+      if (this.esFormulario13Anos(evaluacion)) {
+        this.router.navigate(['/all-formularios'], { 
+          queryParams: { 
+            pacienteId: evaluacion.rut || evaluacion.idPaciente,
+            evaluacionId: evaluacion.idEvaluacion,
+            tipoFormulario: '1-3'
+          } 
+        });
+        return;
+      }
+    }
+    
+    // Navegar al formulario de evaluación correspondiente
+    this.router.navigate([rutaFormulario], { 
       queryParams: { 
-        pacienteId: evaluacion.idPaciente,
+        pacienteId: evaluacion.rut || evaluacion.idPaciente,
         evaluacionId: evaluacion.idEvaluacion 
       } 
     });
+  }
+
+  // Método auxiliar para determinar si es formulario de 1-3 años
+  private esFormulario13Anos(evaluacion: EvaluacionSensorial): boolean {
+    try {
+      const respuestas = typeof evaluacion.respuestas === 'string' 
+        ? JSON.parse(evaluacion.respuestas) 
+        : evaluacion.respuestas;
+      
+      // Si las respuestas son un array (formato de pagina5), es 1-3 años
+      if (Array.isArray(respuestas)) {
+        return true;
+      }
+      
+      // Si tiene la estructura de informacionNino, es 6-12 años
+      if (respuestas && respuestas.informacionNino) {
+        return false;
+      }
+      
+      return false;
+    } catch (error) {
+      console.error('Error al determinar tipo de formulario:', error);
+      return false;
+    }
   }
 
   eliminarEvaluacion(evaluacion: EvaluacionSensorial): void {
