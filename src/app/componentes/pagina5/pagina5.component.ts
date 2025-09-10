@@ -242,9 +242,8 @@ export class Pagina5Component implements OnInit, AfterViewInit, OnChanges {
       event.stopPropagation();
     }
     
-    // ALERTA INMEDIATA PARA CONFIRMAR QUE SE EJECUTA
-    alert('🚀 ¡BOTÓN FUNCIONANDO! - Guardando evaluación (1-3 años) en tabla EvaluacionesSensoriales');
-    console.log('🚀 Iniciando saveEvaluation() para pagina5...');
+    const accion = this.evaluacionData ? 'Actualizando' : 'Guardando';
+    console.log(`🚀 ${accion} evaluación (1-3 años) en tabla EvaluacionesSensoriales`);
 
     if (!this.paciente) {
       alert('⚠️ No hay paciente seleccionado. Por favor, selecciona un paciente antes de guardar.');
@@ -270,25 +269,30 @@ export class Pagina5Component implements OnInit, AfterViewInit, OnChanges {
     const estado = progreso === 100 ? 'Completada' : 'En Progreso';
     
     const evaluacionData: EvaluacionSensorial = {
+      idEvaluacion: this.evaluacionData?.idEvaluacion, // Incluir ID si estamos editando
       idPaciente: parseInt(this.paciente.idPaciente || this.paciente.id),
       progreso: progreso,
       respuestas: responses,
       tipoFormulario: '1-3', // Identificar que es el formulario de 1-3 años
-      evaluadorNombre: 'Dr. Evaluador (1-3 años)',
+      evaluadorNombre: this.formularioEvaluacion.value.evaluador || 'Dr. Evaluador (1-3 años)',
       evaluadorCorreo: 'evaluador@test.com',
-      observaciones: `Evaluación 1-3 años guardada el ${new Date().toLocaleString()}`,
+      observaciones: this.formularioEvaluacion.value.observaciones || `Evaluación 1-3 años ${accion.toLowerCase()} el ${new Date().toLocaleString()}`,
       estado: estado
     };
 
     console.log('💾 Datos de evaluación preparados:', evaluacionData);
 
-    // Guardar en base de datos
+    // Guardar o actualizar en base de datos
     console.log('🔄 Enviando a base de datos...');
     
     this.evaluacionService.guardarEvaluacion(evaluacionData).subscribe({
       next: (response) => {
-        console.log('✅ Evaluación guardada exitosamente:', response);
-        alert(`✅ Evaluación guardada exitosamente para ${this.paciente.nombre}\nProgreso: ${progreso}%\nEstado: ${estado}`);
+        console.log(`✅ Evaluación ${accion.toLowerCase()} exitosamente:`, response);
+        const mensaje = this.evaluacionData 
+          ? `✅ Evaluación actualizada exitosamente para ${this.paciente.nombre}`
+          : `✅ Evaluación guardada exitosamente para ${this.paciente.nombre}`;
+        
+        alert(`${mensaje}\nProgreso: ${progreso}%\nEstado: ${estado}`);
         
         // También mantener copia en localStorage como respaldo
         this.saveEvaluationToStorage({
@@ -303,8 +307,8 @@ export class Pagina5Component implements OnInit, AfterViewInit, OnChanges {
         });
       },
       error: (error) => {
-        console.error('❌ Error al guardar evaluación:', error);
-        alert(`❌ Error al guardar la evaluación en la base de datos.\n\nDetalles: ${error.message}\n\nLa evaluación se guardará localmente como respaldo.`);
+        console.error(`❌ Error al ${accion.toLowerCase()} evaluación:`, error);
+        alert(`❌ Error al ${accion.toLowerCase()} la evaluación en la base de datos.\n\nDetalles: ${error.message}\n\nLa evaluación se guardará localmente como respaldo.`);
         
         // En caso de error, guardar solo localmente
         this.saveEvaluationToStorage({
@@ -324,29 +328,118 @@ export class Pagina5Component implements OnInit, AfterViewInit, OnChanges {
 
   private collectResponses(): any[] {
     console.log('📝 Recopilando respuestas...');
+    console.log('📋 Estado actual del formulario:', this.formularioEvaluacion.value);
     
     const responses: any[] = [];
-    const checkedInputs = document.querySelectorAll('input[type="radio"]:checked');
     
-    console.log(`📊 Radio buttons seleccionados encontrados: ${checkedInputs.length}`);
-    
-    checkedInputs.forEach((input: any, index) => {
-      const questionElement = input.closest('.question-card, .question-item');
-      const questionText = questionElement?.querySelector('.question-text, .pregunta-titulo')?.textContent || `Pregunta ${index + 1}`;
-      
-      responses.push({
-        id: index + 1,
-        name: input.name,
-        pregunta: questionText.trim(),
-        respuesta: input.value,
-        puntaje: this.getScoreFromValue(input.value)
-      });
-      
-      console.log(`📝 Respuesta ${index + 1}: ${input.name} = ${input.value}`);
+    // Método 1: Usar los valores del formulario Angular
+    console.log('🔍 Método 1: Recopilando desde FormGroup...');
+    const formValue = this.formularioEvaluacion.value;
+    Object.keys(formValue).forEach(controlName => {
+      if (controlName.startsWith('pregunta_') && formValue[controlName]) {
+        const preguntaId = controlName.replace('pregunta_', '');
+        const valor = formValue[controlName];
+        
+        // Encontrar el texto de la pregunta
+        const preguntaTexto = this.findQuestionText(parseInt(preguntaId));
+        
+        responses.push({
+          id: parseInt(preguntaId),
+          name: controlName,
+          pregunta: preguntaTexto,
+          respuesta: valor,
+          puntaje: this.getScoreFromValue(valor)
+        });
+        
+        console.log(`📝 Respuesta desde FormGroup: ${controlName} = ${valor}`);
+      }
     });
     
+    // Método 2: Verificar radio buttons del DOM (como respaldo)
+    console.log('🔍 Método 2: Verificando radio buttons del DOM...');
+    const checkedInputs = document.querySelectorAll('input[type="radio"]:checked');
+    console.log(`📊 Radio buttons seleccionados en DOM: ${checkedInputs.length}`);
+    
+    checkedInputs.forEach((input: any, index) => {
+      console.log(`🔘 Radio ${index + 1}: ${input.name} = ${input.value}`);
+    });
+    
+    // Si no hay respuestas del FormGroup pero sí del DOM, usar el DOM
+    if (responses.length === 0 && checkedInputs.length > 0) {
+      console.log('⚠️ Usando respuestas del DOM como respaldo...');
+      checkedInputs.forEach((input: any, index) => {
+        const questionElement = input.closest('.row');
+        const questionLabel = questionElement?.querySelector('label')?.textContent || `Pregunta ${index + 1}`;
+        
+        // Extraer ID de la pregunta del name del input
+        const match = input.name.match(/pregunta_(\d+)/);
+        const preguntaId = match ? parseInt(match[1]) : index + 1;
+        
+        responses.push({
+          id: preguntaId,
+          name: input.name,
+          pregunta: questionLabel.trim(),
+          respuesta: input.value,
+          puntaje: this.getScoreFromValue(input.value)
+        });
+        
+        console.log(`📝 Respuesta desde DOM ${index + 1}: ${input.name} = ${input.value}`);
+      });
+    }
+    
     console.log(`📊 Total de respuestas recopiladas: ${responses.length}`);
+    console.log('📋 Respuestas finales:', responses);
+    
     return responses;
+  }
+
+  // Método auxiliar para encontrar el texto de una pregunta por ID
+  private findQuestionText(preguntaId: number): string {
+    const todasLasPreguntas = [
+      ...this.preguntasVision,
+      ...this.preguntasAuditivo,
+      ...this.preguntasTactil,
+      ...this.preguntasGustoOlfato,
+      ...this.preguntasConcienciaCorporal,
+      ...this.preguntasEquilibrioMovimiento,
+      ...this.preguntasPlanificacionIdeas,
+      ...this.preguntasParticipacionSocial
+    ];
+    
+    const pregunta = todasLasPreguntas.find(p => p.id === preguntaId);
+    return pregunta ? `${preguntaId}. ${pregunta.texto}` : `Pregunta ${preguntaId}`;
+  }
+
+  // Método de depuración para verificar estado del formulario (público para usar en template)
+  debugFormState(): void {
+    console.log('🔧 === DEBUG: Estado del Formulario ===');
+    console.log('📋 FormGroup valid:', this.formularioEvaluacion.valid);
+    console.log('📋 FormGroup dirty:', this.formularioEvaluacion.dirty);
+    console.log('📋 FormGroup touched:', this.formularioEvaluacion.touched);
+    console.log('📋 FormGroup value:', this.formularioEvaluacion.value);
+    
+    // Verificar controles de preguntas específicamente
+    const preguntaControls = Object.keys(this.formularioEvaluacion.controls)
+      .filter(key => key.startsWith('pregunta_'));
+    
+    console.log(`📊 Controles de preguntas encontrados: ${preguntaControls.length}`);
+    
+    let controlsWithValues = 0;
+    preguntaControls.forEach(controlName => {
+      const control = this.formularioEvaluacion.get(controlName);
+      if (control && control.value) {
+        controlsWithValues++;
+        console.log(`✅ ${controlName}: ${control.value}`);
+      }
+    });
+    
+    console.log(`📊 Controles con valores: ${controlsWithValues}/${preguntaControls.length}`);
+    
+    // Verificar radio buttons del DOM
+    const checkedRadios = document.querySelectorAll('input[type="radio"]:checked');
+    console.log(`🔘 Radio buttons marcados en DOM: ${checkedRadios.length}`);
+    
+    console.log('🔧 === FIN DEBUG ===');
   }
 
   // Método auxiliar para obtener puntaje
@@ -500,9 +593,9 @@ export class Pagina5Component implements OnInit, AfterViewInit, OnChanges {
     if (!this.evaluacionData) return;
 
     console.log('🔄 Cargando datos de evaluación existente:', this.evaluacionData);
-    console.log('📋 Estructura completa:', JSON.stringify(this.evaluacionData, null, 2));
+    console.log('📋 Estructura completa de respuestas:', this.evaluacionData.respuestas);
 
-    // Cargar información básica del paciente desde evaluacionData directamente
+    // Cargar información básica del paciente
     if (this.evaluacionData.nombreCompleto) {
       this.formularioEvaluacion.patchValue({
         nombreNino: this.evaluacionData.nombreCompleto || '',
@@ -511,82 +604,125 @@ export class Pagina5Component implements OnInit, AfterViewInit, OnChanges {
         evaluador: this.evaluacionData.evaluadorNombre || '',
         observaciones: this.evaluacionData.observaciones || ''
       });
-      console.log('📝 Información básica cargada desde evaluacionData directamente');
+      console.log('📝 Información básica cargada');
     }
 
-    // Cargar respuestas - la estructura principal es un string JSON
+    // Preparar objeto para patchValue
+    const formValues: any = {};
     let respuestasCargadas = 0;
+
     if (this.evaluacionData.respuestas) {
       try {
         let respuestasArray: any[] = [];
         
-        // Si respuestas es un string, parsearlo
+        // Parsear respuestas según el formato
         if (typeof this.evaluacionData.respuestas === 'string') {
-          console.log('🔄 Parseando respuestas desde string JSON...');
-          respuestasArray = JSON.parse(this.evaluacionData.respuestas);
-        }
-        // Si ya es un array
-        else if (Array.isArray(this.evaluacionData.respuestas)) {
+          const parsedData = JSON.parse(this.evaluacionData.respuestas);
+          console.log('📋 Datos parseados desde string:', parsedData);
+          respuestasArray = parsedData;
+        } else if (Array.isArray(this.evaluacionData.respuestas)) {
           respuestasArray = this.evaluacionData.respuestas;
-        }
-        // Si es un objeto con propiedad respuestas
-        else if (this.evaluacionData.respuestas.respuestas) {
+        } else if (this.evaluacionData.respuestas.respuestas) {
           respuestasArray = this.evaluacionData.respuestas.respuestas;
         }
 
-        console.log('� Array de respuestas procesado:', respuestasArray);
+        console.log('📋 Array de respuestas final para procesar:', respuestasArray);
+        console.log('📊 Cantidad de respuestas a procesar:', respuestasArray.length);
 
-        // Mapear las respuestas al formulario
-        respuestasArray.forEach((respuesta: any) => {
+        // Mapear respuestas al formato del formulario
+        respuestasArray.forEach((respuesta: any, index: number) => {
+          console.log(`🔍 Procesando respuesta ${index + 1}:`, respuesta);
+          
+          // Buscar diferentes estructuras posibles
+          let preguntaId = null;
+          let valorRespuesta = null;
+          
+          // Formato 1: { id: X, respuesta: "Y" }
           if (respuesta.id && respuesta.respuesta) {
-            const controlName = `pregunta_${respuesta.id}`;
+            preguntaId = respuesta.id;
+            valorRespuesta = respuesta.respuesta;
+          }
+          // Formato 2: { preguntaId: X, respuesta: "Y" }  
+          else if (respuesta.preguntaId && respuesta.respuesta) {
+            preguntaId = respuesta.preguntaId;
+            valorRespuesta = respuesta.respuesta;
+          }
+          // Formato 3: { name: "pregunta_X", respuesta: "Y" }
+          else if (respuesta.name && respuesta.respuesta) {
+            const match = respuesta.name.match(/pregunta[_]?(\d+)/);
+            if (match) {
+              preguntaId = parseInt(match[1]);
+              valorRespuesta = respuesta.respuesta;
+            }
+          }
+          // Formato 4: { pregunta: "text", respuesta: "Y" } - usar el índice
+          else if (respuesta.respuesta && !preguntaId) {
+            preguntaId = index + 1; // Usar índice como ID
+            valorRespuesta = respuesta.respuesta;
+          }
+
+          if (preguntaId && valorRespuesta) {
+            const controlName = `pregunta_${preguntaId}`;
             
-            // Mapear el valor "on" a los valores correctos del formulario
-            let valorMapeado = respuesta.respuesta;
+            // Limpiar y validar el valor de respuesta
+            let valorMapeado = valorRespuesta.toString().trim().toUpperCase();
             
-            // Si el valor es "on", necesitamos determinar el valor correcto
-            // Basándome en el puntaje, podemos inferir la respuesta
-            if (respuesta.respuesta === 'on') {
-              if (respuesta.puntaje === 1) valorMapeado = 'N';      // Nunca
-              else if (respuesta.puntaje === 2) valorMapeado = 'O';  // Ocasionalmente  
-              else if (respuesta.puntaje === 3) valorMapeado = 'F';  // Frecuentemente
-              else if (respuesta.puntaje === 4) valorMapeado = 'S';  // Siempre
-              else valorMapeado = 'O'; // Valor por defecto
+            // Mapear valores especiales
+            if (valorMapeado === 'ON' || valorMapeado === 'TRUE') {
+              // Si encontramos 'on' o 'true', intentar mapear por puntaje
+              if (respuesta.puntaje) {
+                switch(respuesta.puntaje) {
+                  case 1: valorMapeado = 'N'; break;
+                  case 2: valorMapeado = 'O'; break;
+                  case 3: valorMapeado = 'F'; break;
+                  case 4: valorMapeado = 'S'; break;
+                  default: valorMapeado = 'O'; break;
+                }
+              } else {
+                valorMapeado = 'O'; // Valor por defecto
+              }
             }
             
-            this.formularioEvaluacion.patchValue({
-              [controlName]: valorMapeado
-            });
-            respuestasCargadas++;
-            console.log(`✅ Cargada respuesta: ${controlName} = ${valorMapeado} (puntaje: ${respuesta.puntaje}, original: ${respuesta.respuesta})`);
+            // Validar que el valor está en el rango permitido
+            if (['N', 'O', 'F', 'S'].includes(valorMapeado)) {
+              formValues[controlName] = valorMapeado;
+              respuestasCargadas++;
+              console.log(`✅ Respuesta ${respuestasCargadas}: ${controlName} = ${valorMapeado}`);
+            } else {
+              console.warn(`⚠️ Valor inválido para ${controlName}: ${valorMapeado}`);
+            }
+          } else {
+            console.warn(`⚠️ No se pudo procesar respuesta ${index + 1}:`, respuesta);
           }
         });
 
       } catch (error) {
         console.error('❌ Error al parsear respuestas:', error);
-        console.log('📋 Respuestas raw:', this.evaluacionData.respuestas);
       }
     }
 
-    console.log(`📊 Total de respuestas cargadas: ${respuestasCargadas}`);
+    console.log(`📊 Total de respuestas procesadas: ${respuestasCargadas}`);
+    console.log('📋 Valores preparados para el formulario:', formValues);
 
-    // Forzar actualización del DOM y progreso después de cargar las respuestas
-    setTimeout(() => {
-      console.log('🎨 Paso 1: Iniciando marcado visual de radio buttons...');
-      this.marcarRadioButtonsVisualmente();
-      this.updateProgress();
-    }, 500);
+    // Aplicar todos los valores de una vez usando patchValue
+    if (Object.keys(formValues).length > 0) {
+      this.formularioEvaluacion.patchValue(formValues);
+      console.log(`✅ ${respuestasCargadas} respuestas aplicadas al formulario`);
+      
+      // Forzar detección de cambios y actualización del progreso
+      setTimeout(() => {
+        this.updateProgress();
+        console.log('✅ Progreso actualizado después de cargar datos');
+        
+        // Verificar que los radio buttons están seleccionados
+        const checkedRadios = document.querySelectorAll('input[type="radio"]:checked');
+        console.log(`🔘 Radio buttons seleccionados después de cargar: ${checkedRadios.length}`);
+      }, 300);
+    } else {
+      console.warn('⚠️ No se aplicaron valores al formulario');
+    }
 
-    // Intentar de nuevo después de más tiempo para asegurar que el DOM esté listo
-    setTimeout(() => {
-      console.log('🎨 Paso 2: Segundo intento de marcado visual...');
-      this.marcarRadioButtonsVisualmente();
-      this.forzarActualizacionFormulario();
-      this.updateProgress();
-      this.setupRadioEventListeners();
-    }, 1000);
-
-    console.log('✅ Datos de evaluación cargados en el formulario');
+    console.log('✅ Carga de datos de evaluación completada');
   }
 
   private forzarActualizacionFormulario(): void {
@@ -598,88 +734,14 @@ export class Pagina5Component implements OnInit, AfterViewInit, OnChanges {
       if (controlName.startsWith('pregunta_') && formValue[controlName]) {
         const control = this.formularioEvaluacion.get(controlName);
         if (control) {
-          // Forzar que el control se marque como "touched" y disparar cambios
           control.markAsTouched();
           control.updateValueAndValidity();
-          console.log(`🔄 Control actualizado: ${controlName} = ${control.value}`);
         }
       }
     });
     
-    // Forzar actualización de todo el formulario
     this.formularioEvaluacion.updateValueAndValidity();
     console.log('✅ Formulario actualizado completamente');
   }
 
-  private marcarRadioButtonsVisualmente(): void {
-    console.log('🎨 Marcando radio buttons visualmente...');
-    
-    const formValue = this.formularioEvaluacion.value;
-    let radiosMarcados = 0;
-    let radiosEncontrados = 0;
-    
-    // Verificar primero cuántos radio buttons hay en total
-    const totalRadiosEnDOM = document.querySelectorAll('input[type="radio"]').length;
-    console.log(`📊 Total de radio buttons en DOM: ${totalRadiosEnDOM}`);
-    
-    Object.keys(formValue).forEach(controlName => {
-      if (controlName.startsWith('pregunta_') && formValue[controlName]) {
-        radiosEncontrados++;
-        console.log(`🔍 Buscando: ${controlName} = ${formValue[controlName]}`);
-        
-        // Método 1: Buscar por name y value exactos
-        let radioButton = document.querySelector(`input[name="${controlName}"][value="${formValue[controlName]}"]`) as HTMLInputElement;
-        
-        if (radioButton) {
-          radioButton.checked = true;
-          // Disparar evento change para asegurar que Angular lo detecte
-          radioButton.dispatchEvent(new Event('change', { bubbles: true }));
-          radiosMarcados++;
-          console.log(`✅ Marcado radio button (método 1): ${controlName} = ${formValue[controlName]}`);
-        } else {
-          console.warn(`⚠️ No encontrado por name/value: ${controlName} = ${formValue[controlName]}`);
-          
-          // Método 2: Buscar por id más específico
-          radioButton = document.querySelector(`input[id="${controlName}_${formValue[controlName]}"]`) as HTMLInputElement;
-          if (radioButton) {
-            radioButton.checked = true;
-            radioButton.dispatchEvent(new Event('change', { bubbles: true }));
-            radiosMarcados++;
-            console.log(`✅ Marcado radio button (método 2): ${controlName} = ${formValue[controlName]}`);
-          } else {
-            // Método 3: Buscar todos los radio buttons del grupo y marcar el correcto
-            const radiosDelGrupo = document.querySelectorAll(`input[name="${controlName}"]`);
-            console.log(`🔍 Radio buttons del grupo ${controlName}:`, radiosDelGrupo.length);
-            
-            radiosDelGrupo.forEach((radio: any) => {
-              console.log(`   - Radio encontrado: value="${radio.value}", id="${radio.id}"`);
-              if (radio.value === formValue[controlName]) {
-                radio.checked = true;
-                radio.dispatchEvent(new Event('change', { bubbles: true }));
-                radiosMarcados++;
-                console.log(`✅ Marcado radio button (método 3): ${controlName} = ${formValue[controlName]}`);
-              }
-            });
-          }
-        }
-      }
-    });
-    
-    console.log(`🎨 Resultado del marcado:`);
-    console.log(`   - Controles procesados: ${radiosEncontrados}`);
-    console.log(`   - Radio buttons marcados: ${radiosMarcados}`);
-    
-    // Verificar estado final
-    const radiosChecked = document.querySelectorAll('input[type="radio"]:checked').length;
-    console.log(`📊 Estado final: ${radiosChecked} radio buttons marcados de ${totalRadiosEnDOM} totales`);
-    
-    // Si no se marcó ninguno, listar todos los radio buttons disponibles para debug
-    if (radiosMarcados === 0 && radiosEncontrados > 0) {
-      console.log('🔍 DEBUG: Listando todos los radio buttons para análisis...');
-      const todosLosRadios = document.querySelectorAll('input[type="radio"]');
-      todosLosRadios.forEach((radio: any, index) => {
-        console.log(`   ${index}: name="${radio.name}", value="${radio.value}", id="${radio.id}"`);
-      });
-    }
-  }
 }

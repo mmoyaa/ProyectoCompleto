@@ -37,10 +37,12 @@ export class Formulario13Component implements OnInit {
     this.onSubmit();
   }
   @Input() paciente: any;
+  @Input() evaluacionExistente: any; // Para recibir datos de evaluación a editar
   formularioParticipacion!: FormGroup;
   loading = false;
   mensaje = '';
   tipoMensaje: 'success' | 'error' | '' = '';
+  isEditing = false; // Flag para saber si estamos editando
 
   // Preguntas y opciones para 1-3 años (puedes adaptar los textos)
   preguntasParticipacion = [
@@ -98,6 +100,71 @@ export class Formulario13Component implements OnInit {
 
   ngOnInit(): void {
     this.initializeForm();
+    this.checkForEditMode();
+    this.subscribeToFormChanges();
+  }
+
+  private subscribeToFormChanges(): void {
+    // Observar cambios en el formulario para actualizar el progreso
+    this.formularioParticipacion.valueChanges.subscribe(() => {
+      this.updateProgress();
+    });
+  }
+
+  private updateProgress(): void {
+    const totalPreguntas = [...this.preguntasParticipacion, ...this.preguntasVision, ...this.preguntasOido, ...this.preguntasTacto, ...this.preguntasGustoOlfato, ...this.preguntasConcienciaCuerpo, ...this.preguntasEquilibrioMovimiento, ...this.preguntasPlanificacionIdeas].length;
+    const respondidas = Object.values(this.formularioParticipacion.value).filter(v => v !== '' && v !== null && v !== undefined).length - 3; // -3 por evaluador, fecha, observaciones
+    this.answeredQuestions = Math.max(0, respondidas);
+    this.progressPercentage = totalPreguntas > 0 ? Math.round((this.answeredQuestions / totalPreguntas) * 100) : 0;
+    this.strokeDashoffset = this.circumference - (this.progressPercentage / 100) * this.circumference;
+  }
+
+  private checkForEditMode(): void {
+    if (this.evaluacionExistente) {
+      this.isEditing = true;
+      this.cargarDatosEvaluacion();
+    }
+  }
+
+  private cargarDatosEvaluacion(): void {
+    if (!this.evaluacionExistente) return;
+
+    // Cargar información básica
+    const formValues: any = {};
+    
+    if (this.evaluacionExistente.fechaEvaluacion) {
+      formValues.fechaEvaluacion = new Date(this.evaluacionExistente.fechaEvaluacion).toISOString().split('T')[0];
+    }
+    
+    if (this.evaluacionExistente.evaluador || this.evaluacionExistente.evaluadorNombre) {
+      formValues.evaluador = this.evaluacionExistente.evaluador || this.evaluacionExistente.evaluadorNombre;
+    }
+    
+    if (this.evaluacionExistente.observaciones) {
+      formValues.observaciones = this.evaluacionExistente.observaciones;
+    }
+
+    // Cargar respuestas
+    if (this.evaluacionExistente.respuestas) {
+      if (Array.isArray(this.evaluacionExistente.respuestas)) {
+        // Si las respuestas vienen como array
+        this.evaluacionExistente.respuestas.forEach((respuesta: any) => {
+          if (respuesta.preguntaId) {
+            formValues[`pregunta${respuesta.preguntaId}`] = respuesta.respuesta;
+          }
+        });
+      } else if (typeof this.evaluacionExistente.respuestas === 'object') {
+        // Si las respuestas vienen como objeto
+        Object.keys(this.evaluacionExistente.respuestas).forEach(key => {
+          formValues[key] = this.evaluacionExistente.respuestas[key];
+        });
+      }
+    }
+
+    // Aplicar los valores al formulario
+    this.formularioParticipacion.patchValue(formValues);
+    
+    console.log('Datos cargados en el formulario:', formValues);
   }
 
   private initializeForm(): void {
@@ -108,7 +175,7 @@ export class Formulario13Component implements OnInit {
     controls['observaciones'] = [''];
     // Preguntas
     [...this.preguntasParticipacion, ...this.preguntasVision, ...this.preguntasOido, ...this.preguntasTacto, ...this.preguntasGustoOlfato, ...this.preguntasConcienciaCuerpo, ...this.preguntasEquilibrioMovimiento, ...this.preguntasPlanificacionIdeas].forEach(pregunta => {
-  controls[`pregunta_${pregunta.id}`] = [''];
+      controls[`pregunta${pregunta.id}`] = [''];
     });
     this.formularioParticipacion = this.fb.group(controls);
   }
@@ -129,27 +196,32 @@ export class Formulario13Component implements OnInit {
     const progreso = totalPreguntas > 0 ? Math.round((respondidas / totalPreguntas) * 100) : 0;
     // Preparar datos para enviar
     const datosEvaluacion = {
+      idEvaluacion: this.isEditing ? this.evaluacionExistente?.idEvaluacion : undefined,
       idPaciente: this.paciente.idPaciente || this.paciente.id || this.paciente.rut,
       fechaEvaluacion: this.formularioParticipacion.value.fechaEvaluacion,
       evaluador: this.formularioParticipacion.value.evaluador,
+      evaluadorNombre: this.formularioParticipacion.value.evaluador,
       observaciones: this.formularioParticipacion.value.observaciones,
       progreso: progreso,
       tipoFormulario: '1-3',
+      estado: progreso === 100 ? 'Completada' : 'En Progreso',
       respuestas: [...this.preguntasParticipacion, ...this.preguntasVision, ...this.preguntasOido, ...this.preguntasTacto, ...this.preguntasGustoOlfato, ...this.preguntasConcienciaCuerpo, ...this.preguntasEquilibrioMovimiento, ...this.preguntasPlanificacionIdeas].map(pregunta => ({
         preguntaId: pregunta.id,
         preguntaTexto: pregunta.texto,
-        respuesta: this.formularioParticipacion.value[`pregunta_${pregunta.id}`] || 'Sin respuesta'
+        respuesta: this.formularioParticipacion.value[`pregunta${pregunta.id}`] || 'Sin respuesta'
       }))
     };
     this.evaluacionService.guardarEvaluacion(datosEvaluacion).subscribe({
       next: (response) => {
-        this.mensaje = `Evaluación guardada correctamente.`;
+        const accion = this.isEditing ? 'actualizada' : 'guardada';
+        this.mensaje = `Evaluación ${accion} correctamente.`;
         this.tipoMensaje = 'success';
         this.loading = false;
         window.scrollTo({ top: 0, behavior: 'smooth' });
       },
       error: (error) => {
-        this.mensaje = `Error al guardar la evaluación: ${error.error?.message || error.message || 'Error desconocido'}`;
+        const accion = this.isEditing ? 'actualizar' : 'guardar';
+        this.mensaje = `Error al ${accion} la evaluación: ${error.error?.message || error.message || 'Error desconocido'}`;
         this.tipoMensaje = 'error';
         this.loading = false;
       }
