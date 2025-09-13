@@ -7,7 +7,6 @@ import { HomeComponent } from './componentes/share/home/home.component';
 import { ListaEvaluacionesComponent } from './componentes/lista-evaluaciones/lista-evaluaciones.component';
 import { GraficosComponent } from './componentes/graficos/graficos.component';
 import { Grafico612Component } from './componentes/grafico6-12/grafico6-12.component';
-import { Pagina3Component } from './componentes/pagina3/pagina3.component';
 import { Formulario612Component } from './componentes/formulario-6-12/formulario-6-12.component';
 import { AllFormulariosComponent } from './componentes/all-formularios/all-formularios.component';
 import { Formulario13Component } from './componentes/formulario-1-3/formulario-1-3.component';
@@ -19,12 +18,11 @@ import { DocumentosComponent } from './componentes/documentos/documentos.compone
 const routes: Routes = [
   { path: '', redirectTo: '/all-formularios', pathMatch: 'full' },
   { path:'paso1', component: Paso1Component },
-  { path:'pagina1', component: Pagina1Component },
+  { path:'agregarPaciente', component: Pagina1Component },
   { path:'pagina2', component: Pagina2Component },
   { path:'evaluaciones', component: ListaEvaluacionesComponent },
   { path:'graficos', component: GraficosComponent },
   { path:'home', component: HomeComponent },
-   { path:'pagina3', component: Pagina3Component },
   { path:'formulario-6-12', component: Formulario612Component },
   { path:'grafico6-12', component: Grafico612Component },
     { path:'all-formularios', component: AllFormulariosComponent },

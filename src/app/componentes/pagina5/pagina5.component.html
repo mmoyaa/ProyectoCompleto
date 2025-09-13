@@ -15,12 +15,30 @@
           </div>
         </div>
         <div class="card-body">
-          <p class="mb-0">
+          <p class="mb-3">
             Este formulario evalúa las habilidades sensoriales y de participación social del niño o niña. Por favor, marque la opción que mejor describa el comportamiento actual en cada una de las 8 áreas evaluadas.
           </p>
+          
+          <!-- Indicador de progreso -->
+          <div class="progress mb-2" style="height: 25px;">
+            <div class="progress-bar" 
+                 role="progressbar" 
+                 [style.width.%]="currentProgress"
+                 [attr.aria-valuenow]="currentProgress" 
+                 aria-valuemin="0" 
+                 aria-valuemax="100">
+              {{ currentProgress }}% - {{ answeredQuestions }}/{{ totalQuestions }} preguntas
+            </div>
+          </div>
+          <div class="small text-muted mb-3">
+            <i class="fas fa-info-circle me-1"></i>
+            Progreso se actualiza automáticamente al responder las preguntas
+          </div>
+          
           <div *ngIf="paciente" class="mt-2">
             <b>Paciente:</b> {{ paciente.nombre }} {{ paciente.apellidoPaterno }}<br>
             <b>RUT:</b> {{ paciente.rut }}
+            <span *ngIf="evaluacionData" class="badge bg-warning text-dark ms-2">EDITANDO EVALUACIÓN</span>
           </div>
         </div>
       </div>
@@ -97,37 +115,50 @@
           <div class="card-body">
             <div class="row">
               <div class="col-md-3">
-                <button type="button" class="btn btn-outline-info me-2" (click)="cargarListaPacientes()" [disabled]="loading">
-                  <i class="fas fa-users me-2"></i>
-                  Ver Pacientes
+                <button type="button" 
+                        class="btn btn-outline-info me-2" 
+                        (click)="scrollToTop()"
+                        title="Ir al inicio del formulario">
+                  <i class="fas fa-arrow-up me-2"></i>
+                  Ir a Inicio
                 </button>
-                <button type="button" class="btn btn-outline-secondary" (click)="formularioEvaluacion.reset()" [disabled]="loading">
+                <!-- <button type="button" class="btn btn-outline-secondary" (click)="formularioEvaluacion.reset()" [disabled]="loading">
                   <i class="fas fa-undo me-2"></i>
                   Limpiar Formulario
-                </button>
+                </button> -->
               </div>
               <div class="col-md-3 text-center">
-                <button type="button" class="btn btn-primary btn-lg" (click)="saveEvaluation($event)" [disabled]="!hasAnswers()">
+                <button type="button" 
+                        class="btn btn-primary btn-lg me-2" 
+                        (click)="saveEvaluation($event)" 
+                        [disabled]="!hasAnswers()">
                   <i class="fas fa-save me-2"></i>
                   {{ evaluacionData ? 'Actualizar Evaluación' : 'Guardar Progreso' }} ({{ currentProgress }}%)
+                </button>
+                <button type="button" 
+                        class="btn btn-outline-primary btn-lg" 
+                        (click)="scrollToTop()"
+                        title="Ir al inicio del formulario">
+                  <i class="fas fa-arrow-up me-2"></i>
+                  Ir al inicio
                 </button>
                 <div class="mt-2 small text-muted">
                   {{ answeredQuestions }}/{{ totalQuestions }} preguntas respondidas
                 </div>
               </div>
               <div class="col-md-3 text-center">
-                <button type="button" class="btn btn-outline-warning btn-sm mb-2" (click)="debugFormState()">
+                <!-- <button type="button" class="btn btn-outline-warning btn-sm mb-2" (click)="debugFormState()">
                   <i class="fas fa-bug me-2"></i>
                   Debug Formulario
-                </button>
-                <div class="small text-muted">Ver estado en consola</div>
+                </button> -->
+                <!-- <div class="small text-muted">Ver estado en consola</div> -->
               </div>
               <div class="col-md-3 text-end">
-                <button type="submit" class="btn btn-success btn-lg" [disabled]="loading || formularioEvaluacion.invalid">
+                <!-- <button type="submit" class="btn btn-success btn-lg" [disabled]="loading || formularioEvaluacion.invalid">
                   <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
                   <i *ngIf="!loading" class="fas fa-check me-2"></i>
                   {{ loading ? 'Guardando...' : 'Guardar Completo' }}
-                </button>
+                </button> -->
               </div>
             </div>
           </div>

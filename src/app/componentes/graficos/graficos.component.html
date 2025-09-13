@@ -102,8 +102,8 @@
     <div class="chart-container">
       <div class="chart-header">
         <h3>
-          <i class="fas fa-chart-area"></i>
-          Resultados por Sección Sensorial
+          <i class="fas fa-chart-pie"></i>
+          Distribución de Puntajes por Sección Sensorial
         </h3>
         <div class="chart-actions" *ngIf="selectedEvaluacion">
           <button class="btn btn-outline-primary btn-sm" (click)="exportChart()" title="Exportar como imagen">
@@ -124,7 +124,7 @@
       <!-- Mensaje informativo cuando no hay datos reales -->
       <div *ngIf="!selectedEvaluacion" class="info-message">
         <i class="fas fa-info-circle"></i>
-        <p>Gráfico de ejemplo mostrado. Seleccione un paciente y evaluación para ver datos reales.</p>
+        <p>Gráfico de torta de ejemplo mostrado. Seleccione un paciente y evaluación para ver la distribución real de puntajes.</p>
       </div>
 
       <!-- Leyenda explicativa -->
@@ -327,39 +327,5 @@
     </div>
   </div>
 
-  <!-- Estadísticas adicionales -->
-  <div *ngIf="selectedEvaluacion" class="stats-section">
-    <h4><i class="fas fa-chart-bar"></i> Estadísticas de la Evaluación</h4>
-    <div class="row">
-      <div class="col-md-3">
-        <div class="stat-card progress-card">
-          <div class="stat-card-header">
-            <div class="stat-value">{{selectedEvaluacion.progreso}}%</div>
-            <button class="home-btn" (click)="scrollToTop()" title="Ir al inicio">
-              <i class="fas fa-home"></i>
-            </button>
-          </div>
-          <div class="stat-label">Progreso Completado</div>
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="stat-card">
-          <div class="stat-value">8</div>
-          <div class="stat-label">Secciones Evaluadas</div>
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="stat-card">
-          <div class="stat-value">80</div>
-          <div class="stat-label">Preguntas Totales</div>
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="stat-card">
-          <div class="stat-value">{{selectedEvaluacion.fechaEvaluacion | date:'dd/MM'}}</div>
-          <div class="stat-label">Fecha de Evaluación</div>
-        </div>
-      </div>
-    </div>
-  </div>
+
 </div>

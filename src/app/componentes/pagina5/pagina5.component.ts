@@ -232,6 +232,14 @@ export class Pagina5Component implements OnInit, AfterViewInit, OnChanges {
       });
 
     this.formularioEvaluacion = this.fb.group(controls);
+    
+    // Agregar listener para actualizar progreso en tiempo real
+    this.formularioEvaluacion.valueChanges.subscribe(() => {
+      // Usar setTimeout para asegurar que el DOM se actualice antes de contar
+      setTimeout(() => {
+        this.updateProgress();
+      }, 50);
+    });
   }
 
   // Método para guardar evaluación sin requerir 100% de completitud (como pagina2)
@@ -410,37 +418,7 @@ export class Pagina5Component implements OnInit, AfterViewInit, OnChanges {
     return pregunta ? `${preguntaId}. ${pregunta.texto}` : `Pregunta ${preguntaId}`;
   }
 
-  // Método de depuración para verificar estado del formulario (público para usar en template)
-  debugFormState(): void {
-    console.log('🔧 === DEBUG: Estado del Formulario ===');
-    console.log('📋 FormGroup valid:', this.formularioEvaluacion.valid);
-    console.log('📋 FormGroup dirty:', this.formularioEvaluacion.dirty);
-    console.log('📋 FormGroup touched:', this.formularioEvaluacion.touched);
-    console.log('📋 FormGroup value:', this.formularioEvaluacion.value);
-    
-    // Verificar controles de preguntas específicamente
-    const preguntaControls = Object.keys(this.formularioEvaluacion.controls)
-      .filter(key => key.startsWith('pregunta_'));
-    
-    console.log(`📊 Controles de preguntas encontrados: ${preguntaControls.length}`);
-    
-    let controlsWithValues = 0;
-    preguntaControls.forEach(controlName => {
-      const control = this.formularioEvaluacion.get(controlName);
-      if (control && control.value) {
-        controlsWithValues++;
-        console.log(`✅ ${controlName}: ${control.value}`);
-      }
-    });
-    
-    console.log(`📊 Controles con valores: ${controlsWithValues}/${preguntaControls.length}`);
-    
-    // Verificar radio buttons del DOM
-    const checkedRadios = document.querySelectorAll('input[type="radio"]:checked');
-    console.log(`🔘 Radio buttons marcados en DOM: ${checkedRadios.length}`);
-    
-    console.log('🔧 === FIN DEBUG ===');
-  }
+
 
   // Método auxiliar para obtener puntaje
   private getScoreFromValue(value: string): number {
@@ -742,6 +720,14 @@ export class Pagina5Component implements OnInit, AfterViewInit, OnChanges {
     
     this.formularioEvaluacion.updateValueAndValidity();
     console.log('✅ Formulario actualizado completamente');
+  }
+
+  // Método para navegar al tope del componente
+  scrollToTop(): void {
+    window.scrollTo({ 
+      top: 0, 
+      behavior: 'smooth' 
+    });
   }
 
 }

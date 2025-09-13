@@ -15,7 +15,6 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { HomeComponent } from './componentes/share/home/home.component';
 import { ListaEvaluacionesComponent } from './componentes/lista-evaluaciones/lista-evaluaciones.component';
 import { GraficosComponent } from './componentes/graficos/graficos.component';
-import { Pagina3Component } from './componentes/pagina3/pagina3.component';
 import { Formulario612Component } from './componentes/formulario-6-12/formulario-6-12.component';
 import { Grafico612Component } from './componentes/grafico6-12/grafico6-12.component';
 import { Formulario13Component } from './componentes/formulario-1-3/formulario-1-3.component';
@@ -38,7 +37,6 @@ import { DocumentosComponent } from './componentes/documentos/documentos.compone
     HomeComponent,
     ListaEvaluacionesComponent,
     GraficosComponent,
-    Pagina3Component,
   Formulario612Component,
   Grafico612Component,
   Formulario13Component,

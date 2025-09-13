@@ -38,12 +38,16 @@
       </div>
 
       <!-- Mensajes de estado -->
-      <div *ngIf="mensaje" class="alert" 
-           [ngClass]="{'alert-success': tipoMensaje === 'success', 'alert-danger': tipoMensaje === 'error'}"
+      <div *ngIf="mensaje" 
+           class="alert alert-dismissible fade show" 
+           [class.alert-success]="tipoMensaje === 'success'"
+           [class.alert-danger]="tipoMensaje === 'error'"
            role="alert">
-        <i class="fas" [ngClass]="{'fa-check-circle': tipoMensaje === 'success', 'fa-exclamation-triangle': tipoMensaje === 'error'}"></i>
+        <i class="fas me-2" 
+           [class.fa-check-circle]="tipoMensaje === 'success'" 
+           [class.fa-exclamation-triangle]="tipoMensaje === 'error'"></i>
         {{ mensaje }}
-        <button type="button" class="btn-close float-end" (click)="limpiarMensaje()"></button>
+        <button type="button" class="btn-close" (click)="limpiarMensaje()" aria-label="Close"></button>
       </div>
 
       <!-- Formulario principal -->
@@ -67,7 +71,7 @@
                           formControlName="nombreNino"
                           (change)="onPacienteSeleccionado($event)"
                           [disabled]="loadingPacientes"
-                          [class.is-invalid]="formularioParticipacion.get('nombreNino')?.touched && formularioParticipacion.get('nombreNino')?.invalid">
+                          [class.is-invalid]="formularioParticipacion.get('nombreNino')?.dirty && formularioParticipacion.get('nombreNino')?.invalid">
                     <option value="" *ngIf="!loadingPacientes">Seleccione un paciente...</option>
                     <option value="" *ngIf="loadingPacientes">Cargando pacientes...</option>
                     <option *ngFor="let paciente of listaPacientes" 
@@ -102,7 +106,7 @@
                          formControlName="edad"
                          min="6" 
                          max="12"
-                         [class.is-invalid]="formularioParticipacion.get('edad')?.touched && formularioParticipacion.get('edad')?.invalid">
+                         [class.is-invalid]="formularioParticipacion.get('edad')?.dirty && formularioParticipacion.get('edad')?.invalid">
                   <div class="invalid-feedback">
                     {{ getErrorMessage('edad') }}
                   </div>
@@ -115,7 +119,7 @@
                          class="form-control" 
                          id="fechaEvaluacion" 
                          formControlName="fechaEvaluacion"
-                         [class.is-invalid]="formularioParticipacion.get('fechaEvaluacion')?.touched && formularioParticipacion.get('fechaEvaluacion')?.invalid">
+                         [class.is-invalid]="formularioParticipacion.get('fechaEvaluacion')?.dirty && formularioParticipacion.get('fechaEvaluacion')?.invalid">
                   <div class="invalid-feedback">
                     {{ getErrorMessage('fechaEvaluacion') }}
                   </div>
@@ -131,7 +135,7 @@
                          id="evaluador" 
                          formControlName="evaluador"
                          placeholder="Nombre del evaluador"
-                         [class.is-invalid]="formularioParticipacion.get('evaluador')?.touched && formularioParticipacion.get('evaluador')?.invalid">
+                         [class.is-invalid]="formularioParticipacion.get('evaluador')?.dirty && formularioParticipacion.get('evaluador')?.invalid">
                   <div class="invalid-feedback">
                     {{ getErrorMessage('evaluador') }}
                   </div>
@@ -716,50 +720,57 @@
           <div class="card-body">
             <div class="row">
               <div class="col-md-3">
-                <button type="button" 
+                <!-- <button type="button" 
                         class="btn btn-outline-info me-2" 
                         (click)="abrirModalPacientes()"
                         [disabled]="loading">
                   <i class="fas fa-users me-2"></i>
                   Ver Pacientes
-                </button>
-                <button type="button" 
+                </button> -->
+                <!-- <button type="button" 
                         class="btn btn-outline-secondary" 
                         (click)="resetForm()"
                         [disabled]="loading">
                   <i class="fas fa-undo me-2"></i>
                   Limpiar Formulario
-                </button>
+                </button> -->
               </div>
               <div class="col-md-3 text-center">
                 <button type="button" 
-                        class="btn btn-primary btn-lg" 
+                        class="btn btn-primary btn-lg me-2" 
                         (click)="saveEvaluation($event)" 
                         [disabled]="!hasAnswers()">
                   <i class="fas fa-save me-2"></i>
                   {{ evaluacionData ? 'Actualizar Evaluación' : 'Guardar Progreso' }} ({{ currentProgress }}%)
+                </button>
+                <button type="button" 
+                        class="btn btn-outline-primary btn-lg" 
+                        (click)="scrollToTop()"
+                        title="Ir al inicio del formulario">
+                  <i class="fas fa-arrow-up me-2"></i>
+                  Ir al inicio
                 </button>
                 <div class="mt-2 small text-muted">
                   {{ answeredQuestions }}/{{ totalQuestions }} preguntas respondidas
                 </div>
               </div>
               <div class="col-md-3 text-center">
-                <button type="button" 
+                <!-- <button type="button" 
                         class="btn btn-outline-warning btn-sm mb-2" 
                         (click)="debugFormState()">
                   <i class="fas fa-bug me-2"></i>
                   Debug Formulario
-                </button>
-                <div class="small text-muted">Ver estado en consola</div>
+                </button> -->
+                <!-- <div class="small text-muted">Ver estado en consola</div> -->
               </div>
               <div class="col-md-3 text-end">
-                <button type="submit" 
+                <!-- <button type="submit" 
                         class="btn btn-success btn-lg"
                         [disabled]="loading || formularioParticipacion.invalid">
                   <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
                   <i *ngIf="!loading" class="fas fa-check me-2"></i>
                   {{ loading ? 'Guardando...' : 'Guardar Completo' }}
-                </button>
+                </button> -->
               </div>
             </div>
           </div>

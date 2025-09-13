@@ -156,6 +156,10 @@ export class Formulario612Component implements OnInit, AfterViewInit, OnChanges 
     this.cargarListaPacientes();
     this.setupProgressTracking();
     
+    // Marcar el formulario como pristine y untouched para evitar mostrar errores al inicio
+    this.formularioParticipacion.markAsUntouched();
+    this.formularioParticipacion.markAsPristine();
+    
     // Si hay datos de evaluación, cargarlos después de que el formulario esté inicializado
     if (this.evaluacionData) {
       setTimeout(() => {
@@ -641,6 +645,7 @@ export class Formulario612Component implements OnInit, AfterViewInit, OnChanges 
   private markFormGroupTouched(): void {
     Object.keys(this.formularioParticipacion.controls).forEach(key => {
       const control = this.formularioParticipacion.get(key);
+      control?.markAsDirty();
       control?.markAsTouched();
     });
   }
@@ -656,7 +661,7 @@ export class Formulario612Component implements OnInit, AfterViewInit, OnChanges 
 
   getErrorMessage(fieldName: string): string {
     const control = this.formularioParticipacion.get(fieldName);
-    if (control?.errors && control.touched) {
+    if (control?.errors && (control.dirty || control.touched)) {
       if (control.errors['required']) {
         return 'Este campo es obligatorio';
       }
@@ -673,6 +678,14 @@ export class Formulario612Component implements OnInit, AfterViewInit, OnChanges 
   limpiarMensaje(): void {
     this.mensaje = '';
     this.tipoMensaje = '';
+  }
+
+  // Método para navegar al tope del componente
+  scrollToTop(): void {
+    window.scrollTo({ 
+      top: 0, 
+      behavior: 'smooth' 
+    });
   }
 
   // Métodos de pacientes (mantenidos del original)

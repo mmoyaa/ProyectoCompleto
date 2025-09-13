@@ -1,1 +1,24 @@
 /* You can add global styles to this file, and also import other style files */
+
+/* Estilos globales para tamaño reducido de checkboxes y radio buttons */
+input[type="radio"]:not(.custom-radio):not(.form-check-input) {
+  width: 0.75em;
+  height: 0.75em;
+  margin-right: 8px;
+}
+
+input[type="checkbox"]:not(.custom-checkbox):not(.form-check-input) {
+  width: 0.75em;
+  height: 0.75em;
+  margin-right: 8px;
+}
+
+/* Mejorar alineación de labels globalmente */
+label:has(input[type="radio"]),
+label:has(input[type="checkbox"]) {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 15px;
+  margin-bottom: 5px;
+  cursor: pointer;
+}

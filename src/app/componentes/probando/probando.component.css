@@ -1,12 +1,23 @@
-/* Radios más grandes */
+/* Radios tamaño reducido */
 input[type="radio"] {
-  width: 1.5em;
-  height: 1.5em;
+  width: 0.75em;
+  height: 0.75em;
+  margin-right: 8px;
 }
-/* Checkboxes más grandes */
+/* Checkboxes tamaño reducido */
 input[type="checkbox"] {
-  width: 1.5em;
-  height: 1.5em;
+  width: 0.75em;
+  height: 0.75em;
+  margin-right: 8px;
+}
+
+/* Mejorar alineación de labels */
+.form-group label {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 20px;
+  margin-bottom: 5px;
+  cursor: pointer;
 }
 .probando-container {
   padding: 2rem;

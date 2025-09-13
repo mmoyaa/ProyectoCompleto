@@ -194,20 +194,34 @@ export class GraficosComponent implements OnInit, AfterViewInit {
 
     // Configuración inicial del gráfico vacío
     const config: ChartConfiguration = {
-      type: 'line',
+      type: 'pie',
       data: {
         labels: ['Visión', 'Auditivo', 'Táctil', 'Gusto/Olfato', 'Conciencia Corporal', 'Equilibrio/Movimiento', 'Planificación/Ideas', 'Participación Social'],
         datasets: [{
           label: 'Datos de ejemplo',
           data: [2.5, 2, 3, 2.5, 2, 2.5, 3, 2.5],
-          borderColor: '#667eea',
-          backgroundColor: 'rgba(102, 126, 234, 0.1)',
-          borderWidth: 3,
-          pointBackgroundColor: '#667eea',
-          pointBorderColor: '#667eea',
-          pointRadius: 8,
-          pointHoverRadius: 10,
-          tension: 0.4
+          backgroundColor: [
+            '#ec4899',  // Visión - Rosa
+            '#667eea',  // Auditivo - Azul
+            '#f59e0b',  // Táctil - Naranja
+            '#10b981',  // Gusto/Olfato - Verde
+            '#ef4444',  // Conciencia Corporal - Rojo
+            '#8b5cf6',  // Equilibrio/Movimiento - Púrpura
+            '#f97316',  // Planificación/Ideas - Naranja oscuro
+            '#06b6d4'   // Participación Social - Cian
+          ],
+          borderColor: [
+            '#be185d',  // Visión - Rosa oscuro
+            '#4338ca',  // Auditivo - Azul oscuro
+            '#d97706',  // Táctil - Naranja oscuro
+            '#047857',  // Gusto/Olfato - Verde oscuro
+            '#dc2626',  // Conciencia Corporal - Rojo oscuro
+            '#7c3aed',  // Equilibrio/Movimiento - Púrpura oscuro
+            '#ea580c',  // Planificación/Ideas - Naranja muy oscuro
+            '#0891b2'   // Participación Social - Cian oscuro
+          ],
+          borderWidth: 2,
+          hoverOffset: 4
         }]
       },
       options: {
@@ -216,7 +230,7 @@ export class GraficosComponent implements OnInit, AfterViewInit {
         plugins: {
           title: {
             display: true,
-            text: 'Evaluación Sensorial - Resultados por Sección',
+            text: 'Evaluación Sensorial - Distribución por Secciones',
             font: {
               size: 18,
               weight: 'bold'
@@ -225,48 +239,54 @@ export class GraficosComponent implements OnInit, AfterViewInit {
           },
           legend: {
             display: true,
-            position: 'top',
+            position: 'right',
             labels: {
               usePointStyle: true,
-              padding: 20
-            }
-          }
-        },
-        scales: {
-          y: {
-            beginAtZero: true,
-            max: 4,
-            min: 0,
-            title: {
-              display: true,
-              text: 'Puntaje Promedio',
+              padding: 15,
               font: {
-                size: 14,
-                weight: 'bold'
-              }
-            },
-            grid: {
-              color: 'rgba(0,0,0,0.1)'
-            },
-            ticks: {
-              stepSize: 1,
-              callback: function(value) {
-                const labels = ['', 'Nunca (N)', 'Ocasionalmente (O)', 'Frecuentemente (F)', 'Siempre (S)'];
-                return labels[Number(value)] || value;
+                size: 12
+              },
+              generateLabels: function(chart) {
+                const data = chart.data;
+                if (data.labels && data.datasets.length) {
+                  return data.labels.map((label, i) => {
+                    const dataset = data.datasets[0];
+                    const value = dataset.data[i] as number;
+                    const dataArray = dataset.data as number[];
+                    const total = dataArray.reduce((a, b) => (a || 0) + (b || 0), 0);
+                    const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : '0.0';
+                    
+                    const backgroundColor = Array.isArray(dataset.backgroundColor) 
+                      ? dataset.backgroundColor[i] 
+                      : dataset.backgroundColor;
+                    const borderColor = Array.isArray(dataset.borderColor) 
+                      ? dataset.borderColor[i] 
+                      : dataset.borderColor;
+                    
+                    return {
+                      text: `${label}: ${value} (${percentage}%)`,
+                      fillStyle: backgroundColor as string,
+                      strokeStyle: borderColor as string,
+                      lineWidth: 2,
+                      hidden: false,
+                      index: i
+                    };
+                  });
+                }
+                return [];
               }
             }
           },
-          x: {
-            title: {
-              display: true,
-              text: 'Secciones Sensoriales',
-              font: {
-                size: 14,
-                weight: 'bold'
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                const label = context.label || '';
+                const value = context.parsed as number;
+                const dataArray = context.dataset.data as number[];
+                const total = dataArray.reduce((a, b) => (a || 0) + (b || 0), 0);
+                const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : '0.0';
+                return `${label}: ${value} (${percentage}%)`;
               }
-            },
-            grid: {
-              color: 'rgba(0,0,0,0.1)'
             }
           }
         },
@@ -309,22 +329,28 @@ export class GraficosComponent implements OnInit, AfterViewInit {
       
       // Preparar datos para el gráfico
       const labels = this.secciones.map(s => s.nombre);
-      const data = this.secciones.map(s => this.promediosSeccion[s.nombre] || 0);
-      const colors = this.secciones.map(s => s.color);
+      const data = this.secciones.map(s => this.sumasSeccion[s.nombre] || 0);
+      const backgroundColors = this.secciones.map(s => s.color);
+      const borderColors = [
+        '#be185d',  // Visión - Rosa oscuro
+        '#4338ca',  // Auditivo - Azul oscuro
+        '#d97706',  // Táctil - Naranja oscuro
+        '#047857',  // Gusto/Olfato - Verde oscuro
+        '#dc2626',  // Conciencia Corporal - Rojo oscuro
+        '#7c3aed',  // Equilibrio/Movimiento - Púrpura oscuro
+        '#ea580c',  // Planificación/Ideas - Naranja muy oscuro
+        '#0891b2'   // Participación Social - Cian oscuro
+      ];
 
       // Actualizar el gráfico
       this.chart.data.labels = labels;
       this.chart.data.datasets = [{
         label: `Evaluación del ${new Date(this.selectedEvaluacion.fechaEvaluacion || '').toLocaleDateString()}`,
         data: data,
-        borderColor: '#667eea',
-        backgroundColor: 'rgba(102, 126, 234, 0.1)',
-        borderWidth: 3,
-        pointBackgroundColor: colors,
-        pointBorderColor: colors,
-        pointRadius: 8,
-        pointHoverRadius: 10,
-        tension: 0.4
+        backgroundColor: backgroundColors,
+        borderColor: borderColors,
+        borderWidth: 2,
+        hoverOffset: 6
       }];
 
       this.chart.update();

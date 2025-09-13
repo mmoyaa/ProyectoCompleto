@@ -271,7 +271,7 @@ html {
 
 .radio-group {
   display: flex;
-  gap: 16px;
+  gap: 8px;
   justify-content: center;
   flex-wrap: wrap;
 }
@@ -289,43 +289,57 @@ html {
   cursor: pointer;
 }
 
+/* Tamaño reducido para radio buttons estándar */
+input[type="radio"]:not(.radio-option input) {
+  width: 0.75em;
+  height: 0.75em;
+  margin-right: 8px;
+}
+
+/* Tamaño reducido para checkboxes */
+input[type="checkbox"] {
+  width: 0.75em;
+  height: 0.75em;
+  margin-right: 8px;
+}
+
 .radio-label {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 50px;
-  height: 50px;
+  width: 25px;
+  height: 25px;
   border: 2px solid #d1d5db;
   border-radius: 50%;
   background: white;
   cursor: pointer;
   transition: all 0.3s ease;
   font-weight: 600;
-  font-size: 14px;
+  font-size: 10px;
   color: #6b7280;
   text-align: center;
   line-height: 1.2;
 }
 
 .radio-label small {
-  font-size: 10px;
+  font-size: 8px;
   font-weight: 400;
-  margin-top: 2px;
+  margin-top: 1px;
 }
 
 .radio-label:hover {
   border-color: #667eea;
   background: #f0f4ff;
-  transform: translateY(-2px);
+  transform: translateY(-1px);
 }
 
 .radio-option input[type="radio"]:checked + .radio-label {
   background: #667eea;
   border-color: #667eea;
   color: white;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(102, 126, 234, 0.3);
 }
 
 .form-actions {
@@ -600,12 +614,12 @@ textarea.form-control {
     padding: 16px;
   }
   .radio-group {
-    gap: 12px;
+    gap: 6px;
   }
   .radio-label {
-    width: 45px;
-    height: 45px;
-    font-size: 13px;
+    width: 22px;
+    height: 22px;
+    font-size: 9px;
   }
   .form-actions {
     flex-direction: column;
@@ -655,9 +669,9 @@ textarea.form-control {
     font-size: 24px;
   }
   .radio-label {
-    width: 40px;
-    height: 40px;
-    font-size: 12px;
+    width: 20px;
+    height: 20px;
+    font-size: 8px;
   }
   .question-item {
     padding: 12px;

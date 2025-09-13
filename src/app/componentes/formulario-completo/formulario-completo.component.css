@@ -1,0 +1,22 @@
+/* Tamaño reducido para radio buttons */
+input[type="radio"] {
+  width: 0.75em;
+  height: 0.75em;
+  margin-right: 8px;
+}
+
+/* Tamaño reducido para checkboxes */
+input[type="checkbox"] {
+  width: 0.75em;
+  height: 0.75em;
+  margin-right: 8px;
+}
+
+/* Mejorar alineación de labels */
+.form-group label {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 20px;
+  margin-bottom: 5px;
+  cursor: pointer;
+}
