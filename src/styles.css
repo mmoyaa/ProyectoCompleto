@@ -1,4 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
+@import url('styles/home-styles.css');
+@import url('styles/graficos-styles.css');
+@import url('styles/pagina2-styles.css');
 
 /* Estilos globales para tamaño reducido de checkboxes y radio buttons */
 input[type="radio"]:not(.custom-radio):not(.form-check-input) {
