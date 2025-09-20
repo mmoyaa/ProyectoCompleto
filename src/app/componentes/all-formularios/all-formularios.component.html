@@ -11,7 +11,7 @@
   <div *ngIf="pacienteSeleccionado">
     <h2>Seleccionar tipo de formulario</h2>
     <select [(ngModel)]="tipoFormularioSeleccionado">
-      <option [ngValue]="null">-- Selecciona tipo de formularioooooo --</option>
+      <option [ngValue]="null">-- Selecciona tipo de formulario --</option>
       <option *ngFor="let tipo of tipoFormularios" [ngValue]="tipo.value">{{ tipo.label }}</option>
     </select>
   </div>
