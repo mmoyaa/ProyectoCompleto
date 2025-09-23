@@ -682,10 +682,19 @@ export class Formulario612Component implements OnInit, AfterViewInit, OnChanges 
 
   // Método para navegar al tope del componente
   scrollToTop(): void {
-    window.scrollTo({ 
-      top: 0, 
-      behavior: 'smooth' 
-    });
+    try {
+      window.scrollTo({ 
+        top: 0, 
+        behavior: 'smooth' 
+      });
+    } catch (error) {
+      // Fallback para navegadores más antiguos
+      window.scrollTo(0, 0);
+    }
+  }
+
+  irAlInicio(): void {
+    this.scrollToTop();
   }
 
   // Métodos de pacientes (mantenidos del original)

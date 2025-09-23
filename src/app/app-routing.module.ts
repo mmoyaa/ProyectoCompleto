@@ -13,6 +13,7 @@ import { Formulario13Component } from './componentes/formulario-1-3/formulario-1
 import { Pagina5Component } from './componentes/pagina5/pagina5.component';
 import { ProbandoComponent } from './componentes/probando/probando.component';
 import { DocumentosComponent } from './componentes/documentos/documentos.component';
+import { CapuertoComponent } from './capuerto/capuerto.component';
 
 
 const routes: Routes = [
@@ -30,6 +31,7 @@ const routes: Routes = [
   { path:'pagina5', component: Pagina5Component },
   { path:'probando', component: ProbandoComponent },
   { path:'documentos', component: DocumentosComponent },
+  { path:'capuerto', component: CapuertoComponent },
 ];
 
 @NgModule({

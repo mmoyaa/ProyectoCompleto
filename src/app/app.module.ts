@@ -24,6 +24,7 @@ import { Pagina5Component } from './componentes/pagina5/pagina5.component';
 import { DetalleEvaluacionComponent } from './componentes/lista-evaluaciones/detalle-evaluacion.component';
 import { ProbandoComponent } from './componentes/probando/probando.component';
 import { DocumentosComponent } from './componentes/documentos/documentos.component';
+import { CapuertoComponent } from './capuerto/capuerto.component';
 
 
   @NgModule({
@@ -45,6 +46,7 @@ import { DocumentosComponent } from './componentes/documentos/documentos.compone
   DetalleEvaluacionComponent,
   ProbandoComponent,
   DocumentosComponent,
+  CapuertoComponent,
     
   ],
   imports: [
