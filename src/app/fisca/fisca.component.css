@@ -7,6 +7,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  pointer-events: none; /* Evita interferencia del cursor */
 }
 
 .card-header {
@@ -16,15 +17,27 @@
 .bg-light {
   background-color: #f8f9fa !important;
   border: 1px solid #e9ecef;
+  position: relative; /* Asegura el contexto de posicionamiento */
 }
 
 .text-danger {
   font-size: 0.875rem;
 }
 
+.btn {
+  cursor: pointer !important;
+  user-select: none; /* Evita selección de texto */
+  position: relative;
+  z-index: 10; /* Asegura que esté por encima de otros elementos */
+}
+
 .btn:disabled {
   opacity: 0.6;
-  cursor: not-allowed;
+  cursor: not-allowed !important;
+}
+
+.btn:hover {
+  cursor: pointer !important;
 }
 
 .alert {
@@ -38,4 +51,68 @@
 
 .small {
   font-size: 0.875rem;
+}
+
+/* Prevenir problemas de cursor en contenedores */
+.d-flex {
+  position: relative;
+}
+
+/* Asegurar que los elementos interactivos tengan el cursor correcto */
+button, input, textarea, select {
+  cursor: pointer;
+}
+
+input[type="text"], input[type="date"], textarea {
+  cursor: text;
+}
+
+/* Evitar conflictos de z-index y positioning */
+.card-body {
+  position: relative;
+  z-index: 1;
+}
+
+/* Mejorar la interacción de botones */
+.btn-outline-secondary:hover,
+.btn-outline-primary:hover {
+  cursor: pointer !important;
+  transform: none; /* Evita transformaciones que puedan causar parpadeo */
+}
+
+/* Estilos para los botones de selección de observaciones */
+.btn-outline-success:hover {
+  background-color: #198754 !important;
+  border-color: #198754 !important;
+  color: white !important;
+}
+
+.btn-outline-danger:hover {
+  background-color: #dc3545 !important;
+  border-color: #dc3545 !important;
+  color: white !important;
+}
+
+/* Transiciones suaves para botones */
+.btn {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Estilos para campos deshabilitados */
+.form-control[readonly] {
+  background-color: #f8f9fa !important;
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Mejorar la apariencia de las alertas */
+.alert {
+  font-size: 0.9rem;
+  border: none;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Estilos para el contenedor de pregunta */
+.border {
+  border-width: 2px !important;
 }

@@ -22,6 +22,10 @@ export class FiscaComponent implements OnInit {
   contadorAcciones = 0;
   contadorResultado = 0;
 
+  // Control de observaciones
+  hayObservaciones: boolean | null = null; // null = no ha decidido, true = sí hay, false = no hay
+  observacionesHabilitadas = false;
+
   fb = inject(FormBuilder);
 
   constructor() {
@@ -90,21 +94,30 @@ export class FiscaComponent implements OnInit {
   }
 
   formularioValido(): boolean {
-    const observacionesValue = this.observaciones?.value || '';
+    // Verificar que se haya seleccionado si hay observaciones o no
+    if (this.hayObservaciones === null) {
+      return false;
+    }
     
-    // Si es "Sin observación", solo validar campos básicos
-    if (observacionesValue === 'Sin observación') {
-      return this.fiscalizacionForm.get('fechaFiscalizacion')?.valid || false;
+    // Verificar fecha de fiscalización (siempre requerida)
+    const fechaValida = this.fiscalizacionForm.get('fechaFiscalizacion')?.valid;
+    if (!fechaValida) {
+      return false;
+    }
+    
+    // Si no hay observaciones, solo se requiere la fecha
+    if (this.hayObservaciones === false) {
+      return true;
     }
     
     // Si hay observaciones, validar todos los campos necesarios
-    if (observacionesValue.length >= 200) {
-      const accionesValue = this.accionesAdoptadas?.value || '';
-      const resultadoValue = this.resultado?.value || '';
-      const fechaValida = this.fiscalizacionForm.get('fechaFiscalizacion')?.valid;
+    if (this.hayObservaciones === true) {
+      const observacionesValue = this.fiscalizacionForm.get('observaciones')?.value || '';
+      const accionesValue = this.fiscalizacionForm.get('accionesAdoptadas')?.value || '';
+      const resultadoValue = this.fiscalizacionForm.get('resultado')?.value || '';
       const plazoValido = this.fiscalizacionForm.get('plazoCumplimiento')?.value;
       
-      return fechaValida && 
+      return observacionesValue.length >= 200 && 
              accionesValue.length >= 200 && 
              resultadoValue.length >= 200 && 
              plazoValido;
@@ -126,12 +139,30 @@ export class FiscaComponent implements OnInit {
     }
   }
 
+  // Métodos para controlar observaciones
+  seleccionarObservaciones(hayObs: boolean): void {
+    this.hayObservaciones = hayObs;
+    this.observacionesHabilitadas = hayObs;
+    
+    if (hayObs) {
+      // Si hay observaciones, habilitar y limpiar el campo
+      this.fiscalizacionForm.get('observaciones')?.enable();
+      this.fiscalizacionForm.get('observaciones')?.setValue('');
+      this.fiscalizacionForm.get('accionesAdoptadas')?.enable();
+      this.fiscalizacionForm.get('resultado')?.enable();
+    } else {
+      // Si no hay observaciones, deshabilitar y poner valores por defecto
+      this.fiscalizacionForm.get('observaciones')?.disable();
+      this.fiscalizacionForm.get('observaciones')?.setValue('Sin observación');
+      this.fiscalizacionForm.get('accionesAdoptadas')?.disable();
+      this.fiscalizacionForm.get('accionesAdoptadas')?.setValue('-');
+      this.fiscalizacionForm.get('resultado')?.disable();
+      this.fiscalizacionForm.get('resultado')?.setValue('-');
+    }
+  }
+
   sinObservaciones(): void {
-    this.fiscalizacionForm.patchValue({
-      observaciones: 'Sin observación',
-      accionesAdoptadas: '-',
-      resultado: '-'
-    });
+    this.seleccionarObservaciones(false);
   }
 
   buscarKardex(): void {
