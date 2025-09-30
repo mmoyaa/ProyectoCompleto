@@ -14,6 +14,9 @@ import { Pagina5Component } from './componentes/pagina5/pagina5.component';
 import { ProbandoComponent } from './componentes/probando/probando.component';
 import { DocumentosComponent } from './componentes/documentos/documentos.component';
 import { CapuertoComponent } from './capuerto/capuerto.component';
+import { FechasComponent } from './fechas/fechas.component';
+import { FiscalizacionComponent } from './fiscalizacion/fiscalizacion.component';
+import { FiscaComponent } from './fisca/fisca.component';
 
 
 const routes: Routes = [
@@ -32,6 +35,9 @@ const routes: Routes = [
   { path:'probando', component: ProbandoComponent },
   { path:'documentos', component: DocumentosComponent },
   { path:'capuerto', component: CapuertoComponent },
+  { path:'fechas', component: FechasComponent },
+  { path:'fiscalizacion', component: FiscalizacionComponent },
+  { path:'fisca', component: FiscaComponent },
 ];
 
 @NgModule({

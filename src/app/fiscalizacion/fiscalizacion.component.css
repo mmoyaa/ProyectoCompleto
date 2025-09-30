@@ -1,0 +1,253 @@
+/* Estilos para el componente fiscalizacion */
+.container-fluid {
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+/* Título principal */
+h2.fw-bold {
+  color: #333;
+  font-size: 1.5rem;
+  text-decoration: underline;
+  margin-bottom: 2rem;
+}
+
+/* Cards */
+.card {
+  border: 2px solid #000;
+  border-radius: 5px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+}
+
+/* Tabla */
+.table-bordered {
+  border: 2px solid #000;
+}
+
+.table-bordered th,
+.table-bordered td {
+  border: 1px solid #000;
+  padding: 0.5rem;
+  vertical-align: middle;
+}
+
+.table-dark {
+  background-color: #495057;
+  color: white;
+}
+
+/* Header de Fiscalización */
+.card-header.bg-primary {
+  background-color: #495057 !important;
+  border-bottom: 2px solid #000;
+  color: white;
+}
+
+/* Badges numerados */
+.badge.bg-primary.rounded-circle {
+  width: 25px;
+  height: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  background-color: #495057 !important;
+}
+
+/* Secciones con fondo */
+.bg-light {
+  background-color: #f8f9fa !important;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+/* Botones */
+.btn {
+  border-radius: 3px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.btn-outline-secondary {
+  border-color: #6c757d;
+  color: #6c757d;
+  font-size: 0.8rem;
+  padding: 0.25rem 0.5rem;
+}
+
+.btn-outline-secondary:hover {
+  background-color: #6c757d;
+  border-color: #6c757d;
+  color: #fff;
+}
+
+.btn-success {
+  background-color: #198754;
+  border-color: #198754;
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+.btn-success:hover {
+  background-color: #157347;
+  border-color: #146c43;
+}
+
+.btn-success:disabled {
+  background-color: #6c757d;
+  border-color: #6c757d;
+  opacity: 0.6;
+}
+
+/* Form controls */
+.form-control {
+  border: 1px solid #ced4da;
+  border-radius: 3px;
+  font-size: 0.9rem;
+}
+
+.form-control:focus {
+  border-color: #495057;
+  box-shadow: 0 0 0 0.2rem rgba(73, 80, 87, 0.25);
+}
+
+textarea.form-control {
+  resize: vertical;
+  min-height: 100px;
+}
+
+/* Labels */
+.form-label {
+  font-weight: 600;
+  color: #333;
+  font-size: 0.85rem;
+  margin-bottom: 0.25rem;
+}
+
+.form-label.small {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+}
+
+/* Contadores de caracteres */
+.text-muted {
+  font-size: 0.75rem;
+  text-align: right;
+  margin-top: 0.25rem;
+}
+
+/* Alertas */
+.alert-info {
+  background-color: #d1ecf1;
+  border-color: #bee5eb;
+  color: #0c5460;
+  border-radius: 5px;
+  font-size: 0.9rem;
+}
+
+.alert-info h6 {
+  color: #0c5460;
+  font-weight: bold;
+}
+
+.alert-info ul {
+  margin-bottom: 0;
+}
+
+.alert-info li {
+  margin-bottom: 0.25rem;
+}
+
+/* Espaciado específico */
+.mb-4 {
+  margin-bottom: 1.5rem !important;
+}
+
+.mb-3 {
+  margin-bottom: 1rem !important;
+}
+
+.mb-2 {
+  margin-bottom: 0.5rem !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .container-fluid {
+    padding: 1rem;
+  }
+  
+  .col-md-6 {
+    margin-bottom: 2rem;
+  }
+  
+  h2.fw-bold {
+    font-size: 1.25rem;
+  }
+  
+  .btn-lg {
+    font-size: 1rem;
+    padding: 0.5rem 2rem;
+  }
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.card {
+  animation: fadeIn 0.5s ease;
+}
+
+/* Estilos para inputs de fecha */
+input[type="date"] {
+  padding: 0.375rem 0.75rem;
+}
+
+/* Espaciado entre elementos del flujo */
+.d-flex.align-items-center {
+  margin-bottom: 1rem;
+}
+
+/* Mejoras visuales para la tabla */
+.table tbody tr:hover {
+  background-color: #f5f5f5;
+}
+
+/* Estilos para el objeto (texto largo) */
+.small {
+  font-size: 0.8rem;
+  line-height: 1.2;
+}
+
+/* Validación visual */
+.form-control.is-valid {
+  border-color: #198754;
+}
+
+.form-control.is-invalid {
+  border-color: #dc3545;
+}
+
+/* Centrado del botón GRABAR */
+.text-center .btn-lg {
+  min-width: 200px;
+}

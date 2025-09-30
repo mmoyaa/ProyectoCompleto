@@ -25,6 +25,9 @@ import { DetalleEvaluacionComponent } from './componentes/lista-evaluaciones/det
 import { ProbandoComponent } from './componentes/probando/probando.component';
 import { DocumentosComponent } from './componentes/documentos/documentos.component';
 import { CapuertoComponent } from './capuerto/capuerto.component';
+import { FechasComponent } from './fechas/fechas.component';
+import { FiscalizacionComponent } from './fiscalizacion/fiscalizacion.component';
+import { FiscaComponent } from './fisca/fisca.component';
 
 
   @NgModule({
@@ -47,6 +50,9 @@ import { CapuertoComponent } from './capuerto/capuerto.component';
   ProbandoComponent,
   DocumentosComponent,
   CapuertoComponent,
+  FechasComponent,
+  FiscalizacionComponent,
+  FiscaComponent,
     
   ],
   imports: [

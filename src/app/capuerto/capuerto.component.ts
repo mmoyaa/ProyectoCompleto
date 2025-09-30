@@ -10,6 +10,7 @@ export class CapuertoComponent implements OnInit {
 
   formularioCobro!: FormGroup;
 
+  // eslint-disable-next-line @angular-eslint/prefer-inject
   constructor(private fb: FormBuilder) {}
 
   ngOnInit(): void {

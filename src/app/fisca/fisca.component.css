@@ -1,0 +1,41 @@
+/* Estilos para el componente de fiscalización */
+
+.badge {
+  font-size: 0.75rem;
+  min-width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-header {
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.bg-light {
+  background-color: #f8f9fa !important;
+  border: 1px solid #e9ecef;
+}
+
+.text-danger {
+  font-size: 0.875rem;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.alert {
+  border-radius: 0.5rem;
+}
+
+.form-control:focus {
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+.small {
+  font-size: 0.875rem;
+}
