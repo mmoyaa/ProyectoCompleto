@@ -37,6 +37,16 @@ export class ResumenPagoComponent implements OnInit {
   errorEvaluaciones = '';
   errorDocumentos = '';
 
+  // Datos de selección para UTM (Proporcional UTM)
+  pacienteSeleccionado: PacienteCompleto | null = null;
+  nombreSeleccionado = '';
+  telefonoSeleccionado = '';
+
+  // Datos de selección para IPC
+  evaluacionSeleccionada: EvaluacionSensorial | null = null;
+  nombrePacienteSeleccionado = '';
+  fechaSeleccionada = '';
+
   constructor(
     private pacienteService: PacienteService,
     private evaluacionService: EvaluacionService,
@@ -75,6 +85,17 @@ export class ResumenPagoComponent implements OnInit {
     this.errorPacientes = '';
     this.errorEvaluaciones = '';
     this.errorDocumentos = '';
+    // Limpiar selecciones
+    this.limpiarSelecciones();
+  }
+
+  private limpiarSelecciones(): void {
+    this.pacienteSeleccionado = null;
+    this.nombreSeleccionado = '';
+    this.telefonoSeleccionado = '';
+    this.evaluacionSeleccionada = null;
+    this.nombrePacienteSeleccionado = '';
+    this.fechaSeleccionada = '';
   }
 
   private cargarPacientes(): void {
@@ -152,6 +173,19 @@ export class ResumenPagoComponent implements OnInit {
       return `${item.nombre} ${item.apellidoPaterno} ${item.apellidoMaterno || ''}`.trim();
     }
     return 'Sin nombre';
+  }
+
+  // Métodos para seleccionar registros
+  seleccionarPaciente(paciente: PacienteCompleto): void {
+    this.pacienteSeleccionado = paciente;
+    this.nombreSeleccionado = this.obtenerNombreCompleto(paciente);
+    this.telefonoSeleccionado = paciente.telefono || 'Sin teléfono';
+  }
+
+  seleccionarEvaluacion(evaluacion: EvaluacionSensorial): void {
+    this.evaluacionSeleccionada = evaluacion;
+    this.nombrePacienteSeleccionado = evaluacion.nombreCompleto || 'Sin nombre';
+    this.fechaSeleccionada = this.formatearFecha(evaluacion.fechaEvaluacion || '');
   }
 
   descargarDocumento(idDocumento: number): void {

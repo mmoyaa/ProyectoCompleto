@@ -126,6 +126,7 @@
                         <th>RUT</th>
                         <th>Teléfono</th>
                         <th>Correo</th>
+                        <th>Acción</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -135,14 +136,51 @@
                         <td>{{ paciente.rut || 'Sin RUT' }}</td>
                         <td>{{ paciente.telefono || 'Sin teléfono' }}</td>
                         <td>{{ paciente.correo || 'Sin correo' }}</td>
+                        <td>
+                          <button 
+                            class="btn btn-sm btn-success"
+                            (click)="seleccionarPaciente(paciente)"
+                            title="Seleccionar paciente">
+                            <i class="fas fa-arrow-right me-1"></i>
+                            Ir
+                          </button>
+                        </td>
                       </tr>
                       <tr *ngIf="pacientes.length === 0">
-                        <td colspan="5" class="text-center text-muted">
+                        <td colspan="6" class="text-center text-muted">
                           No hay pacientes registrados
                         </td>
                       </tr>
                     </tbody>
                   </table>
+                </div>
+
+                <!-- Sección de datos seleccionados para UTM -->
+                <div *ngIf="pacienteSeleccionado" class="mt-4">
+                  <h6 class="mb-3">
+                    <i class="fas fa-user-check text-success me-2"></i>
+                    Información del Paciente Seleccionado
+                  </h6>
+                  <div class="row">
+                    <div class="col-md-6 mb-3">
+                      <label for="nombreSeleccionado" class="form-label fw-bold">Nombre Completo:</label>
+                      <input 
+                        type="text" 
+                        class="form-control" 
+                        id="nombreSeleccionado"
+                        [(ngModel)]="nombreSeleccionado"
+                        readonly>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <label for="telefonoSeleccionado" class="form-label fw-bold">Teléfono:</label>
+                      <input 
+                        type="text" 
+                        class="form-control" 
+                        id="telefonoSeleccionado"
+                        [(ngModel)]="telefonoSeleccionado"
+                        readonly>
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -179,6 +217,7 @@
                         <th>Estado</th>
                         <th>Fecha</th>
                         <th>Evaluador</th>
+                        <th>Acción</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -216,14 +255,51 @@
                         </td>
                         <td>{{ formatearFecha(evaluacion.fechaEvaluacion || '') }}</td>
                         <td>{{ evaluacion.evaluadorNombre || 'Sin evaluador' }}</td>
+                        <td>
+                          <button 
+                            class="btn btn-sm btn-success"
+                            (click)="seleccionarEvaluacion(evaluacion)"
+                            title="Seleccionar evaluación">
+                            <i class="fas fa-arrow-right me-1"></i>
+                            Ir
+                          </button>
+                        </td>
                       </tr>
                       <tr *ngIf="evaluaciones.length === 0">
-                        <td colspan="7" class="text-center text-muted">
+                        <td colspan="8" class="text-center text-muted">
                           No hay evaluaciones registradas
                         </td>
                       </tr>
                     </tbody>
                   </table>
+                </div>
+
+                <!-- Sección de datos seleccionados para IPC -->
+                <div *ngIf="evaluacionSeleccionada" class="mt-4">
+                  <h6 class="mb-3">
+                    <i class="fas fa-clipboard-check text-success me-2"></i>
+                    Información de la Evaluación Seleccionada
+                  </h6>
+                  <div class="row">
+                    <div class="col-md-6 mb-3">
+                      <label for="nombrePacienteSeleccionado" class="form-label fw-bold">Nombre del Paciente:</label>
+                      <input 
+                        type="text" 
+                        class="form-control" 
+                        id="nombrePacienteSeleccionado"
+                        [(ngModel)]="nombrePacienteSeleccionado"
+                        readonly>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <label for="fechaSeleccionada" class="form-label fw-bold">Fecha de Evaluación:</label>
+                      <input 
+                        type="text" 
+                        class="form-control" 
+                        id="fechaSeleccionada"
+                        [(ngModel)]="fechaSeleccionada"
+                        readonly>
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -274,13 +350,21 @@
                         <td>{{ documento.tamano ? (documento.tamano / 1024).toFixed(2) + ' KB' : 'N/A' }}</td>
                         <td>{{ formatearFecha(documento.fechaCreacion || '') }}</td>
                         <td>
-                          <button 
-                            *ngIf="documento.idDocumento"
-                            class="btn btn-sm btn-outline-primary"
-                            (click)="descargarDocumento(documento.idDocumento!)"
-                            title="Descargar documento">
-                            <i class="fas fa-download"></i>
-                          </button>
+                          <div class="btn-group btn-group-sm">
+                            <button 
+                              *ngIf="documento.idDocumento"
+                              class="btn btn-outline-primary"
+                              (click)="descargarDocumento(documento.idDocumento!)"
+                              title="Descargar documento">
+                              <i class="fas fa-download"></i>
+                            </button>
+                            <button 
+                              class="btn btn-success"
+                              title="Ver documento">
+                              <i class="fas fa-arrow-right me-1"></i>
+                              Ir
+                            </button>
+                          </div>
                         </td>
                       </tr>
                       <tr *ngIf="documentos.length === 0">
