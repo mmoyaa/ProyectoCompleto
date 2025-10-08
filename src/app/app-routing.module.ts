@@ -17,6 +17,7 @@ import { CapuertoComponent } from './capuerto/capuerto.component';
 import { FechasComponent } from './fechas/fechas.component';
 import { FiscalizacionComponent } from './fiscalizacion/fiscalizacion.component';
 import { FiscaComponent } from './fisca/fisca.component';
+import { ResumenPagoComponent } from './componentes/resumen-pago/resumen-pago.component';
 
 
 const routes: Routes = [
@@ -38,6 +39,7 @@ const routes: Routes = [
   { path:'fechas', component: FechasComponent },
   { path:'fiscalizacion', component: FiscalizacionComponent },
   { path:'fisca', component: FiscaComponent },
+  { path:'resumen-pago', component: ResumenPagoComponent },
 ];
 
 @NgModule({

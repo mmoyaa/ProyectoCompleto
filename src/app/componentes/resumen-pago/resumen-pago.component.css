@@ -1,0 +1,133 @@
+/* Estilos para el componente Resumen de Pago */
+
+.card {
+  border: none;
+  border-radius: 12px;
+}
+
+.card-header {
+  border-radius: 12px 12px 0 0 !important;
+}
+
+/* Radio buttons personalizados */
+.form-check {
+  margin-bottom: 0.5rem;
+}
+
+.form-check-input:checked {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+}
+
+.form-check-label {
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.form-check-label:hover {
+  color: #0d6efd !important;
+}
+
+/* Tablas responsivas */
+.table-responsive {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.table {
+  margin-bottom: 0;
+}
+
+.table thead th {
+  border-top: none;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+}
+
+.table tbody tr:hover {
+  background-color: rgba(0,0,0,0.02);
+}
+
+/* Badges personalizados */
+.badge {
+  font-size: 0.75rem;
+  padding: 0.375rem 0.75rem;
+}
+
+/* Progress bars */
+.progress {
+  background-color: #e9ecef;
+  border-radius: 10px;
+}
+
+.progress-bar {
+  border-radius: 10px;
+  background: linear-gradient(90deg, #28a745 0%, #20c997 100%);
+}
+
+/* Spinners */
+.spinner-border {
+  width: 3rem;
+  height: 3rem;
+}
+
+/* Botones de acción */
+.btn-sm {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+  border-radius: 0.375rem;
+}
+
+.btn-outline-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Estados vacíos */
+.text-muted i {
+  opacity: 0.6;
+}
+
+/* Animaciones */
+.table tbody tr {
+  transition: background-color 0.2s ease;
+}
+
+.btn {
+  transition: all 0.2s ease;
+}
+
+/* Mejoras para móviles */
+@media (max-width: 768px) {
+  .d-flex.flex-wrap {
+    flex-direction: column !important;
+  }
+  
+  .form-check {
+    margin-bottom: 1rem;
+  }
+  
+  .table-responsive {
+    font-size: 0.875rem;
+  }
+}
+
+/* Iconos con colores específicos */
+.text-primary i {
+  color: #0d6efd !important;
+}
+
+.text-success i {
+  color: #198754 !important;
+}
+
+.text-info i {
+  color: #0dcaf0 !important;
+}
+
+.text-warning i {
+  color: #ffc107 !important;
+}

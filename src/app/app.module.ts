@@ -28,6 +28,7 @@ import { CapuertoComponent } from './capuerto/capuerto.component';
 import { FechasComponent } from './fechas/fechas.component';
 import { FiscalizacionComponent } from './fiscalizacion/fiscalizacion.component';
 import { FiscaComponent } from './fisca/fisca.component';
+import { ResumenPagoComponent } from './componentes/resumen-pago/resumen-pago.component';
 
 
   @NgModule({
@@ -53,6 +54,7 @@ import { FiscaComponent } from './fisca/fisca.component';
   FechasComponent,
   FiscalizacionComponent,
   FiscaComponent,
+  ResumenPagoComponent,
     
   ],
   imports: [

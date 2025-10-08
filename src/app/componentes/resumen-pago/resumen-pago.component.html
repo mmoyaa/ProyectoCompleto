@@ -1,0 +1,310 @@
+<!-- Resumen de Pago -->
+<div class="container-fluid mt-4">
+  <div class="row">
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+          <h4 class="mb-0">
+            <i class="fas fa-receipt me-2"></i>
+            Resumen de Pago
+          </h4>
+        </div>
+        <div class="card-body">
+          
+          <!-- Sección de Radio Buttons -->
+          <div class="row mb-4">
+            <div class="col-12">
+              <h5 class="mb-3">Seleccione el tipo de información:</h5>
+              <div class="d-flex flex-wrap gap-3">
+                
+                <!-- Proporcional UTM -->
+                <div class="form-check">
+                  <input 
+                    class="form-check-input" 
+                    type="radio" 
+                    name="tipoInformacion" 
+                    id="utm" 
+                    value="utm"
+                    (change)="onTipoSeleccionado('utm')"
+                    [checked]="tipoSeleccionado === 'utm'">
+                  <label class="form-check-label fw-bold" for="utm">
+                    <i class="fas fa-chart-line text-primary me-1"></i>
+                    Proporcional UTM
+                  </label>
+                </div>
+
+                <!-- IPC -->
+                <div class="form-check">
+                  <input 
+                    class="form-check-input" 
+                    type="radio" 
+                    name="tipoInformacion" 
+                    id="ipc" 
+                    value="ipc"
+                    (change)="onTipoSeleccionado('ipc')"
+                    [checked]="tipoSeleccionado === 'ipc'">
+                  <label class="form-check-label fw-bold" for="ipc">
+                    <i class="fas fa-clipboard-list text-success me-1"></i>
+                    IPC
+                  </label>
+                </div>
+
+                <!-- Capuerto -->
+                <div class="form-check">
+                  <input 
+                    class="form-check-input" 
+                    type="radio" 
+                    name="tipoInformacion" 
+                    id="capuerto" 
+                    value="capuerto"
+                    (change)="onTipoSeleccionado('capuerto')"
+                    [checked]="tipoSeleccionado === 'capuerto'">
+                  <label class="form-check-label fw-bold" for="capuerto">
+                    <i class="fas fa-anchor text-info me-1"></i>
+                    Capuerto
+                  </label>
+                </div>
+
+                <!-- Arancel -->
+                <div class="form-check">
+                  <input 
+                    class="form-check-input" 
+                    type="radio" 
+                    name="tipoInformacion" 
+                    id="arancel" 
+                    value="arancel"
+                    (change)="onTipoSeleccionado('arancel')"
+                    [checked]="tipoSeleccionado === 'arancel'">
+                  <label class="form-check-label fw-bold" for="arancel">
+                    <i class="fas fa-dollar-sign text-warning me-1"></i>
+                    Arancel
+                  </label>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <!-- Área de Contenido -->
+          <div class="row">
+            <div class="col-12">
+              
+              <!-- Mensaje de selección -->
+              <div *ngIf="!tipoSeleccionado" class="text-center text-muted py-5">
+                <i class="fas fa-hand-pointer fa-3x mb-3"></i>
+                <h5>Seleccione una opción para mostrar la información correspondiente</h5>
+              </div>
+
+              <!-- Tabla de Pacientes (Proporcional UTM) -->
+              <div *ngIf="tipoSeleccionado === 'utm'">
+                <h5 class="mb-3">
+                  <i class="fas fa-users text-primary me-2"></i>
+                  Lista de Pacientes
+                </h5>
+                
+                <!-- Spinner de carga -->
+                <div *ngIf="cargandoPacientes" class="text-center py-4">
+                  <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Cargando...</span>
+                  </div>
+                  <p class="mt-2">Cargando información de pacientes...</p>
+                </div>
+
+                <!-- Error -->
+                <div *ngIf="errorPacientes" class="alert alert-danger" role="alert">
+                  <i class="fas fa-exclamation-triangle me-2"></i>
+                  {{ errorPacientes }}
+                </div>
+
+                <!-- Tabla de Pacientes -->
+                <div *ngIf="!cargandoPacientes && !errorPacientes" class="table-responsive">
+                  <table class="table table-striped table-hover">
+                    <thead class="table-primary">
+                      <tr>
+                        <th>ID</th>
+                        <th>Nombre Completo</th>
+                        <th>RUT</th>
+                        <th>Teléfono</th>
+                        <th>Correo</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let paciente of pacientes">
+                        <td>{{ paciente.idPaciente || 'N/A' }}</td>
+                        <td>{{ obtenerNombreCompleto(paciente) }}</td>
+                        <td>{{ paciente.rut || 'Sin RUT' }}</td>
+                        <td>{{ paciente.telefono || 'Sin teléfono' }}</td>
+                        <td>{{ paciente.correo || 'Sin correo' }}</td>
+                      </tr>
+                      <tr *ngIf="pacientes.length === 0">
+                        <td colspan="5" class="text-center text-muted">
+                          No hay pacientes registrados
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- Tabla de Evaluaciones (IPC) -->
+              <div *ngIf="tipoSeleccionado === 'ipc'">
+                <h5 class="mb-3">
+                  <i class="fas fa-clipboard-check text-success me-2"></i>
+                  Lista de Evaluaciones
+                </h5>
+                
+                <!-- Spinner de carga -->
+                <div *ngIf="cargandoEvaluaciones" class="text-center py-4">
+                  <div class="spinner-border text-success" role="status">
+                    <span class="visually-hidden">Cargando...</span>
+                  </div>
+                  <p class="mt-2">Cargando evaluaciones...</p>
+                </div>
+
+                <!-- Error -->
+                <div *ngIf="errorEvaluaciones" class="alert alert-danger" role="alert">
+                  <i class="fas fa-exclamation-triangle me-2"></i>
+                  {{ errorEvaluaciones }}
+                </div>
+
+                <!-- Tabla de Evaluaciones -->
+                <div *ngIf="!cargandoEvaluaciones && !errorEvaluaciones" class="table-responsive">
+                  <table class="table table-striped table-hover">
+                    <thead class="table-success">
+                      <tr>
+                        <th>ID Evaluación</th>
+                        <th>Paciente</th>
+                        <th>Tipo Formulario</th>
+                        <th>Progreso</th>
+                        <th>Estado</th>
+                        <th>Fecha</th>
+                        <th>Evaluador</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let evaluacion of evaluaciones">
+                        <td>{{ evaluacion.idEvaluacion || 'N/A' }}</td>
+                        <td>{{ evaluacion.nombreCompleto || 'Sin nombre' }}</td>
+                        <td>
+                          <span class="badge bg-info">
+                            {{ evaluacion.tipoFormulario || 'No especificado' }}
+                          </span>
+                        </td>
+                        <td>
+                          <div class="progress" style="height: 20px;">
+                            <div 
+                              class="progress-bar" 
+                              role="progressbar" 
+                              [style.width.%]="evaluacion.progreso"
+                              [attr.aria-valuenow]="evaluacion.progreso" 
+                              aria-valuemin="0" 
+                              aria-valuemax="100">
+                              {{ evaluacion.progreso }}%
+                            </div>
+                          </div>
+                        </td>
+                        <td>
+                          <span 
+                            class="badge"
+                            [ngClass]="{
+                              'bg-success': evaluacion.estado === 'Completada',
+                              'bg-warning': evaluacion.estado === 'En Progreso',
+                              'bg-secondary': evaluacion.estado === 'Borrador'
+                            }">
+                            {{ evaluacion.estado || 'Sin estado' }}
+                          </span>
+                        </td>
+                        <td>{{ formatearFecha(evaluacion.fechaEvaluacion || '') }}</td>
+                        <td>{{ evaluacion.evaluadorNombre || 'Sin evaluador' }}</td>
+                      </tr>
+                      <tr *ngIf="evaluaciones.length === 0">
+                        <td colspan="7" class="text-center text-muted">
+                          No hay evaluaciones registradas
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- Tabla de Documentos (Capuerto) -->
+              <div *ngIf="tipoSeleccionado === 'capuerto'">
+                <h5 class="mb-3">
+                  <i class="fas fa-file-alt text-info me-2"></i>
+                  Lista de Documentos
+                </h5>
+                
+                <!-- Spinner de carga -->
+                <div *ngIf="cargandoDocumentos" class="text-center py-4">
+                  <div class="spinner-border text-info" role="status">
+                    <span class="visually-hidden">Cargando...</span>
+                  </div>
+                  <p class="mt-2">Cargando documentos...</p>
+                </div>
+
+                <!-- Error -->
+                <div *ngIf="errorDocumentos" class="alert alert-danger" role="alert">
+                  <i class="fas fa-exclamation-triangle me-2"></i>
+                  {{ errorDocumentos }}
+                </div>
+
+                <!-- Tabla de Documentos -->
+                <div *ngIf="!cargandoDocumentos && !errorDocumentos" class="table-responsive">
+                  <table class="table table-striped table-hover">
+                    <thead class="table-info">
+                      <tr>
+                        <th>ID</th>
+                        <th>Nombre del Archivo</th>
+                        <th>Tipo</th>
+                        <th>Formato</th>
+                        <th>Tamaño</th>
+                        <th>Fecha Creación</th>
+                        <th>Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let documento of documentos">
+                        <td>{{ documento.idDocumento || 'N/A' }}</td>
+                        <td>
+                          <i class="fas fa-file me-1"></i>
+                          {{ documento.nombreArchivo || 'Sin nombre' }}
+                        </td>
+                        <td>{{ documento.idTipo || 'N/A' }}</td>
+                        <td>{{ documento.idFormato || 'N/A' }}</td>
+                        <td>{{ documento.tamano ? (documento.tamano / 1024).toFixed(2) + ' KB' : 'N/A' }}</td>
+                        <td>{{ formatearFecha(documento.fechaCreacion || '') }}</td>
+                        <td>
+                          <button 
+                            *ngIf="documento.idDocumento"
+                            class="btn btn-sm btn-outline-primary"
+                            (click)="descargarDocumento(documento.idDocumento!)"
+                            title="Descargar documento">
+                            <i class="fas fa-download"></i>
+                          </button>
+                        </td>
+                      </tr>
+                      <tr *ngIf="documentos.length === 0">
+                        <td colspan="7" class="text-center text-muted">
+                          No hay documentos registrados
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- Mensaje para Arancel -->
+              <div *ngIf="tipoSeleccionado === 'arancel'" class="text-center text-muted py-5">
+                <i class="fas fa-dollar-sign fa-3x mb-3 text-warning"></i>
+                <h5>Información de Arancel</h5>
+                <p>Esta funcionalidad estará disponible próximamente.</p>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
