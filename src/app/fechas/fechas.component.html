@@ -1,0 +1,363 @@
+<!-- Componente de Fechas - Renta y Tarifa -->
+<div class="container-fluid mt-4">
+  <div class="row">
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header bg-info text-white">
+          <h4 class="mb-0">
+            <i class="fas fa-calendar-alt me-2"></i>
+            Gestión de Fechas
+          </h4>
+          <small class="text-light">Fecha actual: {{ fechaActual }}</small>
+        </div>
+        <div class="card-body">
+          
+          <!-- Sección de Renta -->
+          <div class="section-container mb-5">
+            <div class="section-header bg-primary text-white p-3 rounded-top">
+              <h5 class="mb-0">
+                <i class="fas fa-home me-2"></i>
+                Sección de Renta
+              </h5>
+            </div>
+            <div class="section-content p-4 border border-top-0 rounded-bottom">
+              
+              <form [formGroup]="rentaForm">
+                <!-- Selector de Semestre para Renta -->
+                <div class="row mb-4">
+                  <div class="col-md-8">
+                    <span class="form-label fw-bold">
+                      <i class="fas fa-calendar-check me-1"></i>
+                      Seleccionar Semestre para Renta:
+                    </span>
+                    <div class="d-flex gap-3 mt-2">
+                      <div class="form-check">
+                        <input 
+                          class="form-check-input" 
+                          type="radio" 
+                          name="semestreRenta" 
+                          id="rentaSemestre1" 
+                          value="1"
+                          formControlName="semestre"
+                          (change)="onSemestreRentaChange('1')">
+                        <label class="form-check-label fw-bold" for="rentaSemestre1">
+                          <i class="fas fa-snowflake text-info me-1"></i>
+                          1
+                        </label>
+                      </div>
+                      <div class="form-check">
+                        <input 
+                          class="form-check-input" 
+                          type="radio" 
+                          name="semestreRenta" 
+                          id="rentaSemestre2" 
+                          value="2"
+                          formControlName="semestre"
+                          (change)="onSemestreRentaChange('2')">
+                        <label class="form-check-label fw-bold" for="rentaSemestre2">
+                          <i class="fas fa-sun text-warning me-1"></i>
+                          2
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Subtítulo dinámico para Renta -->
+                <div *ngIf="subtituloRenta" class="row mb-3">
+                  <div class="col-12">
+                    <h6 class="text-primary mb-0 subtitle-renta">
+                      <i class="fas fa-calendar-alt me-2"></i>
+                      {{ subtituloRenta }}
+                    </h6>
+                  </div>
+                </div>
+
+                <!-- Inputs de calendario para fechas de semestre - Renta -->
+                <div *ngIf="rentaForm.get('semestre')?.value" class="row mb-4 fecha-semestre-container">
+                  <div class="col-md-6 mb-3">
+                    <label for="rentaFechaInicioSemestre" class="form-label">
+                      <i class="fas fa-calendar-day text-success me-1"></i>
+                      Inicio de Semestre:
+                    </label>
+                    <input 
+                      type="date" 
+                      class="form-control" 
+                      id="rentaFechaInicioSemestre"
+                      formControlName="fechaInicioSemestre"
+                      readonly>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="rentaFechaFinalSemestre" class="form-label">
+                      <i class="fas fa-calendar-times text-danger me-1"></i>
+                      Final de Semestre:
+                    </label>
+                    <input 
+                      type="date" 
+                      class="form-control" 
+                      id="rentaFechaFinalSemestre"
+                      formControlName="fechaFinalSemestre"
+                      readonly>
+                  </div>
+                </div>
+              </form>
+
+              <!-- Formulario de Fechas para Renta -->
+              <div class="row">
+                
+                <!-- Fecha de Inicio de Cobro - Renta -->
+                <div class="col-md-4 mb-3">
+                  <label for="rentaFechaInicioCobro" class="form-label">
+                    <i class="fas fa-play-circle text-success me-1"></i>
+                    Fecha Inicio Cobro:
+                  </label>
+                  <input 
+                    type="date" 
+                    class="form-control" 
+                    id="rentaFechaInicioCobro"
+                    [min]="rentaForm.get('semestre')?.value === '1' ? fechaMinSemestre1 : fechaMinSemestre2"
+                    [max]="rentaForm.get('semestre')?.value === '1' ? fechaMaxSemestre1 : fechaMaxSemestre2"
+                    (change)="calcularDiasCobro()">
+                </div>
+
+                <!-- Fecha de Término de Cobro - Renta -->
+                <div class="col-md-4 mb-3">
+                  <label for="rentaFechaTerminoCobro" class="form-label">
+                    <i class="fas fa-stop-circle text-danger me-1"></i>
+                    Fecha Término Cobro:
+                  </label>
+                  <input 
+                    type="date" 
+                    class="form-control" 
+                    id="rentaFechaTerminoCobro"
+                    [min]="rentaForm.get('semestre')?.value === '1' ? fechaMinSemestre1 : fechaMinSemestre2"
+                    [max]="rentaForm.get('semestre')?.value === '1' ? fechaMaxSemestre1 : fechaMaxSemestre2"
+                    (change)="calcularDiasCobro()">
+                </div>
+
+                <!-- Días de Cobro - Renta -->
+                <div class="col-md-4 mb-3">
+                  <label for="rentaDiasCobro" class="form-label">
+                    <i class="fas fa-clock text-warning me-1"></i>
+                    Días de Cobro:
+                  </label>
+                  <input 
+                    type="number" 
+                    class="form-control" 
+                    id="rentaDiasCobro"
+                    readonly
+                    placeholder="Se calcula automáticamente">
+                </div>
+
+              </div>
+
+              <!-- Información adicional para Renta -->
+              <div class="row mt-3">
+                <div class="col-12">
+                  <div class="alert alert-info" role="alert">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Información:</strong> Las fechas de renta se calculan automáticamente según el semestre seleccionado. Los días de cobro se actualizan en tiempo real.
+                    <br>
+                    <small *ngIf="rentaForm.get('semestre')?.value === '1'" class="text-muted">
+                      <i class="fas fa-calendar-alt me-1"></i>
+                      <strong>Semestre 1:</strong> Solo puede seleccionar fechas entre el 1 de enero y 30 de junio de {{ anoActual }}.
+                    </small>
+                    <small *ngIf="rentaForm.get('semestre')?.value === '2'" class="text-muted">
+                      <i class="fas fa-calendar-alt me-1"></i>
+                      <strong>Semestre 2:</strong> Solo puede seleccionar fechas entre el 1 de julio y 31 de diciembre de {{ anoActual }}.
+                    </small>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Sección de Tarifa -->
+          <div class="section-container">
+            <div class="section-header bg-success text-white p-3 rounded-top">
+              <h5 class="mb-0">
+                <i class="fas fa-dollar-sign me-2"></i>
+                Sección de Tarifa
+              </h5>
+            </div>
+            <div class="section-content p-4 border border-top-0 rounded-bottom">
+              
+              <form [formGroup]="tarifaForm">
+                <!-- Selector de Semestre para Tarifa -->
+                <div class="row mb-4">
+                  <div class="col-md-8">
+                    <span class="form-label fw-bold">
+                      <i class="fas fa-calendar-check me-1"></i>
+                      Seleccionar Semestre para Tarifa:
+                    </span>
+                    <div class="d-flex gap-3 mt-2">
+                      <div class="form-check">
+                        <input 
+                          class="form-check-input" 
+                          type="radio" 
+                          name="semestreTarifa" 
+                          id="tarifaSemestre1" 
+                          value="1"
+                          formControlName="semestre"
+                          (change)="onSemestreTarifaChange('1')">
+                        <label class="form-check-label fw-bold" for="tarifaSemestre1">
+                          <i class="fas fa-snowflake text-info me-1"></i>
+                          1
+                        </label>
+                      </div>
+                      <div class="form-check">
+                        <input 
+                          class="form-check-input" 
+                          type="radio" 
+                          name="semestreTarifa" 
+                          id="tarifaSemestre2" 
+                          value="2"
+                          formControlName="semestre"
+                          (change)="onSemestreTarifaChange('2')">
+                        <label class="form-check-label fw-bold" for="tarifaSemestre2">
+                          <i class="fas fa-sun text-warning me-1"></i>
+                          2
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Subtítulo dinámico para Tarifa -->
+                <div *ngIf="subtituloTarifa" class="row mb-3">
+                  <div class="col-12">
+                    <h6 class="text-success mb-0 subtitle-tarifa">
+                      <i class="fas fa-calendar-alt me-2"></i>
+                      {{ subtituloTarifa }}
+                    </h6>
+                  </div>
+                </div>
+
+                <!-- Inputs de calendario para fechas de semestre - Tarifa -->
+                <div *ngIf="tarifaForm.get('semestre')?.value" class="row mb-4 fecha-semestre-container">
+                  <div class="col-md-6 mb-3">
+                    <label for="tarifaFechaInicioSemestre" class="form-label">
+                      <i class="fas fa-calendar-day text-success me-1"></i>
+                      Inicio de Semestre:
+                    </label>
+                    <input 
+                      type="date" 
+                      class="form-control" 
+                      id="tarifaFechaInicioSemestre"
+                      formControlName="fechaInicioSemestre"
+                      readonly>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="tarifaFechaFinalSemestre" class="form-label">
+                      <i class="fas fa-calendar-times text-danger me-1"></i>
+                      Final de Semestre:
+                    </label>
+                    <input 
+                      type="date" 
+                      class="form-control" 
+                      id="tarifaFechaFinalSemestre"
+                      formControlName="fechaFinalSemestre"
+                      readonly>
+                  </div>
+                </div>
+              </form>
+
+              <!-- Formulario de Fechas para Tarifa -->
+              <div class="row">
+                
+                <!-- Fecha de Inicio de Cobro - Tarifa -->
+                <div class="col-md-4 mb-3">
+                  <label for="tarifaFechaInicioCobro" class="form-label">
+                    <i class="fas fa-play-circle text-success me-1"></i>
+                    Fecha Inicio Cobro:
+                  </label>
+                  <input 
+                    type="date" 
+                    class="form-control" 
+                    id="tarifaFechaInicioCobro"
+                    [min]="tarifaForm.get('semestre')?.value === '1' ? fechaMinSemestre1 : fechaMinSemestre2"
+                    [max]="tarifaForm.get('semestre')?.value === '1' ? fechaMaxSemestre1 : fechaMaxSemestre2"
+                    (change)="calcularDiasCobro()">
+                </div>
+
+                <!-- Fecha de Término de Cobro - Tarifa -->
+                <div class="col-md-4 mb-3">
+                  <label for="tarifaFechaTerminoCobro" class="form-label">
+                    <i class="fas fa-stop-circle text-danger me-1"></i>
+                    Fecha Término Cobro:
+                  </label>
+                  <input 
+                    type="date" 
+                    class="form-control" 
+                    id="tarifaFechaTerminoCobro"
+                    [min]="tarifaForm.get('semestre')?.value === '1' ? fechaMinSemestre1 : fechaMinSemestre2"
+                    [max]="tarifaForm.get('semestre')?.value === '1' ? fechaMaxSemestre1 : fechaMaxSemestre2"
+                    (change)="calcularDiasCobro()">
+                </div>
+
+                <!-- Días de Cobro - Tarifa -->
+                <div class="col-md-4 mb-3">
+                  <label for="tarifaDiasCobro" class="form-label">
+                    <i class="fas fa-clock text-warning me-1"></i>
+                    Días de Cobro:
+                  </label>
+                  <input 
+                    type="number" 
+                    class="form-control" 
+                    id="tarifaDiasCobro"
+                    readonly
+                    placeholder="Se calcula automáticamente">
+                </div>
+
+              </div>
+
+              <!-- Información adicional para Tarifa -->
+              <div class="row mt-3">
+                <div class="col-12">
+                  <div class="alert alert-success" role="alert">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Información:</strong> Las fechas de tarifa se calculan automáticamente según el semestre seleccionado. Los días de cobro se actualizan en tiempo real.
+                    <br>
+                    <small *ngIf="tarifaForm.get('semestre')?.value === '1'" class="text-muted">
+                      <i class="fas fa-calendar-alt me-1"></i>
+                      <strong>Semestre 1:</strong> Solo puede seleccionar fechas entre el 1 de enero y 30 de junio de {{ anoActual }}.
+                    </small>
+                    <small *ngIf="tarifaForm.get('semestre')?.value === '2'" class="text-muted">
+                      <i class="fas fa-calendar-alt me-1"></i>
+                      <strong>Semestre 2:</strong> Solo puede seleccionar fechas entre el 1 de julio y 31 de diciembre de {{ anoActual }}.
+                    </small>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Botones de Acción -->
+          <div class="row mt-4">
+            <div class="col-12 text-center">
+              <div class="btn-group">
+                <button 
+                  type="button" 
+                  class="btn btn-primary btn-lg"
+                  (click)="calcularFechas()">
+                  <i class="fas fa-calculator me-2"></i>
+                  Calcular Fechas
+                </button>
+                <button 
+                  type="button" 
+                  class="btn btn-outline-secondary btn-lg"
+                  (click)="limpiarFormulario()">
+                  <i class="fas fa-eraser me-2"></i>
+                  Limpiar Formulario
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
