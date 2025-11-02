@@ -187,7 +187,7 @@
               
               <!-- Número y texto de la pregunta -->
               <div class="col-md-6">
-                <label class="form-label mb-0">
+                <label class="form-label mb-0" [for]="'pregunta_' + pregunta.id">
                   <strong>{{ pregunta.id }}.</strong> {{ pregunta.texto }}
                   <span class="text-danger">*</span>
                 </label>
@@ -257,7 +257,7 @@
               
               <!-- Número y texto de la pregunta -->
               <div class="col-md-6">
-                <label class="form-label mb-0">
+                <label class="form-label mb-0" [for]="'pregunta_' + pregunta.id">
                   <strong>{{ pregunta.id }}.</strong> {{ pregunta.texto }}
                   <span class="text-danger">*</span>
                 </label>
@@ -327,7 +327,7 @@
               
               <!-- Número y texto de la pregunta -->
               <div class="col-md-6">
-                <label class="form-label mb-0">
+                <label class="form-label mb-0" [for]="'pregunta_' + pregunta.id">
                   <strong>{{ pregunta.id }}.</strong> {{ pregunta.texto }}
                   <span class="text-danger">*</span>
                 </label>
@@ -397,7 +397,7 @@
               
               <!-- Número y texto de la pregunta -->
               <div class="col-md-6">
-                <label class="form-label mb-0">
+                <label class="form-label mb-0" [for]="'pregunta_' + pregunta.id">
                   <strong>{{ pregunta.id }}.</strong> {{ pregunta.texto }}
                   <span class="text-danger">*</span>
                 </label>
@@ -467,7 +467,7 @@
               
               <!-- Número y texto de la pregunta -->
               <div class="col-md-6">
-                <label class="form-label mb-0">
+                <label class="form-label mb-0" [for]="'pregunta_' + pregunta.id">
                   <strong>{{ pregunta.id }}.</strong> {{ pregunta.texto }}
                   <span class="text-danger">*</span>
                 </label>
@@ -537,7 +537,7 @@
               
               <!-- Número y texto de la pregunta -->
               <div class="col-md-6">
-                <label class="form-label mb-0">
+                <label class="form-label mb-0" [for]="'pregunta_' + pregunta.id">
                   <strong>{{ pregunta.id }}.</strong> {{ pregunta.texto }}
                   <span class="text-danger">*</span>
                 </label>
@@ -607,7 +607,7 @@
               
               <!-- Número y texto de la pregunta -->
               <div class="col-md-6">
-                <label class="form-label mb-0">
+                <label class="form-label mb-0" [for]="'pregunta_' + pregunta.id">
                   <strong>{{ pregunta.id }}.</strong> {{ pregunta.texto }}
                   <span class="text-danger">*</span>
                 </label>
@@ -677,7 +677,7 @@
               
               <!-- Número y texto de la pregunta -->
               <div class="col-md-6">
-                <label class="form-label mb-0">
+                <label class="form-label mb-0" [for]="'pregunta_' + pregunta.id">
                   <strong>{{ pregunta.id }}.</strong> {{ pregunta.texto }}
                   <span class="text-danger">*</span>
                 </label>
@@ -807,11 +807,25 @@
 </div>
 
 <!-- Modal para mostrar lista de pacientes -->
-<div class="modal-overlay" *ngIf="mostrarModalPacientes" (click)="cerrarModalPacientes()">
-  <div class="modal-container" (click)="$event.stopPropagation()">
+<div class="modal-overlay" 
+     *ngIf="mostrarModalPacientes" 
+     (click)="cerrarModalPacientes()"
+     (keydown.escape)="cerrarModalPacientes()"
+     tabindex="0"
+     role="dialog"
+     aria-modal="true"
+     aria-labelledby="modal-title">
+  <div class="modal-container" 
+       (click)="$event.stopPropagation()"
+       (keydown)="$event.stopPropagation()"
+       tabindex="-1">
     <div class="modal-header">
-      <h2>Seleccionar Paciente para Evaluación</h2>
-      <button class="modal-close" (click)="cerrarModalPacientes()" aria-label="Cerrar modal">×</button>
+      <h2 id="modal-title">Seleccionar Paciente para Evaluación</h2>
+      <button class="modal-close" 
+              (click)="cerrarModalPacientes()" 
+              (keydown.enter)="cerrarModalPacientes()"
+              aria-label="Cerrar modal"
+              type="button">×</button>
     </div>
     
     <div class="modal-body">

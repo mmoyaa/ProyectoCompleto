@@ -5,7 +5,7 @@ import { CommonModule } from '@angular/common';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { Paso1Component } from './componentes/paso-1/paso-1.component';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { HttpClientModule } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Pagina1Component } from './componentes/pagina1/pagina1.component';
 import { Pagina2Component } from './componentes/pagina2/pagina2.component';
@@ -24,15 +24,11 @@ import { Pagina5Component } from './componentes/pagina5/pagina5.component';
 import { DetalleEvaluacionComponent } from './componentes/lista-evaluaciones/detalle-evaluacion.component';
 import { ProbandoComponent } from './componentes/probando/probando.component';
 import { DocumentosComponent } from './componentes/documentos/documentos.component';
-import { CapuertoComponent } from './capuerto/capuerto.component';
-import { FechasComponent } from './fechas/fechas.component';
-import { FiscalizacionComponent } from './fiscalizacion/fiscalizacion.component';
-import { FiscaComponent } from './fisca/fisca.component';
 import { ResumenPagoComponent } from './componentes/resumen-pago/resumen-pago.component';
 
 
-  @NgModule({
-    declarations: [
+@NgModule({
+  declarations: [
     AppComponent,
     Paso1Component,
     Pagina1Component,
@@ -42,25 +38,24 @@ import { ResumenPagoComponent } from './componentes/resumen-pago/resumen-pago.co
     HomeComponent,
     ListaEvaluacionesComponent,
     GraficosComponent,
-  Formulario612Component,
-  Grafico612Component,
-  Formulario13Component,
-  AllFormulariosComponent,
-  Pagina5Component,
-  DetalleEvaluacionComponent,
-  ProbandoComponent,
-  DocumentosComponent,
-  CapuertoComponent,
-  FechasComponent,
-  FiscalizacionComponent,
-  FiscaComponent,
-  ResumenPagoComponent,
-    
+    Formulario612Component,
+    Grafico612Component,
+    Formulario13Component,
+    AllFormulariosComponent,
+    Pagina5Component,
+    DetalleEvaluacionComponent,
+    ProbandoComponent,
+    DocumentosComponent,
+    ResumenPagoComponent
   ],
   imports: [
     BrowserModule,
     CommonModule,
-    AppRoutingModule,HttpClientModule, FormsModule,  ReactiveFormsModule, NgbModule,
+    AppRoutingModule,
+    HttpClientModule,
+    FormsModule,
+    ReactiveFormsModule,
+    NgbModule
   ],
   providers: [],
   bootstrap: [AppComponent]

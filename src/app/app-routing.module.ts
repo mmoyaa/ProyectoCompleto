@@ -13,10 +13,6 @@ import { Formulario13Component } from './componentes/formulario-1-3/formulario-1
 import { Pagina5Component } from './componentes/pagina5/pagina5.component';
 import { ProbandoComponent } from './componentes/probando/probando.component';
 import { DocumentosComponent } from './componentes/documentos/documentos.component';
-import { CapuertoComponent } from './capuerto/capuerto.component';
-import { FechasComponent } from './fechas/fechas.component';
-import { FiscalizacionComponent } from './fiscalizacion/fiscalizacion.component';
-import { FiscaComponent } from './fisca/fisca.component';
 import { ResumenPagoComponent } from './componentes/resumen-pago/resumen-pago.component';
 
 
@@ -30,16 +26,12 @@ const routes: Routes = [
   { path:'home', component: HomeComponent },
   { path:'formulario-6-12', component: Formulario612Component },
   { path:'grafico6-12', component: Grafico612Component },
-    { path:'all-formularios', component: AllFormulariosComponent },
+  { path:'all-formularios', component: AllFormulariosComponent },
   { path:'formulario6-13', component:Formulario13Component },
   { path:'pagina5', component: Pagina5Component },
   { path:'probando', component: ProbandoComponent },
   { path:'documentos', component: DocumentosComponent },
-  { path:'capuerto', component: CapuertoComponent },
-  { path:'fechas', component: FechasComponent },
-  { path:'fiscalizacion', component: FiscalizacionComponent },
-  { path:'fisca', component: FiscaComponent },
-  { path:'resumen-pago', component: ResumenPagoComponent },
+  { path:'resumenes', component: ResumenPagoComponent },
 ];
 
 @NgModule({
