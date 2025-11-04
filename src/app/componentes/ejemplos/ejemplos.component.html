@@ -1,0 +1,247 @@
+<div class="ejemplos-container">
+  <div class="header-section">
+    <h2 class="page-title">
+      <i class="fas fa-calculator"></i>
+      Validador de Suma con Formato CLP
+    </h2>
+    <p class="page-description">
+      Ejemplo de validación de suma con formato de moneda chilena
+    </p>
+  </div>
+
+  <div class="content-section">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="card shadow-lg">
+          <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">
+              <i class="fas fa-coins me-2"></i>
+              Calculadora de Valores CLP
+            </h5>
+          </div>
+          <div class="card-body">
+            
+            <!-- Botón para cargar datos simulados -->
+            <div class="text-center mb-4">
+              <button 
+                type="button" 
+                class="btn btn-info btn-lg"
+                (click)="cargarDatos()"
+                [disabled]="datosSimulados">
+                <i class="fas fa-download me-2"></i>
+                {{ datosSimulados ? 'Datos Cargados' : 'Cargar Datos Simulados' }}
+              </button>
+            </div>
+
+            <!-- Formulario de valores -->
+            <form [formGroup]="calculadoraForm" *ngIf="datosSimulados" (ngSubmit)="guardar()">
+              <div class="row">
+                
+                <!-- Valor 1 -->
+                <div class="col-md-6 mb-3">
+                  <label for="valor1" class="form-label fw-bold">
+                    <i class="fas fa-money-bill-wave me-2"></i>
+                    Valor 1 (CLP)
+                  </label>
+                  <div class="input-group">
+                    <span class="input-group-text">$</span>
+                    <input 
+                      type="text" 
+                      id="valor1"
+                      class="form-control"
+                      formControlName="valor1"
+                      [class.is-invalid]="esCampoInvalido('valor1')"
+                      [class.is-valid]="esCampoValido('valor1')"
+                      (input)="onInputChange('valor1', $event)"
+                      placeholder="0">
+                  </div>
+                  <div class="invalid-feedback" *ngIf="esCampoInvalido('valor1')">
+                    <i class="fas fa-exclamation-triangle me-1"></i>
+                    <span *ngIf="tieneSumaExcedida('valor1')">La suma excede el total permitido</span>
+                    <span *ngIf="valor1Control?.hasError('required')">Este campo es requerido</span>
+                    <span *ngIf="valor1Control?.hasError('noEsNumero')">Ingrese solo números</span>
+                  </div>
+                  <div class="valid-feedback" *ngIf="esCampoValido('valor1')">
+                    <i class="fas fa-check me-1"></i>
+                    Valor válido
+                  </div>
+                </div>
+
+                <!-- Valor 2 -->
+                <div class="col-md-6 mb-3">
+                  <label for="valor2" class="form-label fw-bold">
+                    <i class="fas fa-money-bill-wave me-2"></i>
+                    Valor 2 (CLP)
+                  </label>
+                  <div class="input-group">
+                    <span class="input-group-text">$</span>
+                    <input 
+                      type="text" 
+                      id="valor2"
+                      class="form-control"
+                      formControlName="valor2"
+                      [class.is-invalid]="esCampoInvalido('valor2')"
+                      [class.is-valid]="esCampoValido('valor2')"
+                      (input)="onInputChange('valor2', $event)"
+                      placeholder="0">
+                  </div>
+                  <div class="invalid-feedback" *ngIf="esCampoInvalido('valor2')">
+                    <i class="fas fa-exclamation-triangle me-1"></i>
+                    <span *ngIf="tieneSumaExcedida('valor2')">La suma excede el total permitido</span>
+                    <span *ngIf="valor2Control?.hasError('required')">Este campo es requerido</span>
+                    <span *ngIf="valor2Control?.hasError('noEsNumero')">Ingrese solo números</span>
+                  </div>
+                  <div class="valid-feedback" *ngIf="esCampoValido('valor2')">
+                    <i class="fas fa-check me-1"></i>
+                    Valor válido
+                  </div>
+                </div>
+
+                <!-- Total (Solo lectura) -->
+                <div class="col-12 mb-4">
+                  <label for="valorTotal" class="form-label fw-bold">
+                    <i class="fas fa-piggy-bank me-2"></i>
+                    Total Máximo Permitido (CLP)
+                  </label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-secondary text-white">$</span>
+                    <input 
+                      type="text" 
+                      id="valorTotal"
+                      class="form-control bg-light"
+                      formControlName="valorTotal"
+                      readonly>
+                    <span class="input-group-text bg-secondary text-white">
+                      <i class="fas fa-lock"></i>
+                    </span>
+                  </div>
+                  <div class="form-text">
+                    <i class="fas fa-info-circle me-1"></i>
+                    Este valor es de solo lectura y representa el límite máximo
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- Resumen de cálculo -->
+              <div class="calculation-summary mb-4">
+                <div class="card bg-light">
+                  <div class="card-body">
+                    <h6 class="card-title">
+                      <i class="fas fa-calculator me-2"></i>
+                      Resumen del Cálculo
+                    </h6>
+                    <div class="row text-center">
+                      <div class="col-md-3">
+                        <div class="metric">
+                          <div class="metric-value">${{ valor1Control?.value || '0' }}</div>
+                          <div class="metric-label">Valor 1</div>
+                        </div>
+                      </div>
+                      <div class="col-md-1 d-flex align-items-center justify-content-center">
+                        <i class="fas fa-plus text-primary fs-3"></i>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="metric">
+                          <div class="metric-value">${{ valor2Control?.value || '0' }}</div>
+                          <div class="metric-label">Valor 2</div>
+                        </div>
+                      </div>
+                      <div class="col-md-1 d-flex align-items-center justify-content-center">
+                        <i class="fas fa-equals text-secondary fs-3"></i>
+                      </div>
+                      <div class="col-md-4">
+                        <div class="metric">
+                          <div class="metric-value" 
+                               [class.text-success]="sumValida"
+                               [class.text-danger]="!sumValida">
+                            ${{ formatearNumero(sumaActual) }}
+                          </div>
+                          <div class="metric-label">Suma Total</div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <!-- Validación visual -->
+                    <div class="validation-status mt-3 text-center">
+                      <div *ngIf="sumValida" class="alert alert-success d-inline-block">
+                        <i class="fas fa-check-circle me-2"></i>
+                        La suma está dentro del límite permitido
+                      </div>
+                      <div *ngIf="!sumValida" class="alert alert-danger d-inline-block">
+                        <i class="fas fa-times-circle me-2"></i>
+                        ¡La suma excede el total máximo de ${{ valorTotalControl?.value }}!
+                      </div>
+                    </div>
+
+                    <!-- Información del estado del formulario -->
+                    <div class="form-status mt-3 text-center">
+                      <div class="badge" 
+                           [class.bg-success]="calculadoraForm.valid"
+                           [class.bg-danger]="calculadoraForm.invalid">
+                        <i class="fas fa-info-circle me-1"></i>
+                        Formulario {{ calculadoraForm.valid ? 'VÁLIDO' : 'INVÁLIDO' }}
+                      </div>
+                      <div class="badge bg-secondary ms-2">
+                        <i class="fas fa-edit me-1"></i>
+                        {{ calculadoraForm.touched ? 'Modificado' : 'Sin modificar' }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Botones de acción -->
+              <div class="text-center">
+                <button 
+                  type="submit" 
+                  class="btn btn-success btn-lg me-3"
+                  [disabled]="!puedeGuardar">
+                  <i class="fas fa-save me-2"></i>
+                  {{ puedeGuardar ? 'Guardar con Reactive Forms' : 'No se puede guardar' }}
+                </button>
+                
+                <button 
+                  type="button" 
+                  class="btn btn-outline-secondary btn-lg"
+                  (click)="limpiar()">
+                  <i class="fas fa-eraser me-2"></i>
+                  Limpiar Todo
+                </button>
+              </div>
+
+              <!-- Debug del formulario (solo en desarrollo) -->
+              <div class="debug-section mt-4" style="font-size: 0.8rem; background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                <h6>🔧 Debug del Formulario Reactivo:</h6>
+                <div class="row">
+                  <div class="col-md-6">
+                    <strong>Estados:</strong>
+                    <ul class="list-unstyled">
+                      <li>Valid: {{ calculadoraForm.valid }}</li>
+                      <li>Invalid: {{ calculadoraForm.invalid }}</li>
+                      <li>Touched: {{ calculadoraForm.touched }}</li>
+                      <li>Dirty: {{ calculadoraForm.dirty }}</li>
+                    </ul>
+                  </div>
+                  <div class="col-md-6">
+                    <strong>Errores:</strong>
+                    <pre>{{ calculadoraForm.errors | json }}</pre>
+                  </div>
+                </div>
+              </div>
+
+            </form>
+
+            <!-- Mensaje inicial -->
+            <div *ngIf="!datosSimulados" class="text-center py-5">
+              <i class="fas fa-arrow-up fa-3x text-muted mb-3"></i>
+              <h5 class="text-muted">Haz clic en "Cargar Datos Simulados" para comenzar</h5>
+              <p class="text-muted">Se cargarán valores de ejemplo para probar la funcionalidad</p>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

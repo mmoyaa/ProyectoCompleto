@@ -25,6 +25,7 @@ import { DetalleEvaluacionComponent } from './componentes/lista-evaluaciones/det
 import { ProbandoComponent } from './componentes/probando/probando.component';
 import { DocumentosComponent } from './componentes/documentos/documentos.component';
 import { ResumenPagoComponent } from './componentes/resumen-pago/resumen-pago.component';
+import { EjemplosComponent } from './componentes/ejemplos/ejemplos.component';
 
 
 @NgModule({
@@ -46,7 +47,8 @@ import { ResumenPagoComponent } from './componentes/resumen-pago/resumen-pago.co
     DetalleEvaluacionComponent,
     ProbandoComponent,
     DocumentosComponent,
-    ResumenPagoComponent
+    ResumenPagoComponent,
+    EjemplosComponent
   ],
   imports: [
     BrowserModule,

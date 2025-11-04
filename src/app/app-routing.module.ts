@@ -14,6 +14,7 @@ import { Pagina5Component } from './componentes/pagina5/pagina5.component';
 import { ProbandoComponent } from './componentes/probando/probando.component';
 import { DocumentosComponent } from './componentes/documentos/documentos.component';
 import { ResumenPagoComponent } from './componentes/resumen-pago/resumen-pago.component';
+import { EjemplosComponent } from './componentes/ejemplos/ejemplos.component';
 
 
 const routes: Routes = [
@@ -32,6 +33,7 @@ const routes: Routes = [
   { path:'probando', component: ProbandoComponent },
   { path:'documentos', component: DocumentosComponent },
   { path:'resumenes', component: ResumenPagoComponent },
+  { path:'ejemplos', component: EjemplosComponent },
 ];
 
 @NgModule({
