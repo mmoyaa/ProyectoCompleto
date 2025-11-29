@@ -167,7 +167,7 @@ export class EjemplosComponent implements OnInit {
   get valorTotalControl() { return this.calculadoraForm.get('valorTotal'); }
 
   // Verificar si un campo específico es válido
-  esCampoValido(campo: string): boolean {
+    esCampoValido(campo: string): boolean {
     const control = this.calculadoraForm.get(campo);
     return control ? control.valid && control.touched : false;
   }
